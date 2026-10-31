@@ -439,7 +439,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 <details class="sect howto"><summary>How to pump it up</summary><div class="sect-body">
 <ol id="pump-steps"></ol>
 <p class="fk" style="margin-top:12px" id="sag-tips"></p>
-<p class="fk" style="margin-top:8px">Every dial starts fully open: turn it counterclockwise until it stops, then count clicks clockwise.</p>
+<p class="fk" style="margin-top:8px">Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. Compression that starts "fully open" is turned counterclockwise until it stops.</p>
 </div></details>
 <h2 class="h2">See what the spring does</h2>
 <p class="lede" id="s-lede"></p>
@@ -575,39 +575,41 @@ function dhxTT(){const C=DH2TT.chart,rows=Object.keys(C).filter(k=>k!=="wheel").
  let i=0;DH2TT.rates.forEach((x,j)=>{if(Math.abs(x-U.rate)<Math.abs(DH2TT.rates[i]-U.rate))i=j});return{k,t:DH2TT[k],i,rate:DH2TT.rates[i],st,wt:C.wheel[wi]}}
 // ---------- dampers ----------
 const CCW="clicks counterclockwise from fully closed";
-const CWO="clicks clockwise from fully open";
+const CWO="clicks counterclockwise from fully closed";
 let NEEDCOUNT=false;
-// from-closed value (number or "a-b") -> from-open, given the dial's total clicks
-const foC=(v,tot)=>{const [a,b]=String(v).split(/[-–]/).map(x=>Math.min(Number(x),tot));const c=b==null?a:b;return c===a?String(tot-a):`${tot-c}–${tot-a}`};
-const fo=(v,tot)=>{if(typeof v==="number")return tot-v;const [a,b]=String(v).split(/[-–]/).map(Number);return b==null?String(tot-a):`${tot-b}–${tot-a}`};
-// text for a from-closed setting; when the total isn't published, ask the rider to count it
-const cwc=(v,tot)=>{if(tot)return `${fo(v,tot)} ${CWO} (of ${tot})`;NEEDCOUNT=true;return `your dial's total clicks minus ${String(v).replace("-","–")}, counted clockwise from fully open`};
+// The app counts every click from fully closed (turn fully clockwise, then count counterclockwise), the way Fox and RockShox print their tables.
+// from-closed value (number or "a-b") -> display string, capped at the dial's total
+const foC=(v,tot)=>{const [a,b]=String(v).split(/[-–]/).map(x=>Math.min(Number(x),tot));return b==null||a===b?String(a):`${a}–${b}`};
+const fo=(v,tot)=>{if(typeof v==="number")return v;const [a,b]=String(v).split(/[-–]/).map(Number);return b==null?String(a):`${a}–${b}`};
+// from-open value -> from-closed, given the total
+const flip=(v,tot)=>{if(typeof v==="number")return tot-v;const [a,b]=String(v).split(/[-–]/).map(Number);return b==null?String(tot-a):`${tot-b}–${tot-a}`};
+const cwc=(v,tot)=>`${String(v).replace("-","–")} ${CWO}${tot?` (of ${tot})`:""}`;
 const zebReb=w=>Math.max(1,Math.min(18,Math.round(19-w/20)));
 // r = rebound clicks from closed (higher = faster); l/h = compression positions (higher = firmer)
 const DMP={
- c3:{name:"Charger 3 RC2",r:18,l:15,h:5,start:`Low-speed 7 and high-speed 2 ${CWO} (of 15 and 5).`,init:{l:7,h:2}},
- c31:{name:"Charger 3.1 RC2",r:18,l:15,h:5,lRange:25,start:`Low-speed 7 and high-speed 2 ${CWO} (of 15 and 5).`,init:{l:7,h:2}},
- c32:{name:"Charger 3.2 RC2",r:18,rGuess:true,l:15,h:5,lLab:"−7 to +7",hLab:"−2 to +2",start:`Low-speed 7 and high-speed 2 ${CWO}. That lands on 0 on the numbered bezel.`,init:{l:7,h:2}},
- c21:{name:"Charger 2.1 RC2",r:18,rGuess:true,l:20,h:5,start:`Low-speed 10 and high-speed 2 ${CWO} (of 20 and 5), about halfway. RockShox doesn't print a starting point for this damper; the 20 low-speed clicks and 5 high-speed positions are from ENDURO's Lyrik test, so count your rebound dial.`,init:{l:10,h:2}},
- c3rc:{name:"Charger 3 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks, counted clockwise from fully open. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
- c32rc:{name:"Charger 3.2 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks, counted clockwise from fully open. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
- c21rc:{name:"Charger 2.1 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks, counted clockwise from fully open. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
+ c3:{name:"Charger 3 RC2",r:18,l:15,h:5,start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5).`,init:{l:7,h:2}},
+ c31:{name:"Charger 3.1 RC2",r:18,l:15,h:5,lRange:25,start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5).`,init:{l:7,h:2}},
+ c32:{name:"Charger 3.2 RC2",r:18,rGuess:true,l:15,h:5,lLab:"−7 to +7",hLab:"−2 to +2",start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5). That lands on 0 on the numbered bezel.`,init:{l:7,h:2}},
+ c21:{name:"Charger 2.1 RC2",r:18,rGuess:true,l:20,h:5,start:`Low-speed 10 and high-speed 3 ${CWO} (of 20 and 5), about halfway. RockShox doesn't print a starting point for this damper; the 20 low-speed clicks and 5 high-speed positions are from ENDURO's Lyrik test, so count your rebound dial.`,init:{l:10,h:2}},
+ c3rc:{name:"Charger 3 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
+ c32rc:{name:"Charger 3.2 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
+ c21rc:{name:"Charger 2.1 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
  rct3:{name:"Charger 2.1 RCT3",r:18,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.5,start:"Lever in Open for descending. Its low-speed compression dial works in Open only: start fully counterclockwise.",init:{l:0}},
- crc:{name:"Charger RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks, counted clockwise from fully open. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
+ crc:{name:"Charger RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
  cr:{name:"Charger R",r:18,rGuess:true,l:0,h:0,hFix:.5,start:"No compression dial; rebound only.",init:{}},
- rush:{name:"Rush RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks, counted clockwise from fully open. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
- delta:{name:"Delta RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks, counted clockwise from fully open. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
+ rush:{name:"Rush RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
+ delta:{name:"Delta RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
  rd2:{name:"Charger Race Day 2",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.4,start:"Lever in Open for descending; Pedal and Lock are for climbs.",init:{l:0}},
  rd:{name:"Charger Race Day",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.4,start:"Lever in Open for descending; Pedal and Lock are for climbs.",init:{l:0}},
  c2rl:{name:"Charger 2 RL",r:15,rGuess:true,l:2,lever:["Open","Lock"],h:0,hFix:.4,start:"Lever in Open for descending.",init:{l:0}},
  crl:{name:"Charger RL",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.4,start:"Lever in Open for descending.",init:{l:0}},
  rrl:{name:"Rush RL",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.4,start:"Lever in Open for descending.",init:{l:0}},
- gx2:{name:"GRIP X2",r:16,hr:8,l:16,h:8,fox:"x2",start:`High-speed 3 and low-speed 6 ${CWO} (of 8 and 16).`,init:{l:6,h:3}},
- gx:{name:"GRIP X",r:17,l:16,h:15,firmAtMax:true,fox:"gx",start:`High-speed 5 and low-speed 6 ${CWO} (of 15 and 16).`,init:{l:6,h:5}},
+ gx2:{name:"GRIP X2",r:16,hr:8,l:16,h:8,fox:"x2",start:`High-speed 5 and low-speed 10 ${CWO} (of 8 and 16).`,init:{l:6,h:3}},
+ gx:{name:"GRIP X",r:17,l:16,h:15,firmAtMax:true,fox:"gx",start:`High-speed 10 and low-speed 10 ${CWO} (of 15 and 16).`,init:{l:6,h:5}},
  grip:{name:"GRIP",r:13,l:2,lever:["Open","Medium","Firm"],h:0,hFix:.5,fox:"grip",rUnk:true,start:"Three-position lever in Open to start.",init:{l:0}},
  gsl:{name:"GRIP SL",r:13,l:2,lever:["Open","Medium","Firm"],h:0,hFix:.5,fox:"grip",rUnk:true,start:"Three-position lever: Open for descents, Medium for rolling terrain, Firm for smooth climbs.",init:{l:0}},
- g2:{name:"GRIP2",r:16,hr:8,l:16,h:8,fox:"x2",start:`High-speed 3 and low-speed 6 ${CWO} (of 8 and 16).`,init:{l:6,h:3}},
- fit4:{name:"FIT4",r:14,l:2,lever:["Open","Medium","Firm"],h:0,hFix:.5,fox:"fit4",rUnk:true,needCount:true,start:`Three-position lever in Open. Open-mode adjust: your dial's total clicks minus 18, counted clockwise from fully open.`,init:{l:0}}
+ g2:{name:"GRIP2",r:16,hr:8,l:16,h:8,fox:"x2",start:`High-speed 5 and low-speed 10 ${CWO} (of 8 and 16).`,init:{l:6,h:3}},
+ fit4:{name:"FIT4",r:14,l:2,lever:["Open","Medium","Firm"],h:0,hFix:.5,fox:"fit4",rUnk:true,needCount:true,start:`Three-position lever in Open. Open-mode adjust: 18 clicks counterclockwise from fully closed.`,init:{l:0}}
 };
 // ---------- Öhlins and DVO (researched 2026-10-28) ----------
 const OHW=[110,132,154,176,198,220,243,265],OHM=[70,80,90,100,110,120,130,140],OHR=[160,170,180,190,200,210,220,230];
@@ -627,20 +629,20 @@ CAT.dvo={name:"DVO",forks:{
   chart:{kind:"interp",W:DVOW,byTravel:Object.fromEntries([130,140,150,160,170].map(t=>[String(t),[90,100,110,125,130,135,140]]))},ebike:"none",tokens:{},sag:[15,20],sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's range is 15–20%: 15% is firmer, 20% is plusher.",
   dampers:["dvod1"],shape:"std",abo:false,warns:[],reb:{},
   dvo:{ott:["0–2","2–4","3–7","6–8","7–9","8–10","11–14"],reb:["10–14","10–14","8–12","8–12","6–10","6–10","6–10"],hsc:["0–1","0–2","2–3","2–4","3–5","4–6","5–7"],lsc:"1–2"},
-  notes:["DVO counts compression from fully open, the same way this app does. Rebound is converted from DVO's from-closed numbers."]}]}]},
+  notes:["DVO counts compression from fully open; the app converts it to clicks from fully closed. Rebound uses DVO's own from-closed numbers."]}]}]},
  dia36:{name:"Diamond 36",sub:"36 mm · SL air · trail",years:[{label:"2024–2027",versions:[{name:"SL air",spring:"DVO SL air spring",maxPsi:100,travel:[140,150,160,170],chart:{kind:"none"},ebike:"none",tokens:{"140":[0,6],"150":[0,6],"160":[0,6],"170":[0,6]},sag:[15,30],
   sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's Diamond 36 guide gives 15–30%: less for high-speed stability, more for comfort and cornering grip.",dampers:["dvo36"],shape:"std",abo:false,notes:["Air setup (DVO): inflate, push the fork down about 25 mm until you hear air transfer, then reset the pressure with the fork fully extended. Never exceed 100 psi."],reb:{},warns:["The pressure-by-weight chart in DVO's Diamond 36 guide didn't come through readably; it runs from 50 to 100 psi. Use the printed guide or sticker, then set it by sag."]}]}]},
  onyx38:{name:"Onyx 38",sub:"38 mm · SL air · enduro",years:[{label:"2024–2027",versions:[{name:"SL air",spring:"DVO SL air spring",maxPsi:null,travel:[160,170,180],chart:{kind:"none"},ebike:"none",tokens:{},sag:[15,20],
   sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline, inside DVO's usual 15–20% range.",dampers:["onyx"],shape:"std",abo:false,notes:["End-of-travel ramp is tuned with volume reducers."],reb:{},
   warns:["DVO's Onyx 38 pressure chart isn't in the sources we found. Use DVO's setup guide, then set it by sag."]}]}]}}};
 Object.assign(DMP,{
- ttx18:{name:"TTX18",r:16,l:16,h:3,start:`Low-speed 8 ${CWO} (of 16). High-speed 1 click clockwise from fully open (of 3): Öhlins labels that position 2, and fully clockwise (0) is for long climbs only. Öhlins' manual doesn't list starting clicks, so these are the halfway points.`,init:{l:8,h:1},
+ ttx18:{name:"TTX18",r:16,l:16,h:3,start:`Low-speed 8 ${CWO} (of 16). High-speed 2 ${CWO} (of 3): Öhlins labels that position 2, and fully clockwise (0) is for long climbs only. Öhlins' manual doesn't list starting clicks, so these are the halfway points.`,init:{l:8,h:1},
   rebText:`8 ${CWO} (of 16). Öhlins' manual doesn't list a starting number, so this is halfway`},
  dvod1:{name:"DVO D1 damper",r:20,l:6,h:29,start:"",init:{l:2,h:3}},
- onyx:{name:"DVO Onyx damper",r:25,l:5,h:38,start:`High-speed 8–9 ${CWO} (one full turn, of 38). Low-speed 0–1 ${CWO} (of 5); DVO doesn't give a low-speed start.`,init:{l:1,h:9},
-  rebText:`7–11 ${CWO} (of 25, DVO's recommended range)`,rebR:16},
- dvo36:{name:"DVO Diamond 36 damper",r:25,l:14,h:0,hFix:.5,start:`Low-speed compression 7 ${CWO} (of 14): DVO says start in the middle of its range.`,init:{l:7},rebText:"DVO's chart by pressure didn't come through readably; the dial has 25 clicks. Check DVO's setup guide, then count it clockwise from fully open"},
- dvogen:{name:"DVO damper",r:20,rGuess:true,l:6,lGuess:true,h:20,hGuess:true,start:`Compression 0–1 ${CWO}. Check DVO's setup guide for its exact numbers.`,init:{l:1,h:4},rebText:"check DVO's setup guide for the starting number, then count it clockwise from fully open"}});
+ onyx:{name:"DVO Onyx damper",r:25,l:5,h:38,start:`High-speed 29–30 ${CWO} (of 38), which is one full turn in from fully open. Low-speed fully open, or 1 click in from open (4–5 ${CWO}, of 5); DVO doesn't give a low-speed start.`,init:{l:1,h:9},
+  rebText:`14–18 ${CWO} (of 25, DVO's recommended range)`,rebR:16},
+ dvo36:{name:"DVO Diamond 36 damper",r:25,l:14,h:0,hFix:.5,start:`Low-speed compression 7 ${CWO} (of 14): DVO says start in the middle of its range.`,init:{l:7},rebText:"DVO's chart by pressure didn't come through readably; the dial has 25 clicks. Check DVO's setup guide, then count it counterclockwise from fully closed"},
+ dvogen:{name:"DVO damper",r:20,rGuess:true,l:6,lGuess:true,h:20,hGuess:true,start:`Compression fully open, or 1 click in from open. Check DVO's setup guide for its exact numbers.`,init:{l:1,h:4},rebText:"check DVO's setup guide for the starting number, then count it counterclockwise from fully closed"}});
 SHK.oh={name:"Öhlins",shocks:{
  ttx1:{name:"TTX1Air",sub:"air · trail/enduro",years:"2023–2027",kind:"air",maxPsi:300,sag:[25,30],start:"weight",spacers:"Volume spacers come with the shock.",
   notes:["Dials: low-speed compression 10 clicks, high-speed 3, rebound 12.","The m.2 version adds new seals and a reworked spacer system."]},
@@ -686,8 +688,8 @@ CAT.mz={name:"Marzocchi",forks:{
 Object.assign(DMP,{
  mgrip:{name:"GRIP (compression sweep)",r:13,rUnk:true,l:4,lever:["Open","¼","½","¾","Firm"],h:0,hFix:.5,fox:"grip",start:"Compression sweep fully counterclockwise (Open). Set sag there, then add compression clockwise to taste; positions between Open and Firm fine-tune it.",init:{l:0}},
  mrail:{name:"Rail (compression sweep)",r:13,rUnk:true,l:4,lever:["Open","¼","½","¾","Firm"],h:0,hFix:.5,fox:"grip",start:"Compression sweep fully counterclockwise (Open). Set sag there, then add compression clockwise to counter bob; positions between Open and Firm fine-tune it.",init:{l:0}},
- m58:{name:"Bomber 58 damper",r:13,rUnk:true,l:10,lGuess:true,h:0,hFix:.5,fox:"grip",needCount:true,start:"Compression fully counterclockwise (open) to set sag. Marzocchi's 2017 guide then shows a start of 8 clicks out from fully closed in one place and 4 in another, so count your dial's total and subtract 8 to get clicks clockwise from fully open.",init:{l:3}},
- mgx:{name:"GRIP X",r:16,rUnk:true,l:16,h:15,firmAtMax:true,fox:"mgx",start:`Low-speed 6 and high-speed 5 ${CWO} (of 16 and 15): Marzocchi's start is 10 clicks out from fully closed on both. The last high-speed click is Firm mode for climbs.`,init:{l:6,h:5}}});
+ m58:{name:"Bomber 58 damper",r:13,rUnk:true,l:10,lGuess:true,h:0,hFix:.5,fox:"grip",needCount:true,start:"Compression fully counterclockwise (open) to set sag. Marzocchi's 2017 guide then shows a start of 8 clicks out from fully closed in one place and 4 in another, so start at 8 clicks counterclockwise from fully closed.",init:{l:3}},
+ mgx:{name:"GRIP X",r:16,rUnk:true,l:16,h:15,firmAtMax:true,fox:"mgx",start:`Low-speed 10 and high-speed 10 ${CWO} (of 16 and 15), Marzocchi's start. The last high-speed click is Firm mode for climbs.`,init:{l:6,h:5}}});
 SHK.mz={name:"Marzocchi",shocks:{
  mzair:{name:"Bomber Air",sub:"air · trail/enduro",years:"2022–2027",kind:"air",maxPsi:350,sag:[25,30],start:"weight",rule:"Marzocchi's rule",rebPsi:[10,10,9,8,7,6,5,4,3,2,1],
   spacers:"Volume spacers: a larger one if you bottom out too easily with correct sag, a smaller one if you don't use full travel.",notes:["Compression starts fully counterclockwise (open)."]},
@@ -746,76 +748,76 @@ const THW=[100,120,140,160,180,200,220,240];
 const forkMax=v=>(v.maxByTravel||{})[String(U.travel)]??v.maxPsi;
 function rebFor(v,id,w){const dm=DMP[id],ov=(v.reb||{})[id],i=band10(w);
  if(ov&&ov.th){const T=ov.th[String(U.travel)];if(T){let j=0,b=1e9;THW.forEach((x,k)=>{if(T[k]!=null&&Math.abs(x-w)<b){b=Math.abs(x-w);j=k}});const z=T[j];
-  return{text:`${dm.rGuess?cwc(z,0):`${dm.r-z} ${CWO} (of ${dm.r})`}. RockShox TrailHead (${ov.thm}, ${U.travel} mm) lists −${z}, meaning ${z} clicks out from fully closed, for a ${THW[j]} lb rider${w<THW[0]||w>THW[THW.length-1]?"; your weight is outside its range, so this is the nearest row":""}`,r:Math.min(z,dm.r)}}}
- if(ov&&ov.r==="zeb"){const z=zebReb(w);return{text:`${dm.r-z} ${CWO} (of ${dm.r}). RockShox TrailHead shows the same setting as −${z}`,r:z}}
+  return{text:`${cwc(z,dm.rGuess?0:dm.r)}. RockShox TrailHead (${ov.thm}, ${U.travel} mm) lists this as −${z} for a ${THW[j]} lb rider${w<THW[0]||w>THW[THW.length-1]?"; your weight is outside its range, so this is the nearest row":""}`,r:Math.min(z,dm.r)}}}
+ if(ov&&ov.r==="zeb"){const z=zebReb(w);return{text:`${z} ${CWO} (of ${dm.r}). RockShox TrailHead shows the same setting as −${z}`,r:z}}
  if(v.dvo){const j=dvoBand(w),rg=v.dvo.reb[j];return{text:`${cwc(rg,dm.r)}, from DVO's base tune`,r:Math.round(rg.split("–").reduce((a,b)=>+a+ +b,0)/2)}}
  if(dm.rebText)return{text:dm.rebText,r:dm.rebR??Math.round(dm.r/2)};
- if(!dm.fox){if(dm.rGuess)NEEDCOUNT=true;return{text:`get your number from the RockShox TrailHead app (scan the QR code on the crown or enter the serial number). TrailHead counts from fully closed, so set it at ${dm.rGuess?"your dial's total clicks":dm.r} minus TrailHead's number, counted clockwise from fully open${dm.rGuess?"":`: TrailHead's −9 becomes ${dm.r-9} clicks clockwise`}`,r:null}}
+ if(!dm.fox)return{text:`get your number from the RockShox TrailHead app (scan the QR code on the crown or enter the serial number). TrailHead counts from fully closed like this app: −9 means turn it fully clockwise, then 9 clicks counterclockwise`,r:null}
  if(dm.fox==="x2"||ov&&ov.lsr){const L=(ov&&ov.lsr)||DEFREB.lsr,H=(ov&&ov.hsr)||DEFREB.hsr;// if the maker's table goes past the usual total (the Fox 40 lists up to 10 HSR clicks), the total isn't known for this fork
-  if(Math.max(...L)>dm.r||Math.max(...H)>dm.hr)return{text:`low-speed ${cwc(L[i],0)}; high-speed ${cwc(H[i],0)}. ${CAT[U.brand].name} lists ${L[i]} and ${H[i]} clicks from fully closed`,r:Math.min(L[i],dm.r),hr:Math.min(H[i],dm.hr)};
+  if(Math.max(...L)>dm.r||Math.max(...H)>dm.hr)return{text:`low-speed ${L[i]} and high-speed ${H[i]} ${CWO}, as ${CAT[U.brand].name} lists them. Its table goes past this damper's usual totals, so count your dials`,r:Math.min(L[i],dm.r),hr:Math.min(H[i],dm.hr)};
   return{text:`low-speed ${fo(L[i],dm.r)} and high-speed ${fo(H[i],dm.hr)} ${CWO} (of ${dm.r} and ${dm.hr})`,r:L[i],hr:H[i]}}
  const T=(ov&&ov.r)||(dm.fox==="gx"?DEFREB.gx:dm.fox==="fit4"?null:DEFREB.grip);
  if(!T)return{text:"see your fork's manual",r:null};
  return{text:cwc(T[i],dm.rUnk?0:dm.r),r:T[i]}}
 function startFor(v,id){const st=v.start||{};
- if(id==="gx"&&st.gx)return`High-speed ${15-st.gx[0]} and low-speed ${16-st.gx[1]} ${CWO} (of 15 and 16). Fox changed this for 2027.`;
- if(id==="gx2"&&st.gx2)return`High-speed ${8-st.gx2[0]} and low-speed ${16-st.gx2[1]} ${CWO} (of 8 and 16), from this fork's manual.`;
- if(id==="grip"&&st.grip40){NEEDCOUNT=true;return`Low-speed compression: your dial's total clicks minus 4, counted clockwise from fully open.`}
- if(v.dvo){const j=dvoBand(lb());return`High-speed ${v.dvo.hsc[j]} and low-speed ${v.dvo.lsc} ${CWO} (of 29 and 6), from DVO's base tune.`}
+ if(id==="gx"&&st.gx)return`High-speed ${st.gx[0]} and low-speed ${st.gx[1]} ${CWO} (of 15 and 16). Fox changed this for 2027.`;
+ if(id==="gx2"&&st.gx2)return`High-speed ${st.gx2[0]} and low-speed ${st.gx2[1]} ${CWO} (of 8 and 16), from this fork's manual.`;
+ if(id==="grip"&&st.grip40)return`Low-speed compression: 4 ${CWO}.`;
+ if(v.dvo){const j=dvoBand(lb());return`High-speed ${flip(v.dvo.hsc[j],29)} and low-speed ${flip(v.dvo.lsc,6)} ${CWO} (of 29 and 6), from DVO's base tune (DVO counts compression from fully open: ${v.dvo.hsc[j]} and ${v.dvo.lsc} clicks in).`}
  if(DMP[id].needCount)NEEDCOUNT=true;return DMP[id].start}
 
 // ---------- pumping guides and fixes ----------
 const PUMP={
- mz:[`Turn every dial fully counterclockwise, then count rebound clockwise to its starting clicks. Leave compression fully open for the sag check.`,
+ mz:[`Turn compression fully counterclockwise (open) for the sag check. Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
   `Unscrew the air cap on top of the left leg counterclockwise and thread on a high-pressure shock pump.`,
   `Pump to the starting pressure, never above the maximum (120 psi on most Marzocchi forks, 140 on the Z2 E-Bike+). Filling from empty? Go up in steps and slowly cycle the fork a few times between steps.`,
   `Remove the pump and measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position (lean on a wall), step off without bouncing, and measure.`,
   `Adjust until sag is on target (20%), then screw the air cap on clockwise until snug.`],
- mzShock:[`Turn every dial fully counterclockwise (compression open), then count rebound clockwise to its starting clicks.`,
+ mzShock:[`Turn compression fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
   `Thread a shock pump onto the air valve and set the pressure to your body weight in pounds, never above 350 psi.`,
   `After each 50 psi you add, slowly compress the shock through about 25% of its travel 10–20 times so the chambers equalize. At your target, cycle it 10 more times and top up.`,
   `Remove the pump and measure sag: push the O-ring against the air sleeve seal, sit on the bike in your riding position, get off without bouncing, and measure. Aim for 30%.`,
   `When letting air out, do it slowly so the negative chamber can vent.`],
- oh:[`Turn every dial fully counterclockwise, then count clockwise to the starting clicks above.`,
+ oh:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above.`,
   `Ramp-up chamber first: take the cap off the valve at the bottom of the right leg, pump it to the ramp-up pressure above, then refit the cap.`,
   `Main chamber next: unscrew the air cap on top of the left leg counterclockwise, pump to the main chamber pressure, remove the pump and refit the cap clockwise.`,
   `Measure sag: push the O-ring against the wiper seal, get on in your riding position (lean on a wall), step off without bouncing, and measure.`,
   `Adjust the main chamber for sag: add air if sag is too deep, let air out if it's too shallow. Change the ramp-up chamber to tune bottom-out: more pressure for more support deep in the travel.`,
   `After letting air out of the main chamber, push the fork down and let it extend about 10 times, until it's back to full length. Öhlins says to do this every time.`],
- dvo:[`Turn every dial fully counterclockwise, then count clockwise to the starting clicks above. Let all the air out before turning the OTT adjuster.`,
+ dvo:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above. Let all the air out before turning the OTT adjuster.`,
   `Unscrew the air cap counterclockwise and thread on a shock pump.`,
   `Pump to 10 psi above your starting pressure, then bleed it down to the target. That's DVO's method.`,
   `Remove the pump and measure sag: push the O-ring against the wiper seal, get on in your riding position, step off without bouncing, and measure.`,
   `Set mid and end support with air pressure, then fine-tune small-bump feel with OTT (if your fork has it). Refit the air cap clockwise.`],
- ohShock:[`Turn every dial fully counterclockwise. Öhlins doesn't give starting clicks, so turn rebound clockwise to about halfway (6 of 12 on a TTX1Air) and leave compression fully open for the sag check.`,
+ ohShock:[`Öhlins doesn't give starting clicks: turn rebound fully clockwise (closed), then back it out counterclockwise about halfway (6 of 12 on a TTX1Air). Leave compression fully counterclockwise (open) for the sag check.`,
   `Thread a shock pump onto the air valve and set the pressure to your body weight in pounds, never above the maximum.`,
   `Filling from low pressure? Add about 50 psi at a time and slowly cycle the shock through about 25% of its travel several times between steps.`,
   `Remove the pump and measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure. Adjust in small steps.`],
- dvoShock:[`Turn every dial fully counterclockwise, then count clockwise to the starting clicks above.`,
+ dvoShock:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above.`,
   `Set the reservoir bladder pressure through the valve under the reservoir cap, using the range above.`,
   `Thread a shock pump onto the main air valve and set the pressure to your body weight in pounds, never above the maximum. Cycle the shock slowly through about 25% of its travel a few times and top up.`,
   `Remove the pump and measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure. Adjust in small steps.`],
- rs:[`Turn every dial fully counterclockwise, then count clockwise to the starting clicks above.`,
+ rs:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above.`,
   `Unscrew the air cap on top of the left leg counterclockwise and thread on a shock pump.`,
   `Pump to the starting pressure. If you're filling from empty or adding a lot, go up in steps of about 50 psi and do step 4 between steps.`,
   `Remove the pump and slowly compress the fork a few times through about 25–30% of its travel. A short hiss is normal: that's air moving into the negative chamber.`,
   `Reattach the pump. The pressure will have dropped, so top it back up. Repeat steps 4 and 5 until the pressure holds.`,
   `Measure sag: push the O-ring against the wiper seal, get on in your riding position (lean on a wall), step off without bouncing, and measure from the seal to the O-ring.`,
   `Adjust in small steps until sag is on target, then screw the air cap on clockwise until snug.`],
- fox:[`Turn every dial fully counterclockwise. Leave compression there for the sag check, and count rebound clockwise to its starting clicks.`,
+ fox:[`Turn compression fully counterclockwise (open) for the sag check. Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
   `Unscrew the air cap on top of the left leg counterclockwise and thread on a high-pressure shock pump.`,
   `Pump to the starting pressure. If you're filling from empty or adding a lot, go up in steps of about 50 psi and cycle the fork slowly a few times between steps.`,
   `With the pump still on, slowly compress the fork a few times and recheck the gauge. Fox's manual doesn't require this, but it settles the chambers and does no harm. Top up if the pressure dropped.`,
   `Remove the pump. The hiss is air from the pump hose, not the fork.`,
   `Measure sag: push the O-ring against the wiper seal, get on dressed to ride and hold your riding position (lean on a wall), step off without bouncing, and measure.`,
   `Adjust until sag is on target, then screw the air cap on clockwise until snug. After a few rides, if your fork has air release buttons on the backs of the lowers, use them (see below).`],
- foxShock:[`Open the compression lever, turn every dial fully counterclockwise, then count rebound clockwise to its starting clicks.`,
+ foxShock:[`Open the compression lever and turn compression fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
   `Thread a shock pump onto the air valve and set the pressure to your body weight in pounds, never above the shock's maximum.`,
   `Filling from low pressure? Add about 50 psi at a time, and after each step slowly compress the shock through about 25% of its travel 10–20 times so air reaches the negative chamber.`,
   `At your target, cycle it through 25% of its travel 10 more times, recheck the gauge and top up.`,
   `Remove the pump and measure sag: push the O-ring against the air sleeve seal, sit on the bike in your riding position (lean on a wall), get off without bouncing, and measure.`,
   `Adjust in small steps until sag is on target. When letting air out, do it slowly.`],
- rsShock:[`Open the threshold lever and turn rebound fully counterclockwise, then count it clockwise to its starting clicks above. Set each compression dial to its middle (0) setting, RockShox's starting point.`,
+ rsShock:[`Open the threshold lever. Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks above. Set each compression dial to its middle (0) setting, RockShox's starting point.`,
   `Thread a shock pump onto the air valve and pump to your starting pressure (your body weight in pounds), then remove the pump.`,
   `Slowly cycle the shock 5–8 times through about 15% of its travel (about 35% for Vivid Air) so air reaches the negative chamber.`,
   `Reattach the pump and top back up; the pressure drops as the chambers equalize. Repeat until it holds. On Vivid Air, RockShox suggests adding 50–75 psi at a time when filling from low.`,
@@ -849,7 +851,7 @@ function renderHowto(kind){
 // ---------- setup rendering ----------
 const sagText=(sg,len)=>{const mm=x=>Math.round(len*x/10)/10;return sg[0]===sg[1]?`${mm(sg[0])} mm<em> ${sg[0]}% of travel</em>`:`${mm(sg[0])}–${mm(sg[1])} mm<em> ${sg[0]}–${sg[1]}% of travel</em>`};
 const capf=s=>s.charAt(0).toUpperCase()+s.slice(1);
-function setLines(L){if(L.some(x=>/\(of \d+/.test(x)))L.push("Click numbers marked \"of\" use that dial's published click total. Where the maker counts from fully closed, the app has converted it; if your dial stops at a different total, use your total minus the maker's number.");if(NEEDCOUNT){L.push("<b>Counting a dial:</b> turn it fully counterclockwise, then clockwise until it stops, counting every click. That's its total. Do it once and write it down.");NEEDCOUNT=false}const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});$("r-lines").innerHTML=P.join("");$("r-notes").innerHTML=N.join("")}
+function setLines(L){if(L.some(x=>/counterclockwise from fully closed/.test(x)))L.push("Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. \"Of\" is the dial's total. Where a maker counts from fully open, the app has converted it.");NEEDCOUNT=false;const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});$("r-lines").innerHTML=P.join("");$("r-notes").innerHTML=N.join("")}
 const SNAPK={fork:["brand","fork","year","ver","travel","damp","w","unit","eb"],shock:["sb","sk","stroke","rate","w","unit","eb","wtrav","csag","cbias"]};
 const snapOf=m=>Object.fromEntries(SNAPK[m].map(k=>[k,U[k]]));
 
@@ -993,11 +995,11 @@ function applyProfile(realPsi){const P=profOf(),box=$("r-prof");PROFRES=null;
  if(o.tok!=null)L.push(TCC?`<b>Volume spacers:</b> add ${P.tok*TCC} cc.`:`<b>${fork?"Tokens":"Volume spacers"}:</b> add ${P.tok}${tk?`, for ${o.tok} (stock ${tk[0]}, max ${tk[1]})`:""}.`);
  else if(P.tok&&o.ramp)L.push(`<b>Ramp-up chamber:</b> add about 10 psi for more end-of-travel support, in place of a token.`);
  else if(P.tok&&!coil)L.push(`<b>${fork?"Tokens":"Volume spacers"}:</b> already at the maximum, so leave them.`);
- if(dp.r&&P.reb)L.push(`<b>Rebound:</b> ${dial?`one mark ${P.reb<0?"slower (clockwise)":"faster (counterclockwise)"} than the starting mark.`:`${cw(dp.r-q.r,dp.r,dp.rGuess)}${Math.abs(P.reb)} click ${P.reb<0?"slower (clockwise)":"faster (counterclockwise)"} than the starting point.`}`);
- if(dp.hr&&P.hrb)L.push(`<b>High-speed rebound:</b> ${cw(dp.hr-q.hr,dp.hr,dp.hrGuess)}${Math.abs(P.hrb)} click slower (clockwise) than the starting point.`);
- if(dp.l&&!dp.lever&&P.lsc[i])L.push(`<b>Low-speed compression:</b> ${cw(q.l,dp.l,dp.lGuess)}${Math.abs(P.lsc[i])} click${Math.abs(P.lsc[i])>1?"s":""} ${P.lsc[i]>0?"firmer (clockwise)":"softer (counterclockwise)"} than the starting point.`);
+ if(dp.r&&P.reb)L.push(`<b>Rebound:</b> ${dial?`one mark ${P.reb<0?"slower (clockwise)":"faster (counterclockwise)"} than the starting mark.`:`${cw(q.r,dp.r,dp.rGuess)}${Math.abs(P.reb)} click ${P.reb<0?"slower (clockwise)":"faster (counterclockwise)"} than the starting point.`}`);
+ if(dp.hr&&P.hrb)L.push(`<b>High-speed rebound:</b> ${cw(q.hr,dp.hr,dp.hrGuess)}${Math.abs(P.hrb)} click slower (clockwise) than the starting point.`);
+ if(dp.l&&!dp.lever&&P.lsc[i])L.push(`<b>Low-speed compression:</b> ${cw(dp.l-q.l,dp.l,dp.lGuess)}${Math.abs(P.lsc[i])} click${Math.abs(P.lsc[i])>1?"s":""} ${P.lsc[i]>0?"firmer (clockwise)":"softer (counterclockwise)"} than the starting point.`);
  if(o.lever)L.push(`<b>Lever:</b> use ${o.lever} for climbs and smooth trail, Open for descents.`);
- if(dp.h&&P.hsc[i])L.push(`<b>High-speed compression:</b> ${cw(q.h,dp.h,dp.hGuess)}${Math.abs(P.hsc[i])} click${Math.abs(P.hsc[i])>1?"s":""} ${P.hsc[i]>0?"firmer (clockwise)":"softer (counterclockwise)"} than the starting point.`);
+ if(dp.h&&P.hsc[i])L.push(`<b>High-speed compression:</b> ${cw(dp.h-q.h,dp.h,dp.hGuess)}${Math.abs(P.hsc[i])} click${Math.abs(P.hsc[i])>1?"s":""} ${P.hsc[i]>0?"firmer (clockwise)":"softer (counterclockwise)"} than the starting point.`);
  if(!dp.h&&P.hsc[i]>0&&!dp.lever)L.push(`<b>High-speed compression:</b> this ${nn} has no high-speed dial${dp.l?", so the low-speed change does the job":""}.`);
  box.innerHTML=`<p><b>${P.name}:</b> ${P.why}</p><ul>${L.map(x=>`<li>${x}</li>`).join("")}</ul><p class="fk">These are common starting points from riders and suspension tuners, not the maker's numbers. Change one thing at a time on the trail.</p>`;
  box.hidden=false;PROFRES=o;
@@ -1034,7 +1036,7 @@ function renderFork(){
  L.push(`<b>Compression:</b> ${startFor(v,U.damp)}`);
  if(v.ramp)L.push("<b>Ramp-up chamber:</b> a second air chamber that sets how hard the fork resists the end of its travel, in place of tokens. Pump it through the valve at the bottom of the right leg, before the main chamber.");
  if(v.dvo)L.push(`<b>OTT:</b> ${v.dvo.ott[dvoBand(w)]} full turns clockwise from fully open. OTT preloads a small coil that sets how easily the fork moves off the top. Let the air out before turning it.`);
- if(v.abo)L.push("<b>Adjustable Bottom Out:</b> on Ultimate forks, a dial at the bottom of the air leg changes end-of-travel support. Turn it fully counterclockwise, then 4 clicks clockwise (of 8).");
+ if(v.abo)L.push("<b>Adjustable Bottom Out:</b> on Ultimate forks, a dial at the bottom of the air leg changes end-of-travel support. Turn it fully clockwise, then 4 clicks counterclockwise (of 8).");
  v.notes.forEach(n=>L.push(n));
  setLines(L);
  warn.push(...v.warns);if(dm.warn)warn.push(dm.warn);if(!tk&&!v.ramp&&U.brand!=="dvo")warn.push("Token or spacer counts for this travel aren't confirmed yet.");
@@ -1065,7 +1067,7 @@ function renderShock(){
  $("r-sag").innerHTML=sagText([30,30],U.stroke);
  if(sh.sag[0]!==30||sh.sag[1]!==30)L.push(`<b>Sag:</b> the app targets 30%, the usual baseline.${U.sb==="fox"?` Fox's manual gives ${sh.sag[0]}–${sh.sag[1]}%.`:""} If your frame maker recommends a different sag for your bike, use theirs.`);
  if(sh.rebPsi&&psi!=null){const B2=[100,120,140,160,180,200,220,240,260,280];let i=0;while(i<B2.length&&psi>=B2[i])i++;i=Math.min(i,sh.rebPsi.length-1);
-  L.push(`<b>Rebound:</b> ${cwc(sh.rebPsi[i],0)}. ${SHK[U.sb].name} lists ${sh.rebPsi[i]} clicks from fully closed for your pressure.`)}
+  L.push(`<b>Rebound:</b> ${cwc(sh.rebPsi[i],0)}, from ${SHK[U.sb].name}'s chart for your pressure.`)}
  if(sh.rebDial&&psi!=null){const B2=[100,120,140,160,180,200,220,240,260,280];let i=0;while(i<B2.length&&psi>=B2[i])i++;const m=sh.rebDial[i];
   L.push(`<b>Rebound:</b> ${m==="Open"?"turn the dial fully counterclockwise, to Open":m==="Closed"?"turn the dial fully clockwise, to Closed":`turn the dial fully counterclockwise (Open), then clockwise to the ${m} mark`}. Fox's ${sh.name} chart uses the printed marks on the dial (Open, 11 down to 3, Closed), not clicks.`)}
  if(sh.table==="dhx2tt"){const d=dhxTT();
@@ -1076,17 +1078,17 @@ function renderShock(){
   L.push(`<b>Rebound:</b> low-speed ${fo(X2T.LSR[i],16)} and high-speed ${fo(X2T.HSR[i],8)} ${CWO} (of 16 and 8).`);
   L.push(`<b>Compression:</b> low-speed ${fo(X2T.LSC[i],16)} and high-speed ${fo(X2T.HSC[i],8)} ${CWO} (of 16 and 8). High-speed dials are on Factory shocks only.`)}
  if(sh.table==="x2o"&&psi!=null){const i=Math.max(0,Math.min(21,Math.round((psi-90)/10))),m=v=>v.replace("-","–");
-  L.push(`<b>Rebound:</b> low-speed ${cwc(X2O.LSR[i],0)}; high-speed ${cwc(X2O.HSR[i],0)}. Fox's ${X2O.psi[i]} psi row lists ${m(X2O.LSR[i])} and ${m(X2O.HSR[i])} clicks out from fully closed.`);
-  L.push(`<b>Compression:</b> low-speed ${cwc(X2O.LSC[i],0)}; high-speed ${cwc(X2O.HSC[i],0)}. Fox lists ${m(X2O.LSC[i])} and ${m(X2O.HSC[i])} clicks out from fully closed.`)}
+  L.push(`<b>Rebound:</b> low-speed ${m(X2O.LSR[i])} and high-speed ${m(X2O.HSR[i])} ${CWO} (Fox's ${X2O.psi[i]} psi row).`);
+  L.push(`<b>Compression:</b> low-speed ${m(X2O.LSC[i])} and high-speed ${m(X2O.HSC[i])} ${CWO}.`)}
  if(sh.table==="x2tt"&&psi!=null){const i=Math.max(0,Math.min(21,Math.round((psi-90)/10))),over=["LSR","LSC"].some(k=>Number(X2TT[k][i].split("-")[1])>16);
   L.push(`<b>Rebound:</b> low-speed ${foC(X2TT.LSR[i],16)} and high-speed ${foC(X2TT.HSR[i],8)} ${CWO} (of 16 and 8; Fox's ${X2TT.psi[i]} psi row).`);
   L.push(`<b>Compression:</b> low-speed ${foC(X2TT.LSC[i],16)} and high-speed ${foC(X2TT.HSC[i],8)} ${CWO} (of 16 and 8). High-speed dials are on Factory shocks only.`+(over?" Fox's table goes past 16 clicks at this pressure, so those dials start fully open.":""))}
  if(sh.table==="dhx2"){const R=DH2T.springLbIn;let i=0,b=1e9;R.forEach((r,j)=>{if(Math.abs(r-U.rate)<b){b=Math.abs(r-U.rate);i=j}});
   L.push(`<b>Rebound:</b> low-speed ${fo(DH2T.LSR[i],16)} and high-speed ${fo(DH2T.HSR[i],8)} ${CWO} (of 16 and 8; Fox's table for a ${R[i]} lb/in spring).`);
   L.push(`<b>Compression:</b> low-speed ${fo(DH2T.LSC[i],16)} and high-speed ${fo(DH2T.HSC[i],8)} ${CWO} (of 16 and 8). Compression dials are on Factory and Performance Elite only.`)}
- if(sh.reboundClicks)L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed, so set it at ${sh.reboundClicks} minus TrailHead's number, counted clockwise from fully open (${sh.reboundClicks} clicks total).`);
- else if(U.sb==="rs"&&sh.kind==="air"){NEEDCOUNT=true;L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed, so set it at your dial's total clicks minus TrailHead's number, counted clockwise from fully open.`)}
- if(U.sb==="rs"&&sh.kind==="air")L.push(U.sk==="dlx"?`<b>Compression:</b> threshold lever in Open for descending.`:U.sk==="sdo"?`<b>Compression:</b> threshold lever in Open for descending. If your shock has a low-speed compression dial, start it fully counterclockwise (open) and add clicks to taste.`:`<b>Compression:</b> start each compression dial at its middle (0) setting, RockShox's starting point${U.sk==="vac"?` (position 3 of 5, so turn fully counterclockwise, then 2 clicks clockwise)`:""}. Use TrailHead's suggestion for your bike if it gives a different one.`);
+ if(sh.reboundClicks)L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed, so turn the dial fully clockwise, then counterclockwise the number of clicks TrailHead shows (${sh.reboundClicks} clicks total).`);
+ else if(U.sb==="rs"&&sh.kind==="air"){L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed: turn the dial fully clockwise, then counterclockwise the number of clicks it shows.`)}
+ if(U.sb==="rs"&&sh.kind==="air")L.push(U.sk==="dlx"?`<b>Compression:</b> threshold lever in Open for descending.`:U.sk==="sdo"?`<b>Compression:</b> threshold lever in Open for descending. If your shock has a low-speed compression dial, start it fully counterclockwise (open) and add clicks to taste.`:`<b>Compression:</b> start each compression dial at its middle (0) setting, RockShox's starting point${U.sk==="vac"?` (position 3 of 5, so turn fully clockwise, then 2 clicks counterclockwise)`:""}. Use TrailHead's suggestion for your bike if it gives a different one.`);
  if(sh.bladder)L.push(`<b>Reservoir bladder:</b> set it to ${sh.bladder} through the valve under the reservoir cap: lighter riders at the low end, heavier riders at the high end.`);
  if(sh.lever)L.push(`<b>Lever:</b> ${sh.lever}`);
  if(sh.spacers)L.push(`<b>Volume:</b> ${sh.spacers}`);
@@ -1180,7 +1182,14 @@ function applyShock(psi){
  if(dm.tbl==="x2o"&&psi!=null){const i=Math.max(0,Math.min(21,Math.round((psi-90)/10))),mid=v=>{const [a,b]=String(v).split("-").map(Number);return Math.round((a+(b??a))/2)};r=Math.min(dm.r,mid(X2O.LSR[i]));hrv=Math.min(dm.hr,mid(X2O.HSR[i]))}
  if(dm.tbl==="x2tt"&&psi!=null){const i=Math.max(0,Math.min(21,Math.round((psi-90)/10))),mid=v=>{const [a,b]=String(v).split("-").map(Number);return Math.round((a+(b??a))/2)};r=Math.min(16,mid(X2TT.LSR[i]));hrv=Math.min(8,mid(X2TT.HSR[i]))}
  if(dm.tbl==="dhx2"){const Rr=DH2T.springLbIn;let i=0,b=1e9;Rr.forEach((x,j)=>{if(Math.abs(x-U.rate)<b){b=Math.abs(x-U.rate);i=j}});r=DH2T.LSR[i];hrv=DH2T.HSR[i]}
- const base={prof:coil?"coil":"std",damp:"x",t:coil?0:1,n:0,r:Math.min(r,dm.r),l:dm.init.l||0,h:dm.init.h||0,hr:dm.hr?Math.min(hrv,dm.hr):0};
+ // compression start from the maker's table where there is one (tables count from closed; the sim stores compression from open)
+ let lc=dm.init.l||0,hc=dm.init.h||0;{const mid=v=>{const [a,b]=String(v).split("-").map(Number);return Math.round((a+(b??a))/2)},B2=[100,120,140,160,180,200,220,240,260,280];let T=null,i=0;
+  if(dm.tbl==="x2"&&psi!=null){while(i<B2.length&&psi>=B2[i])i++;i=Math.min(i,X2T.LSC.length-1);T=X2T}
+  else if(dm.tbl==="x2tt"&&psi!=null){i=Math.max(0,Math.min(21,Math.round((psi-90)/10)));T=X2TT}
+  else if(dm.tbl==="dhx2"){const Rr=DH2T.springLbIn;let bb=1e9;Rr.forEach((x,j)=>{if(Math.abs(x-U.rate)<bb){bb=Math.abs(x-U.rate);i=j}});T=DH2T}
+  else if(dm.tbl==="dhx2tt"){const d=dhxTT();if(d){T=d.t;i=d.i}}
+  if(T&&T.LSC&&T.HSC){lc=Math.max(0,dm.l-Math.min(dm.l,mid(T.LSC[i])));hc=Math.max(0,dm.h-Math.min(dm.h,mid(T.HSC[i])))}}
+ const base={prof:coil?"coil":"std",damp:"x",t:coil?0:1,n:0,r:Math.min(r,dm.r),l:lc,h:hc,hr:dm.hr?Math.min(hrv,dm.hr):0};
  if(coil){COIL0=U.rate;base.p=U.rate;PS=1}else{base.p=pAt(base,SAGT);PS=psi?psi/base.p:1}
  D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
  $("t").max=TMAX;$("n").max=Math.max(1,NMAX);$("p").step=coil?25:1;$("p").min=coil?200:Math.round(base.p*.55);$("p").max=coil?800:Math.round(base.p*1.5);
@@ -1482,10 +1491,10 @@ function renderDamp(){
  setGauge(r.mx,r.mx);cancelAnimationFrame(anim);$("dot").style.display="none";drawScene(r,r.peak,r.out[r.peak][0],r.mx);
  renderBikeCheck();renderTrailTune();$("d-sum").innerHTML=`<h2>Your starting clicks</h2><ul class="lines">${$("r-lines").innerHTML}</ul>`;
  renderLinks();
- const dp=DAMP.x;["r","l","h","hr"].forEach(k=>{const mx=dp[k]||1;$(k).max=mx;$(k).value=(k==="r"||k==="hr")?mx-(s[k]||0):(s[k]||0)});$("hrctl").hidden=!dp.hr;$("r-lab").textContent=dp.hr?"Low-speed rebound":"Rebound";$("hrv").textContent=dp.hrGuess?`about ${dp.hr-s.hr} of ${dp.hr} from fully open`:`${dp.hr-s.hr} ${CWO} (of ${dp.hr})`;
- $("rv").textContent=dp.rGuess?`about ${dp.r-s.r} of ${dp.r} from fully open`:`${dp.r-s.r} ${CWO} (of ${dp.r})`;
- $("lv").textContent=dp.lever?dp.lever[s.l]:dp.lGuess?`about ${s.l} of ${dp.l} from fully open`:dp.lLab?`${s.l} ${CWO} (bezel ${s.l-7>0?"+":""}${s.l-7})`:`${s.l} ${CWO} (of ${dp.l})`;
- $("hv").textContent=dp.hGuess?`about ${s.h} of ${dp.h} from fully open`:dp.hLab?`${s.h} ${CWO} (bezel ${s.h-2>0?"+":""}${s.h-2})`:`${s.h} ${CWO} (of ${dp.h})`;
+ const dp=DAMP.x;["r","l","h","hr"].forEach(k=>{const mx=dp[k]||1;$(k).max=mx;$(k).value=(k==="r"||k==="hr")?mx-(s[k]||0):(s[k]||0)});$("hrctl").hidden=!dp.hr;$("r-lab").textContent=dp.hr?"Low-speed rebound":"Rebound";$("hrv").textContent=!dp.hr?"":dp.hrGuess?`about ${s.hr} of ${dp.hr} from fully closed`:`${s.hr} ${CWO} (of ${dp.hr})`;
+ $("rv").textContent=dp.rGuess?`about ${s.r} of ${dp.r} from fully closed`:`${s.r} ${CWO} (of ${dp.r})`;
+ $("lv").textContent=dp.lever?dp.lever[s.l]:dp.lGuess?`about ${dp.l-s.l} of ${dp.l} from fully closed`:dp.lLab?`${dp.l-s.l} ${CWO} (bezel ${s.l-7>0?"+":""}${s.l-7})`:`${dp.l-s.l} ${CWO} (of ${dp.l})`;
+ $("hv").textContent=dp.hGuess?`about ${dp.h-s.h} of ${dp.h} from fully closed`:dp.hLab?`${dp.h-s.h} ${CWO} (bezel ${s.h-2>0?"+":""}${s.h-2})`:`${dp.h-s.h} ${CWO} (of ${dp.h})`;
  $("l-lab").textContent=dp.lever?"Compression lever":dp.h?"Low-speed compression":"Compression";
  $("hctl").hidden=!dp.h;$("l").closest(".ctl").hidden=!dp.l;
  $("cap2").textContent=U.mode==="shock"&&scn==="brake"&&!last2?PEDCAP:NOUN(last2?CAP2[last2]:CAP2[scn]);
@@ -1578,7 +1587,7 @@ function play(){
 }
 function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():renderDamp()}
 ["p","t","n","rp"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=+e.target.value;last=k;render()}));
-// rebound sliders show clicks from fully open, so they store the inverse
+// rebound is stored as clicks from fully closed; sliders run open-to-closed so the inverse is stored on them
 ["r","l","h","hr"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=(k==="r"||k==="hr")?(+e.target.max)-(+e.target.value):+e.target.value;last2=k;render()}));
 document.querySelectorAll("#scn button").forEach(b=>b.onclick=()=>{scn=b.dataset.s;last2=null;render();play()});
 $("play").onclick=play;
@@ -1715,7 +1724,7 @@ function bubble(cls,text){const d=document.createElement("div");d.className="m "
 function context(){
  const dl=$("rv").textContent?`, rebound ${$("rv").textContent}, ${DAMP.x.h?"low-speed":""} compression ${$("lv").textContent}${DAMP.x.h?", high-speed "+$("hv").textContent:""}`:"";
  const tryS=`pressure ${realP(s.p)} psi, ${s.rp!=null?"ramp-up chamber "+s.rp+" psi (this fork has no tokens)":(TCC?`volume spacers ${Math.round(s.t*TCC)} cc (1 cc steps; Fox publishes no cc maximum for this shock, it is set by ribs in the air sleeve)`:"tokens "+s.t+($("r-tok").textContent!=="—"?"":" (token limits for this fork not confirmed)"))}${NMAX?", negative spacers "+s.n+" of "+NMAX:", no user negative spacers on this "+(U.mode==="shock"?"shock":"fork")}${dl}`;
- return `You are the assistant inside a mountain bike fork setup and teaching app. Be brief (2-6 sentences), plain-spoken, and explain the "why" in terms of the app's model: the spring (air pressure, tokens, or the ramp-up chamber on Öhlins forks, and negative spacers on the few shocks that take them) decides how far the fork moves, the damper (rebound, low-speed and high-speed compression) decides how fast. When it helps, point the rider to the Spring or Damping step to see it. Suggest one change at a time, 1-2 clicks or about 5 psi. Always describe dial changes as clockwise (more damping, slower or firmer) or counterclockwise (less damping, faster or softer), and give every setting as clicks clockwise from fully open (turn it fully counterclockwise first, then count clockwise). Never recommend exceeding the fork's maximum pressure or token count. Sag targets are 20% of travel for forks and 30% of stroke for rear shocks. Only state click counts and pressures given below; if something isn't listed, say you don't have it and suggest the fork manual or a shop. If the rider describes how a ride felt, a symptom, or a setting they changed, call save_note with a short factual note (setting + what they felt), then answer.
+ return `You are the assistant inside a mountain bike fork setup and teaching app. Be brief (2-6 sentences), plain-spoken, and explain the "why" in terms of the app's model: the spring (air pressure, tokens, or the ramp-up chamber on Öhlins forks, and negative spacers on the few shocks that take them) decides how far the fork moves, the damper (rebound, low-speed and high-speed compression) decides how fast. When it helps, point the rider to the Spring or Damping step to see it. Suggest one change at a time, 1-2 clicks or about 5 psi. Always describe dial changes as clockwise (more damping, slower or firmer) or counterclockwise (less damping, faster or softer), and give every setting as clicks counterclockwise from fully closed (turn it fully clockwise first, then count counterclockwise). Never recommend exceeding the fork's maximum pressure or token count. Sag targets are 20% of travel for forks and 30% of stroke for rear shocks. Only state click counts and pressures given below; if something isn't listed, say you don't have it and suggest the fork manual or a shop. If the rider describes how a ride felt, a symptom, or a setting they changed, call save_note with a short factual note (setting + what they felt), then answer.
 
 RIDER'S FORK: ${$("r-title").textContent}
 Riding profile: ${profOf().name}${PROFRES?" ("+[...$("r-prof").querySelectorAll("li")].map(x=>x.textContent).join(" ")+")":""}.
