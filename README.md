@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/34195036/README.md)
 <p align="center">
   <img src="icons/icon-192.png" width="96" height="96" alt="Plushbucket icon">
 </p>
@@ -6,7 +5,8 @@
 <h1 align="center">Plushbucket</h1>
 
 <p align="center">
-  <b>Mountain bike suspension setup that shows you why.</b><br>
+  <b>Measured in the lab, tested on the trail.</b><br>
+  Mountain bike suspension setup that shows you why.<br>
   Starting pressures, sag and dial settings for your fork and rear shock, from the makers' own charts.
 </p>
 
