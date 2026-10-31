@@ -24,7 +24,7 @@ Pick your fork and rear shock, enter your weight, and Plushbucket gives you a st
 
 - **Air pressure or spring rate**, from the manufacturer's chart for your exact model, year and travel
 - **Sag target** in millimeters: 20% of travel for forks, 30% of stroke for rear shocks
-- **Rebound and compression clicks**, always written as "turn fully counterclockwise (open), then N clicks clockwise"
+- **Rebound and compression clicks**, always counted from fully closed: turn the dial clockwise until it stops, then count N clicks counterclockwise, the way Fox and RockShox print their charts
 - **Tokens and volume spacers**: stock count and the maximum for your travel
 
 Then it teaches you what those numbers do:
