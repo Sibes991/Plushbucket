@@ -67,6 +67,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .ctx b{color:var(--ink);font-weight:600}
 /* segmented + chips */
 .chips,.seg{display:flex;flex-wrap:wrap;gap:6px}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:2px 4px 6px;-webkit-overflow-scrolling:touch}.chips.scroll::-webkit-scrollbar{display:none}.chips.scroll button{flex:0 0 auto;white-space:nowrap}
+.profrow{margin:-4px 0 14px}.proflab{display:block;font-weight:600;margin:0 0 6px;opacity:.75}
+.profbox{border-left:4px solid var(--accent,#e8701a);background:rgba(232,112,26,.08);border-radius:10px;padding:10px 14px;margin:12px 0}.profbox p{margin:0 0 6px}.profbox ul{margin:0;padding-left:18px}.profbox li{margin:4px 0}.profbox .fk{margin:8px 0 0}
 .chips button,.seg button{min-height:38px;padding:6px 14px;font-weight:500}
 .chips button[aria-pressed="true"],.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
 .mode{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--sunk);border-radius:12px}
@@ -397,12 +400,14 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 </section>
 
 <section class="card result" aria-live="polite">
+<div class="profrow"><small class="proflab">How are you riding today?</small><div class="chips scroll" id="c-prof"></div></div>
 <h2 id="r-title"></h2>
 <div class="stats">
 <div class="stat"><small id="r-l1">Starting pressure</small><strong class="big" id="r-psi"></strong></div>
 <div class="stat"><small>Sag target</small><strong id="r-sag"></strong></div>
 <div class="stat"><small id="r-l3">Tokens</small><strong id="r-tok"></strong></div>
 </div>
+<div class="profbox" id="r-prof" hidden></div>
 <ul class="lines" id="r-lines"></ul>
 <ul class="notes2" id="r-notes"></ul>
 <ul class="warn" id="r-warn"></ul>
@@ -688,7 +693,7 @@ SHK.mz={name:"Marzocchi",shocks:{
 
 // ---------- setup state ----------
 const $=id=>document.getElementById(id);
-let U={mode:"fork",brand:"rs",fork:"zeb",year:"2027",ver:0,travel:170,damp:"c32",w:175,unit:"lb",eb:false,sb:"fox",sk:"x2",stroke:60,rate:450,wtrav:150,csag:30,cbias:65};
+let U={prof:"trail",mode:"fork",brand:"rs",fork:"zeb",year:"2027",ver:0,travel:170,damp:"c32",w:175,unit:"lb",eb:false,sb:"fox",sk:"x2",stroke:60,rate:450,wtrav:150,csag:30,cbias:65};
 const forkOf=()=>CAT[U.brand].forks[U.fork];
 const yearOf=()=>forkOf().years.find(y=>y.label===U.year);
 const verOf=()=>yearOf().versions[U.ver];
@@ -949,12 +954,59 @@ function renderGarage(){let saved;try{saved=G.saved||(G.saved=[])}catch(e){retur
  el.innerHTML=`<h2>Your garage</h2><div class="gl">`+mine.map(x=>`<div class="gi${JSON.stringify(x.snap)===cur?" on":""}"><button data-gload="${x.id}">${esc(x.name||x.label)}<small>${esc(x.name?x.label:(x.snap.unit==="kg"?x.snap.w+" kg":x.snap.w+" lb"))}</small></button><button class="x" data-gdel="${x.id}" aria-label="Remove ${esc(x.name||x.label)}">×</button></div>`).join("")+`<button class="gadd" id="g-addbike">+ Add a bike</button></div>`;$("g-addbike").onclick=()=>openLanding();
  el.querySelectorAll("[data-gload]").forEach(b=>b.onclick=()=>{const x=saved.find(y=>y.id===b.dataset.gload);Object.assign(U,x.snap);U.mode=x.kind;$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;renderSetup()});
  el.querySelectorAll("[data-gdel]").forEach(b=>b.onclick=()=>{G.saved=saved.filter(y=>y.id!==b.dataset.gdel);svcSave();renderGarage()})}
+// Riding profiles: changes from the maker's starting point. Sag and offsets follow what tuners and riders commonly run
+// (EMTB Forums park guide, Howler Bike Park, Cam Cole, ENDURO, Blister, Competitive Cyclist, Vital/MTBR threads). They are the app's suggestions, not maker settings.
+const PROFILES=[
+ {id:"trail",name:"Trail",sag:[20,30],reb:0,hrb:0,lsc:[0,0],hsc:[0,0],tok:0,why:"The maker's starting point."},
+ {id:"park",name:"Bike park",sag:[20,30],reb:-1,hrb:-1,lsc:[1,1],hsc:[2,2],tok:1,why:"More support for jump faces, big landings and repeated hits: an extra token, firmer high-speed compression and a touch slower rebound so it doesn't kick on landings. Sag stays at the usual 20% front and 30% rear."},
+ {id:"race",name:"Race",sag:[18,28],reb:1,hrb:0,lsc:[1,1],hsc:[1,1],tok:1,why:"Firmer and faster to hold speed and stay up in the travel: a little less sag, an extra token, a click more compression and slightly faster rebound so it recovers between hits."},
+ {id:"chunk",name:"Chunk",sag:[22,32],reb:1,hrb:0,lsc:[-1,-1],hsc:[-1,-1],tok:0,why:"Rough, rocky, rooty trails: a bit more sag and less compression so the wheels follow the ground, and faster rebound so it recovers between hits instead of packing down."},
+ {id:"steep",name:"Steep",sag:[18,32],reb:-1,hrb:-1,lsc:[2,-1],hsc:[1,0],tok:0,why:"Steep chutes and rolls: less sag and more low-speed compression up front so the fork rides higher, more sag at the rear to keep the bike level, and slightly slower rebound to calm it at lower speeds."},
+ {id:"xc",name:"XC / climbing",sag:[15,25],reb:0,hrb:0,lsc:[1,1],hsc:[0,0],tok:0,why:"Efficiency first: less sag front and rear, and a click more low-speed compression (or the lever in the middle position) to cut bob on climbs."}];
+const profOf=()=>PROFILES.find(p=>p.id===U.prof)||PROFILES[0];
+function applyProfile(realPsi){const P=profOf(),box=$("r-prof");PROFRES=null;
+ if(P.id==="trail"||!D){box.hidden=true;return}
+ const fork=U.mode==="fork",i=fork?0:1,dp=DAMP.x||{},coil=s.prof==="coil",ramp=s.rp!=null,q={...D},o={sag:P.sag[i],lines:[]};
+ const mx=fork?forkMax(verOf()):(maxP(SHK[U.sb].shocks[U.sk])||null);
+ const nn=fork?"fork":"shock",tokN=fork?"token":TCC?"cc of volume spacers":"volume spacer";
+ const base=fork?20:30,q0={...D};
+ if(P.tok&&!coil&&!ramp){const t0=q.t;q.t=Math.max(0,Math.min(TMAX,q.t+(TCC?P.tok*1:P.tok)));if(q.t!==t0)o.tok=q.t}
+ else if(P.tok&&ramp)o.ramp=true;
+ if(!coil){const mp=o.sag===base?D.p:pAt(q0,o.sag/100);q.p=mp;if(realPsi!=null){let r=Math.round(mp*PS);if(mx&&r>mx){r=mx;o.capped=true}o.psi=r;o.psi0=realPsi}}
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ if(dp.r&&P.reb){q.r=clamp(q.r+P.reb,0,dp.r)}
+ if(dp.hr&&P.hrb){q.hr=clamp(q.hr+P.hrb,0,dp.hr)}
+ if(dp.l&&!dp.lever&&P.lsc[i]){q.l=clamp(q.l+P.lsc[i],0,dp.l)}
+ if(dp.lever&&P.id==="xc"&&dp.l>=2)o.lever=dp.lever[1];
+ if(dp.h&&P.hsc[i]){q.h=clamp(q.h+P.hsc[i],0,dp.h)}
+ // state for the Spring and Damping tabs
+ D={...q};s={...q};R={...q};cache={};last=last2=null;setCC(q);["p","t","n","r","l","h","hr"].forEach(k=>{$(k).value=q[k]??0});
+ const L=o.lines,cw=(n,tot,g)=>g?"":`${n} ${CWO} (of ${tot}), `,dial=SHK[U.sb]&&!fork&&SHK[U.sb].shocks[U.sk].rebDial,tk=fork?ebV(verOf()).tokens[String(U.travel)]:null;
+ if(coil&&o.sag===base)L.push(`<b>Sag:</b> stays at ${base}%, so keep your spring.`);
+ else if(coil)L.push(`<b>Sag:</b> ${o.sag}% of stroke. On a coil shock that means a different spring rate, not air: enter ${o.sag}% in the spring guide below to see the rate.`);
+ else if(o.sag===base)L.push(`<b>Sag:</b> stays at ${base}%, so keep the starting pressure.`);
+ else if(o.psi!=null)L.push(`<b>Sag:</b> ${o.sag}% of ${fork?"travel":"stroke"} instead of ${fork?20:30}%, so pump to about <b>${o.psi} psi</b> (the starting point is ${o.psi0} psi). Set it by measuring sag: the pressure is the app's estimate.${o.capped?` That's capped at the ${mx} psi maximum.`:""}`);
+ else L.push(`<b>Sag:</b> ${o.sag}% of ${fork?"travel":"stroke"}. Set the pressure by measuring sag.`);
+ if(o.tok!=null)L.push(TCC?`<b>Volume spacers:</b> add ${P.tok*TCC} cc.`:`<b>${fork?"Tokens":"Volume spacers"}:</b> add ${P.tok}${tk?`, for ${o.tok} (stock ${tk[0]}, max ${tk[1]})`:""}.`);
+ else if(P.tok&&o.ramp)L.push(`<b>Ramp-up chamber:</b> add about 10 psi for more end-of-travel support, in place of a token.`);
+ else if(P.tok&&!coil)L.push(`<b>${fork?"Tokens":"Volume spacers"}:</b> already at the maximum, so leave them.`);
+ if(dp.r&&P.reb)L.push(`<b>Rebound:</b> ${dial?`one mark ${P.reb<0?"slower (clockwise)":"faster (counterclockwise)"} than the starting mark.`:`${cw(dp.r-q.r,dp.r,dp.rGuess)}${Math.abs(P.reb)} click ${P.reb<0?"slower (clockwise)":"faster (counterclockwise)"} than the starting point.`}`);
+ if(dp.hr&&P.hrb)L.push(`<b>High-speed rebound:</b> ${cw(dp.hr-q.hr,dp.hr,dp.hrGuess)}${Math.abs(P.hrb)} click slower (clockwise) than the starting point.`);
+ if(dp.l&&!dp.lever&&P.lsc[i])L.push(`<b>Low-speed compression:</b> ${cw(q.l,dp.l,dp.lGuess)}${Math.abs(P.lsc[i])} click${Math.abs(P.lsc[i])>1?"s":""} ${P.lsc[i]>0?"firmer (clockwise)":"softer (counterclockwise)"} than the starting point.`);
+ if(o.lever)L.push(`<b>Lever:</b> use ${o.lever} for climbs and smooth trail, Open for descents.`);
+ if(dp.h&&P.hsc[i])L.push(`<b>High-speed compression:</b> ${cw(q.h,dp.h,dp.hGuess)}${Math.abs(P.hsc[i])} click${Math.abs(P.hsc[i])>1?"s":""} ${P.hsc[i]>0?"firmer (clockwise)":"softer (counterclockwise)"} than the starting point.`);
+ if(!dp.h&&P.hsc[i]>0&&!dp.lever)L.push(`<b>High-speed compression:</b> this ${nn} has no high-speed dial${dp.l?", so the low-speed change does the job":""}.`);
+ box.innerHTML=`<p><b>${P.name}:</b> ${P.why}</p><ul>${L.map(x=>`<li>${x}</li>`).join("")}</ul><p class="fk">These are common starting points from riders and suspension tuners, not the maker's numbers. Change one thing at a time on the trail.</p>`;
+ box.hidden=false;PROFRES=o;
+ if(o.psi!=null){$("r-psi").textContent=o.psi+" psi";if(!ramp)$("r-l1").textContent=`${P.name} pressure`}$("r-sag").innerHTML=sagText([o.sag,o.sag],fork?U.travel:U.stroke);if(o.tok!=null&&tk)$("r-tok").textContent=`${o.tok} of ${tk[1]} max`}
+let PROFRES=null;
 function renderSetup(){
  fixU();
  chips("c-mode",[["fork","Fork"],["shock","Rear shock"]],U.mode,v=>{U.mode=v;renderSetup()});
  chips("c-unit",[["lb","lb"],["kg","kg"]],U.unit,v=>{if(v!==U.unit){U.w=Math.round(v==="kg"?U.w/2.20462:U.w*2.20462);U.unit=v;$("wt").value=U.w}renderSetup()});
  $("st-u-l").textContent=U.mode==="shock"?"Shock":"Fork";$("fork-ui").hidden=U.mode!=="fork";$("shock-ui").hidden=U.mode!=="shock";$("eb-row").hidden=false;
  $("cta").hidden=false;$("shock-learn").hidden=true;
+ chips("c-prof",PROFILES.map(p=>[p.id,p.name]),profOf().id,v=>{U.prof=v;renderSetup()});{const r=$("c-prof"),b=r.querySelector('[aria-pressed="true"]');if(b&&(b.offsetLeft<r.scrollLeft||b.offsetLeft+b.offsetWidth>r.scrollLeft+r.clientWidth))r.scrollLeft=b.offsetLeft-r.offsetLeft-8}
  U.mode==="fork"?renderFork():renderShock();rememberLast();renderGarage();renderAddPrompt()}
 function renderFork(){
  const B=CAT[U.brand],fk=forkOf(),y=yearOf(),v=verOf(),dm=DMP[U.damp],w=lb();
@@ -984,7 +1036,7 @@ function renderFork(){
  setLines(L);
  warn.push(...v.warns);if(dm.warn)warn.push(dm.warn);if(!tk&&!v.ramp&&U.brand!=="dvo")warn.push("Token or spacer counts for this travel aren't confirmed yet.");
  $("r-warn").innerHTML=warn.map(x=>`<li>${x}</li>`).join("");
- renderHowto("air");applyFork(p.psi,rb.r,rb.hr)}
+ renderHowto("air");applyFork(p.psi,rb.r,rb.hr);applyProfile(p.psi)}
 const STROKES=[37.5,40,42.5,45,47.5,50,52.5,55,57.5,60,62.5,65,67.5,70,72.5,75];
 // Vivid limits by stroke (RockShox manuals): vac = 2024–2026 C1, vad = 2027 D1. Max shown is for the low token counts.
 const maxP=sh=>U.sk==="vac"?(U.stroke>=67.5?300:360):U.sk==="vad"?(U.stroke>=67.5?330:360):sh.maxPsi;
@@ -1040,7 +1092,7 @@ function renderShock(){
  if(sh.kind==="air"&&U.sb==="fox")L.push("Rebound tip: higher pressure needs more rebound damping (turn clockwise). Set it so the shock returns quickly without topping out.");
  setLines(L);
  $("r-warn").innerHTML=warn.map(x=>`<li>${x}</li>`).join("");
- renderHowto(sh.kind);renderCoil(sh);applyShock(psi)}
+ renderHowto(sh.kind);renderCoil(sh);applyShock(psi);applyProfile(sh.kind==="air"?psi:null)}
 // ---------- coil spring guide ----------
 // Rate: Pinkbike's formula, rate = W x B x L^2 / (T x S), with L = wheel travel / stroke (average leverage).
 // Fit: Fox spring free length (TLG) ranges and stroke pairings from The Lost Co's Fox fitment page; spring inner
@@ -1661,7 +1713,8 @@ function context(){
  return `You are the assistant inside a mountain bike fork setup and teaching app. Be brief (2-6 sentences), plain-spoken, and explain the "why" in terms of the app's model: the spring (air pressure, tokens, or the ramp-up chamber on Öhlins forks, and negative spacers on the few shocks that take them) decides how far the fork moves, the damper (rebound, low-speed and high-speed compression) decides how fast. When it helps, point the rider to the Spring or Damping step to see it. Suggest one change at a time, 1-2 clicks or about 5 psi. Always describe dial changes as clockwise (more damping, slower or firmer) or counterclockwise (less damping, faster or softer), and give every setting as clicks clockwise from fully open (turn it fully counterclockwise first, then count clockwise). Never recommend exceeding the fork's maximum pressure or token count. Sag targets are 20% of travel for forks and 30% of stroke for rear shocks. Only state click counts and pressures given below; if something isn't listed, say you don't have it and suggest the fork manual or a shop. If the rider describes how a ride felt, a symptom, or a setting they changed, call save_note with a short factual note (setting + what they felt), then answer.
 
 RIDER'S FORK: ${$("r-title").textContent}
-Manufacturer starting point: ${$("r-psi").textContent}; sag target ${$("r-sag").textContent}; tokens ${$("r-tok").textContent}.
+Riding profile: ${profOf().name}${PROFRES?" ("+[...$("r-prof").querySelectorAll("li")].map(x=>x.textContent).join(" ")+")":""}.
+Starting point shown: ${$("r-psi").textContent}; sag target ${$("r-sag").textContent}; tokens ${$("r-tok").textContent}.
 ${liText($("r-lines"))}
 ${liText($("r-notes"))}
 Data caveats: ${[...$("r-warn").querySelectorAll("li")].map(x=>x.textContent).join(" ")||"none"}
