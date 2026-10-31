@@ -1,0 +1,13 @@
+{
+  "appId": "com.plushbucket.app",
+  "appName": "Plushbucket",
+  "webDir": "www",
+  "backgroundColor": "#1a3328",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#1a3328"
+  },
+  "android": {
+    "backgroundColor": "#1a3328"
+  }
+}

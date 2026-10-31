@@ -1,0 +1,27 @@
+{
+  "name": "plushbucket-native",
+  "private": true,
+  "version": "0.1.0",
+  "description": "iPhone and Android apps for Plushbucket, wrapping the website's index.html with Capacitor",
+  "type": "module",
+  "scripts": {
+    "build:web": "node scripts/build-web.mjs",
+    "add:android": "npm run build:web && npx cap add android",
+    "add:ios": "npm run build:web && npx cap add ios",
+    "icons": "npx capacitor-assets generate --iconBackgroundColor '#1a3328' --iconBackgroundColorDark '#1a3328' --splashBackgroundColor '#1a3328' --splashBackgroundColorDark '#1a3328'",
+    "sync": "npm run build:web && npx cap sync",
+    "android": "npm run sync && npx cap open android",
+    "ios": "npm run sync && npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/filesystem": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/share": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0"
+  }
+}
