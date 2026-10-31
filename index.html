@@ -318,6 +318,7 @@ button.ghost{border-color:transparent;color:var(--muted);background:none}
 .prow{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:.92rem}
 .prow input[type=number]{width:5em;min-height:36px;padding:2px 8px}
 .prow .sw{min-height:36px}
+.bkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 .prow input[type=date]{min-height:36px;padding:2px 8px;max-width:11em}
 .logrow{display:grid;grid-template-columns:6em minmax(0,1fr);gap:10px}
 @media (max-width:360px){.logrow input{padding-left:8px;padding-right:6px;font-size:.95rem}}.logrow>*{min-width:0}
@@ -548,6 +549,12 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 <h2 class="h2">Recent rides</h2>
 <ul class="rides" id="ride-list"></ul>
 <p class="fk" id="svc-where" style="margin-top:14px"></p>
+<section class="card" id="backup" style="margin-top:18px">
+<h2 class="h2" style="margin-top:0">Back up or move to a new phone</h2>
+<p class="fk" style="margin-top:0">Saves everything in one file: your garage, forks and shocks, service dates, ride log, slider settings and assistant notes. Keep it somewhere safe, or open it on your new phone and restore it here.</p>
+<div class="bkrow"><button class="primary" id="bk-exp">Save backup file</button><button id="bk-pick">Restore from a file</button><input type="file" id="bk-imp" accept=".json,application/json" hidden></div>
+<p class="fk" id="bk-msg" role="status"></p>
+</section>
 </div>
 <footer class="copy"><i>Measured in the lab, tested on the trail.</i><br>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.</footer>
 </main>
@@ -1843,6 +1850,25 @@ $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService(
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
  if(!(hrs>0)||!ids.length)return;G.rides.push({id:uidGen(),date:$("ride-date").value||today(),h:hrs,wet:!!SV.wet,parts:ids});svcSave();renderService()};
 svcInit();
+// ---------- backup and restore (all data lives in this browser) ----------
+const BKEYS=()=>[SK,TUNESK,NK,LASTK,LDK];
+// inside Claude the page can't save files, and the service log follows the account there
+if(window.claude)$("backup").hidden=true;
+$("bk-exp").onclick=async()=>{const data={app:"Plushbucket",version:1,saved:new Date().toISOString(),store:{}};
+ BKEYS().forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)data.store[k]=v}catch(e){}});data.store[SK]=JSON.stringify(G);
+ const name=`plushbucket-backup-${today()}.json`,blob=new Blob([JSON.stringify(data,null,1)],{type:"application/json"});
+ try{const f=new File([blob],name,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})&&/Android|iPhone|iPad/i.test(navigator.userAgent)){await navigator.share({files:[f],title:"Plushbucket backup"});$("bk-msg").textContent="Backup ready. Save it to Files, Drive, or send it to yourself.";return}}catch(e){if(e&&e.name==="AbortError")return}
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+ $("bk-msg").textContent=`Saved ${name}. Look for it in your Downloads.`};
+$("bk-pick").onclick=()=>$("bk-imp").click();
+$("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+ try{const d=JSON.parse(await f.text());if(!d||d.app!=="Plushbucket"||!d.store)throw 0;
+  let g={parts:[],rides:[]};try{g=JSON.parse(d.store[SK]||"{}")}catch(x){}
+  if(!confirm(`Restore the backup from ${String(d.saved||"").slice(0,10)}? It has ${(g.parts||[]).length} fork${(g.parts||[]).length===1?"":"s"} or shock${(g.parts||[]).length===1?"":"s"} in the service log and ${(g.rides||[]).length} ride${(g.rides||[]).length===1?"":"s"}. It replaces what's saved on this phone now.`))return;
+  BKEYS().forEach(k=>{try{if(d.store[k]!=null)localStorage.setItem(k,d.store[k])}catch(x){}});
+  G={parts:g.parts||[],rides:g.rides||[],saved:g.saved||[]};await svcSave();
+  $("bk-msg").textContent="Restored. Reloading…";setTimeout(()=>location.reload(),600)}
+ catch(x){$("bk-msg").textContent="That file isn't a Plushbucket backup, so nothing was changed."}};
 (async()=>{try{if(window.claude&&claude.use){sampleFn=await claude.use("sample");if(sampleFn)$("fab").hidden=false}}catch(e){}})();
 
 </script>
