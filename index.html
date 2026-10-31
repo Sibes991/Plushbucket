@@ -318,6 +318,7 @@ button.ghost{border-color:transparent;color:var(--muted);background:none}
 .prow{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:.92rem}
 .prow input[type=number]{width:5em;min-height:36px;padding:2px 8px}
 .prow .sw{min-height:36px}
+.prow input[type=date]{min-height:36px;padding:2px 8px;max-width:11em}
 .logrow{display:grid;grid-template-columns:6em minmax(0,1fr);gap:10px}
 @media (max-width:360px){.logrow input{padding-left:8px;padding-right:6px;font-size:.95rem}}.logrow>*{min-width:0}
 /* iOS Safari gives date inputs a fixed intrinsic width that ignores width:100% and spills out of the grid */
@@ -1684,7 +1685,8 @@ function partFromSetup(){
  const sh=SHK[U.sb].shocks[U.sk];
  return{id:uidGen(),kind:"shock",brand:U.sb,sk:U.sk,label:`${SHK[U.sb].name} ${sh.name} (${sh.years})`,ebike:U.eb,added:today(),base:0,done:{}}}
 function svcStatus(p){const H=effHours(p);return svcPlan(p).map(s=>{
- const d=p.done[s.k]||{h:0,date:p.added};const used=H-d.h,left=s.h-used;
+ // a "last serviced" date the rider enters counts as a service on that day, unless a later one was marked done
+ const b0={h:0,date:p.svcDate||p.added},dn=p.done[s.k],d=dn&&(!p.svcDate||dn.date>=p.svcDate)?dn:b0;const used=H-d.h,left=s.h-used;
  let daysLeft=null;if(s.yr){daysLeft=Math.round((new Date(d.date).getTime()+365*864e5-Date.now())/864e5)}
  const over=left<=0||(daysLeft!=null&&daysLeft<=0);return{...s,used,left,daysLeft,over,last:d}})}
 const f1=x=>Math.round(x*10)/10;
@@ -1698,14 +1700,15 @@ function renderService(){
   st.map(s=>{const pct=Math.max(0,Math.min(100,s.used/s.h*100));
    const due=s.over?`<span class="due">Due now</span>`:`${f1(s.left)} h left${s.daysLeft!=null?` or ${s.daysLeft} days`:""}`;
    return`<div class="svc"><div class="row"><span>${s.n}</span><span>${due}</span></div><div class="bar"><i style="width:${pct}%" class="${s.over?"over":pct>80?"near":""}"></i></div>
-   <details><summary>Why, and when it was last done</summary><p>${s.why}</p><p class="fk">Every ${s.h} hours${s.yr?" or once a year":""}. ${p.done[s.k]?"Last done "+s.last.date:"Counting from when you added it on "+p.added}.</p></details>
+   <details><summary>Why, and when it was last done</summary><p>${s.why}</p><p class="fk">Every ${s.h} hours${s.yr?" or once a year":""}. ${s.last===p.done[s.k]?"Last done "+s.last.date:p.svcDate?"Counting from your last service on "+p.svcDate:"Counting from when you added it on "+p.added+". Set the date of its last service below if it was done before that"}.</p></details>
    <button class="sm" data-done="${p.id}|${s.k}">Mark done</button></div>`}).join("")+
-  `<div class="prow"><label>Hours since last service when added <input type="number" min="0" step="1" value="${p.base||0}" data-base="${p.id}"></label><label class="sw"><input type="checkbox" data-eb="${p.id}" ${p.ebike?"checked":""}> E-bike</label><button class="sm ghost" data-del="${p.id}">Remove</button></div></div>`}).join("");
+  `<div class="prow"><label class="svdate">Last serviced <input type="date" max="${today()}" value="${p.svcDate||""}" data-sdate="${p.id}"></label><label>Hours ridden since that service <input type="number" min="0" step="1" value="${p.base||0}" data-base="${p.id}"></label><label class="sw"><input type="checkbox" data-eb="${p.id}" ${p.ebike?"checked":""}> E-bike</label><button class="sm ghost" data-del="${p.id}">Remove</button></div></div>`}).join("");
  const ck=$("ride-parts");ck.innerHTML=G.parts.map(p=>`<label class="sw"><input type="checkbox" value="${p.id}" checked> ${esc(p.label)}</label>`).join("")||`<p class="fk">Add a fork or shock first.</p>`;
  $("ride-list").innerHTML=G.rides.slice().reverse().slice(0,12).map(r=>`<li><span>${esc(r.date)} · ${f1(r.h)} h${r.wet?" · wet, muddy or dusty":""}</span><button class="sm ghost" data-rdel="${r.id}">Delete</button></li>`).join("")||`<li class="fk">No rides logged yet.</li>`;
  chips("c-cond",[["0","Dry"],["1","Wet, muddy or dusty"]],String(SV.wet),v=>{SV.wet=+v;renderService()});
  parts.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.done.split("|"),p=G.parts.find(x=>x.id===id),s=svcPlan(p).find(x=>x.k===k),H=effHours(p);
   p.done[k]={h:H,date:today()};(s.resets||[]).forEach(r=>{p.done[r]={h:H,date:today()}});svcSave();renderService()});
+ parts.querySelectorAll("[data-sdate]").forEach(i=>i.onchange=()=>{const p=G.parts.find(x=>x.id===i.dataset.sdate),v=i.value;p.svcDate=v&&v<=today()?v:"";if(v&&v>today())i.value="";svcSave();renderService()});
  parts.querySelectorAll("[data-base]").forEach(i=>i.onchange=()=>{const p=G.parts.find(x=>x.id===i.dataset.base);p.base=Math.max(0,+i.value||0);svcSave();renderService()});
  parts.querySelectorAll("[data-eb]").forEach(i=>i.onchange=()=>{const p=G.parts.find(x=>x.id===i.dataset.eb);p.ebike=i.checked;svcSave();renderService()});
  parts.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Remove this part and its service history?"))return;G.parts=G.parts.filter(x=>x.id!==b.dataset.del);G.rides.forEach(r=>r.parts=r.parts.filter(x=>x!==b.dataset.del));svcSave();renderService()});
