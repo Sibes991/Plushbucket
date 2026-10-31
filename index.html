@@ -1060,13 +1060,15 @@ function renderSetup(){
  const tk0=tuneKey(),keepS=s&&{...s},keepR=R&&{...R};
  U.mode==="fork"?renderFork():renderShock();
  // keep the rider's slider changes and comparison while the bike and profile are unchanged, including after a reload
- {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else if(!TUNEK){try{const t=JSON.parse(localStorage.getItem(TUNESK)||"null");if(t&&t.k===k)src=t}catch(e){}}
+ {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else src=tuneLoad()[k]||null;
   if(src&&src.s&&src.s.prof===D.prof){s={...src.s};R={...(src.R||src.s)};cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
   TUNEK=k;saveTune()}
  rememberLast();renderGarage();renderAddPrompt()}
-let TUNEK=null;const TUNESK="tune-state-v1";
+let TUNEK=null,TUNES=null;const TUNESK="tune-state-v2";
+// slider settings are kept per part (fork and shock separately), so switching between them doesn't lose either
+function tuneLoad(){if(!TUNES){try{TUNES=JSON.parse(localStorage.getItem(TUNESK)||"{}")||{}}catch(e){TUNES={}}}return TUNES}
 const tuneKey=()=>JSON.stringify([U.mode,U.mode==="fork"?[U.brand,U.fork,U.year,U.ver,U.travel,U.damp]:[U.sb,U.sk,U.stroke,U.rate],U.w,U.unit,U.eb,U.prof]);
-function saveTune(){try{if(TUNEK&&s)localStorage.setItem(TUNESK,JSON.stringify({k:TUNEK,s,R}))}catch(e){}}
+function saveTune(){if(!TUNEK||!s)return;const T=tuneLoad();delete T[TUNEK];T[TUNEK]={s:{...s},R:{...R},t:Date.now()};const ks=Object.keys(T);if(ks.length>40)ks.sort((a,b)=>T[a].t-T[b].t).slice(0,ks.length-40).forEach(x=>delete T[x]);try{localStorage.setItem(TUNESK,JSON.stringify(T))}catch(e){}}
 function renderFork(){
  const B=CAT[U.brand],fk=forkOf(),y=yearOf(),v=verOf(),dm=DMP[U.damp],w=lb();
  chips("c-brand",Object.entries(CAT).map(([k,x])=>[k,x.name]),U.brand,x=>{U.brand=x;renderSetup()});
