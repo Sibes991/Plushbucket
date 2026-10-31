@@ -592,6 +592,8 @@ const DMP={
  c31:{name:"Charger 3.1 RC2",r:18,l:15,h:5,lRange:25,start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5).`,init:{l:7,h:2}},
  c32:{name:"Charger 3.2 RC2",r:18,rGuess:true,l:15,h:5,lLab:"−7 to +7",hLab:"−2 to +2",start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5). That lands on 0 on the numbered bezel.`,init:{l:7,h:2}},
  c21:{name:"Charger 2.1 RC2",r:18,rGuess:true,l:20,h:5,start:`Low-speed 10 and high-speed 3 ${CWO} (of 20 and 5), about halfway. RockShox doesn't print a starting point for this damper; the 20 low-speed clicks and 5 high-speed positions are from ENDURO's Lyrik test, so count your rebound dial.`,init:{l:10,h:2}},
+ p91:{name:"PUSH Nine.One damper",r:18,l:28,h:28,start:`Low- and high-speed 14 ${CWO} (of 28), about halfway. PUSH tunes each fork and lists starting clicks on its setup card: use those if you have them.`,init:{l:14,h:14},rebText:`9 ${CWO} (of 18), about halfway. Use the clicks on PUSH's setup card if you have it`,rebR:9},
+ extera:{name:"EXT Era damper",r:30,rGuess:true,l:12,lGuess:true,h:0,hFix:.5,start:`4 ${CWO}, EXT's starting point.`,init:{l:8},rebText:`20 ${CWO}, EXT's starting point`,rebR:20},
  c3rc:{name:"Charger 3 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
  c32rc:{name:"Charger 3.2 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
  c21rc:{name:"Charger 2.1 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
@@ -625,6 +627,15 @@ CAT.oh={name:"Öhlins",forks:{
   {label:"m.2",versions:[ohv("Air",[160,170,180])]},
   {label:"m.3",versions:[ohv("Air",[160,170,180],{notes:["Full-length check: with the fork topped out, crown to wiper seal should be 162, 172 or 182 mm for 160, 170 or 180 mm of travel."]})]}]}}};
 const DVOW=[120,140,160,180,200,220,240];
+CAT.push={name:"PUSH",forks:{
+ n91:{name:"Nine.One",sub:"inverted · coil · trail/enduro",years:[{label:"2023–2027",versions:[{name:"Coil",spring:"PUSH coil spring",maxPsi:null,travel:[140,150,160,170],chart:{kind:"none"},coilBands:{"140": [["Red", 30, 105, 120], ["Yellow", 35, 120, 135], ["Orange", 40, 135, 145], ["Blue", 45, 145, 165], ["Green", 50, 165, 185], ["Black", 55, 185, 200], ["Grey", 60, 200, 220]], "150": [["Red", 30, 115, 130], ["Yellow", 35, 130, 145], ["Orange", 40, 145, 155], ["Blue", 45, 155, 175], ["Green", 50, 175, 200], ["Black", 55, 200, 215], ["Grey", 60, 215, 240]], "160": [["Red", 30, 120, 135], ["Yellow", 35, 135, 150], ["Orange", 40, 150, 160], ["Blue", 45, 160, 185], ["Green", 50, 185, 210], ["Black", 55, 210, 235], ["Grey", 60, 230, 255]], "170": [["Red", 30, 120, 135], ["Yellow", 35, 135, 150], ["Orange", 40, 150, 160], ["Blue", 45, 160, 185], ["Green", 50, 185, 210], ["Black", 55, 210, 235], ["Grey", 60, 230, 255]]},ebike:"none",tokens:{},sag:null,dampers:["p91"],shape:"std",abo:false,
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. PUSH sets the Nine.One by spring rate, not air: pick the spring for your weight and travel from its chart, then check sag.",
+  notes:["Spring chart from PUSH's Nine.One support page, by rider weight with gear and travel. Where two springs overlap at your weight, the app picks the one your weight sits nearer the middle of: go firmer if you ride hard or bottom out, softer if you want more grip.","Changing travel by more than 10 mm needs a different spring (PUSH).","The external air bottom-out piston takes 5–50 psi (PUSH): more air gives more support at the very end of the travel."],warns:[],reb:{},start:{}}]}]}}};
+CAT.ext={name:"EXT",forks:{
+ era:{name:"Era V2S",sub:"36 mm · air · trail/enduro",years:[{label:"2023–2027",versions:[{name:"Air",spring:"EXT air spring",maxPsi:200,travel:[140,150,160,170],chart:{kind:"interp",W:[132,154,176,198,220],byTravel:{"140":[60,70,80,90,100],"150":[60,70,80,90,100],"160":[60,70,80,90,100],"170":[60,70,80,90,100]}},ebike:"none",tokens:{},sag:null,dampers:["extera"],shape:"std",abo:false,
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. EXT's quick manual doesn't give a sag target.",
+  notes:["Pressure chart from EXT's Era V2S quick manual: about 1 psi per kg of rider weight (60 psi at 60 kg, 100 psi at 100 kg), with one volume reducer fitted. Maximum 200 psi.","EXT's chart doesn't change with travel; shorter travel may need more pressure, so set it by sag.","EXT counts every dial from fully closed (click 0), like this app."],
+  warns:["EXT's quick manual doesn't list how many volume reducers fit, so the token numbers aren't shown."],reb:{},start:{}}]}]}}};
 CAT.dvo={name:"DVO",forks:{
  diamond:{name:"Diamond",sub:"35 mm · OTT · trail/enduro",years:[{label:"D1 (OTT)",versions:[{name:"OTT air",spring:"DVO air spring with OTT",maxPsi:170,travel:[130,140,150,160,170],
   chart:{kind:"interp",W:DVOW,byTravel:Object.fromEntries([130,140,150,160,170].map(t=>[String(t),[90,100,110,125,130,135,140]]))},ebike:"none",tokens:{},sag:[15,20],sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's range is 15–20%: 15% is firmer, 20% is plusher.",
@@ -651,6 +662,23 @@ SHK.oh={name:"Öhlins",shocks:{
   notes:["Double-can design with a larger air volume than the TTX1Air."],warns:["The TTX2Air's maximum pressure isn't in our sources. Check the label on the air can."]},
  ttx22:{name:"TTX22m.2",sub:"coil · enduro/DH",years:"2023–2027",kind:"coil",sag:[30,30],preload:"2 turns",
   notes:["High-speed compression has 3 positions: I soft, II medium, III hard. Öhlins' factory setting is II.","Öhlins counts its adjusters from fully closed and doesn't list totals or starts for low-speed compression and rebound, so count your dials.","Preload: no more than 2 full turns (Öhlins' TTX22M manual). Öhlins gives 25–30% sag in one edition of the manual and 25–35% in another."]}}};
+SHK.push={name:"PUSH",shocks:{
+ e116:{name:"ElevenSix",sub:"coil · two-mode · custom tune",years:"current",kind:"coil",sag:[30,30],preload:"5 turns",
+  lever:"Valve Selection Lever (grey, center) switches between two complete compression settings, Valve 1 and Valve 2, each with its own low- and high-speed dials. Never ride it with the lever in the middle.",
+  notes:["PUSH's manual puts sag at 25–33% of travel, with your frame maker's number first. Use 1–5 turns of preload, never more than 5; if you can't reach sag in that range, you need a different spring.","Dials, counted from fully closed: rebound (red) about 15 clicks, low-speed compression (blue) about 20 per valve, high-speed compression (silver and grey) about 15 per valve.","PUSH tunes each shock and ships a Personal Factory Build card with two of its six baseline settings: start from that card. Without it, start rebound and compression about halfway."]}}};
+SHK.ext={name:"EXT",shocks:{
+ storia:{name:"Storia V3",sub:"coil · LOK lever",years:"current",kind:"coil",sag:[30,30],preload:"2 turns (2 mm)",
+  lever:"LOK lever: turn it clockwise to firm the shock for climbs, and open it for descents.",
+  notes:["EXT's V3 manual gives sag targets of 25%, 30% and 35% depending on riding style; the app uses 30%. Its bottom-out circuit isn't adjustable on the Storia.","Run the spring with no preload, or at most 2 mm (2 full turns). The shock ships with a 400 lb/in spring.","Dials count from fully closed (click 0): high-speed compression (12 mm spanner), low-speed compression (4 mm Allen) and rebound. EXT tunes each shock and gives your starting clicks; stay within 1–2 clicks of them."]},
+ arma:{name:"Arma V3",sub:"coil · adjustable bottom-out",years:"current",kind:"coil",sag:[30,30],preload:"2 turns (2 mm)",
+  notes:["EXT's V3 manual gives sag targets of 25%, 30% and 35% depending on riding style; the app uses 30%. The HBC dial adds bottom-out support over the last 15% of travel: clockwise is firmer.","Run the spring with no preload, or at most 2 mm (2 full turns). The shock ships with a 400 lb/in spring.","Dials count from fully closed (click 0): high-speed compression (12 mm spanner), low-speed compression (4 mm Allen), rebound and HBC. EXT tunes each shock and gives your starting clicks; stay within 1–2 clicks of them."]},
+ aria:{name:"Aria",sub:"air · two positive chambers",years:"current",kind:"air",maxPsi:280,sag:[30,30],start:"weight",
+  lever:"LOK lever (black) on the damper head: turn it for a firm climbing mode, open for descents.",
+  notes:["The Aria has two positive air chambers. The app's starting pressure is for the main (+) chamber, never above 280 psi. The ++ chamber runs higher, never above 600 psi: EXT's chart pairs, for example, 160 psi + with about 310 psi ++. Fill the ++ chamber first and follow the chart in your manual.","Dials count from fully closed (click 0): high-speed compression BH (12 mm spanner), low-speed compression BL (4 mm Allen), rebound R, and HBC bottom-out H (4 mm Allen). EXT's chart gives starting clicks by pressure."]}}};
+SHK.fast={name:"FAST",shocks:{
+ fenix:{name:"Fenix 2.0",sub:"coil · custom tune",years:"current",kind:"coil",sag:[30,30],
+  lever:"Climb lever: firms the shock for climbing without locking it out.",
+  notes:["FAST tunes each Fenix to your bike and weight and supplies the spring. FAST's Holy Grail manual gives sag of about 28% for trail, 30% for freeride and 33% for downhill; the app uses 30%.","Dials count from fully closed: low/mid-speed compression and low-speed rebound, about 24 clicks each (ENDURO's test). Move 2–3 clicks at a time, then fine-tune.","FAST's Fenix product page doesn't give a preload limit; its older Holy Grail shock allows up to 3 turns. If you need more, ask FAST for a firmer spring."]}}};
 SHK.dvo={name:"DVO",shocks:{
  tpp:{name:"Topaz Prime",sub:"air · 2024 on",years:"2024–2027",kind:"air",tmax:2,neg:2,maxPsi:300,sag:[30,30],start:"weight",bladder:"140–180 psi",spacers:"Up to two spacers in the positive chamber and two in the negative chamber.",
   notes:["Dials: low-speed compression 5 clicks, high-speed 10, rebound 9."]},
@@ -699,6 +727,7 @@ SHK.mz={name:"Marzocchi",shocks:{
 
 // ---------- setup state ----------
 const $=id=>document.getElementById(id);
+let COILF=null;
 let U={prof:"trail",mode:"fork",brand:"rs",fork:"zeb",year:"2027",ver:0,travel:170,damp:"c32",w:175,unit:"lb",eb:false,sb:"fox",sk:"x2",stroke:60,rate:450,wtrav:150,csag:30,cbias:65};
 const forkOf=()=>CAT[U.brand].forks[U.fork];
 const yearOf=()=>forkOf().years.find(y=>y.label===U.year);
@@ -794,6 +823,20 @@ const PUMP={
   `Thread a shock pump onto the air valve and set the pressure to your body weight in pounds, never above the maximum.`,
   `Filling from low pressure? Add about 50 psi at a time and slowly cycle the shock through about 25% of its travel several times between steps.`,
   `Remove the pump and measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure. Adjust in small steps.`],
+ push:[`Turn compression fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Find your spring on PUSH's chart for your weight and travel. The color is printed on the spring; swapping it is a job for PUSH or a shop if you're not set up for it.`,
+  `Set the bottom-out air between 5 and 50 psi: more for heavier riders and big hits.`,
+  `Measure sag: push the O-ring down to the seal, get on dressed to ride in your riding position, step off without bouncing, and measure. Aim for 20%.`,
+  `Sag too deep or shallow by more than a few mm? Move one spring up or down the chart.`],
+ ext:[`Turn compression fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Unscrew the air cap on top of the left leg and thread on a shock pump.`,
+  `Pump to the starting pressure, never above 200 psi. Slowly cycle the fork a few times as you go so the pressure settles.`,
+  `Remove the pump and measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position, step off without bouncing, and measure.`,
+  `Adjust until sag is on target, then refit the air cap.`],
+ extShock:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks from EXT's chart.`,
+  `Fill the ++ chamber first, to the pressure EXT's chart pairs with your + pressure, never above 600 psi.`,
+  `Then fill the + chamber to the starting pressure, never above 280 psi, cycling the shock a few times as you go.`,
+  `Measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure. Aim for 30%.`],
  dvoShock:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above.`,
   `Set the reservoir bladder pressure through the valve under the reservoir cap, using the range above.`,
   `Thread a shock pump onto the main air valve and set the pressure to your body weight in pounds, never above the maximum. Cycle the shock slowly through about 25% of its travel a few times and top up.`,
@@ -842,7 +885,7 @@ const FIXES=[
  {s:"The pressure drops overnight",b:"air",t:"A few psi between rides is normal with temperature swings. If it keeps losing air, check that the valve core is tight and the cap is on. A steady leak means a seal needs service."},
  {s:"I can't reach sag with the spring I have",b:"coil",t:"Preload is only for fine-tuning; stay within your shock's limit (two turns after the spring stops moving on Fox shocks). Go up a spring rate if sag is too deep, down one if it's too shallow. Springs usually come in 25 or 50 lb/in steps, though some brands only offer 50."}];
 function renderHowto(kind){
- const key=U.mode==="fork"?U.brand:kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock"}[U.sb];
+ const key=U.mode==="fork"?U.brand:kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock",ext:"extShock"}[U.sb];
  $("pump-steps").innerHTML=PUMP[key].map(x=>`<li>${x}</li>`).join("");
  $("sag-tips").innerHTML=`<b>For a reading you can trust:</b> once you're on the bike, bounce gently a couple of times to free up the seals before the final reading. Measure in the same position every time: standing and centered over the bike for trail and enduro riding, or seated if you mostly ride seated, like cross-country. A wall or door frame to lean an elbow on helps. Ride with a pack? Wear it.`;
  const ok=f=>f.b==="any"||(f.b==="fork"&&U.mode==="fork")||(kind==="coil"?f.b==="coil":(f.b==="air"||(f.b==="foxfork"?(U.mode==="fork"&&U.brand==="fox"):f.b==="other"?!(U.mode==="fork"&&U.brand==="fox"):false)));
@@ -989,6 +1032,7 @@ function applyProfile(realPsi){const P=profOf(),box=$("r-prof");PROFRES=null;
  D={...q};s={...q};R={...q};cache={};last=last2=null;setCC(q);["p","t","n","r","l","h","hr"].forEach(k=>{$(k).value=q[k]??0});
  const L=o.lines,cw=(n,tot,g)=>g?"":`${n} ${CWO} (of ${tot}), `,dial=SHK[U.sb]&&!fork&&SHK[U.sb].shocks[U.sk].rebDial,tk=fork?ebV(verOf()).tokens[String(U.travel)]:null;
  if(coil&&o.sag===base)L.push(`<b>Sag:</b> stays at ${base}%, so keep your spring.`);
+ else if(coil&&fork)L.push(`<b>Sag:</b> ${o.sag}% of travel. On a coil fork that means a ${o.sag<base?"firmer":"softer"} spring: try the next one ${o.sag<base?"up":"down"} on the chart and check sag.`);
  else if(coil)L.push(`<b>Sag:</b> ${o.sag}% of stroke. On a coil shock that means a different spring rate, not air: enter ${o.sag}% in the spring guide below to see the rate.`);
  else if(o.sag===base)L.push(`<b>Sag:</b> stays at ${base}%, so keep the starting pressure.`);
  else if(o.psi!=null)L.push(`<b>Sag:</b> ${o.sag}% of ${fork?"travel":"stroke"} instead of ${fork?20:30}%, so pump to about <b>${o.psi} psi</b> (the starting point is ${o.psi0} psi). Set it by measuring sag: the pressure is the app's estimate.${o.capped?` That's capped at the ${mx} psi maximum.`:""}`);
@@ -1013,7 +1057,16 @@ function renderSetup(){
  $("st-u-l").textContent=U.mode==="shock"?"Shock":"Fork";$("fork-ui").hidden=U.mode!=="fork";$("shock-ui").hidden=U.mode!=="shock";$("eb-row").hidden=false;
  $("cta").hidden=false;$("shock-learn").hidden=true;
  chips("c-prof",PROFILES.map(p=>[p.id,p.name]),profOf().id,v=>{U.prof=v;renderSetup()});{const r=$("c-prof"),b=r.querySelector('[aria-pressed="true"]');if(b&&(b.offsetLeft<r.scrollLeft||b.offsetLeft+b.offsetWidth>r.scrollLeft+r.clientWidth))r.scrollLeft=b.offsetLeft-r.offsetLeft-8}
- U.mode==="fork"?renderFork():renderShock();rememberLast();renderGarage();renderAddPrompt()}
+ const tk0=tuneKey(),keepS=s&&{...s},keepR=R&&{...R};
+ U.mode==="fork"?renderFork():renderShock();
+ // keep the rider's slider changes and comparison while the bike and profile are unchanged, including after a reload
+ {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else if(!TUNEK){try{const t=JSON.parse(localStorage.getItem(TUNESK)||"null");if(t&&t.k===k)src=t}catch(e){}}
+  if(src&&src.s&&src.s.prof===D.prof){s={...src.s};R={...(src.R||src.s)};cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
+  TUNEK=k;saveTune()}
+ rememberLast();renderGarage();renderAddPrompt()}
+let TUNEK=null;const TUNESK="tune-state-v1";
+const tuneKey=()=>JSON.stringify([U.mode,U.mode==="fork"?[U.brand,U.fork,U.year,U.ver,U.travel,U.damp]:[U.sb,U.sk,U.stroke,U.rate],U.w,U.unit,U.eb,U.prof]);
+function saveTune(){try{if(TUNEK&&s)localStorage.setItem(TUNESK,JSON.stringify({k:TUNEK,s,R}))}catch(e){}}
 function renderFork(){
  const B=CAT[U.brand],fk=forkOf(),y=yearOf(),v=verOf(),dm=DMP[U.damp],w=lb();
  chips("c-brand",Object.entries(CAT).map(([k,x])=>[k,x.name]),U.brand,x=>{U.brand=x;renderSetup()});
@@ -1025,12 +1078,17 @@ function renderFork(){
  chips("c-damp",v.dampers.map(k=>[k,DMP[k].name]),U.damp,x=>{U.damp=x;renderSetup()});
  $("r-title").textContent=`${B.name} ${fk.name} ${U.year}${y.versions.length>1?" · "+v.name:""} · ${U.travel} mm · ${dm.name}${U.eb?" · e-bike":""}`;
  $("r-l1").textContent=v.ramp?"Main chamber":"Starting pressure";$("r-l3").textContent=v.ramp?"Ramp-up chamber":U.brand==="fox"?"Volume spacers":"Tokens";
- const p=forkPsi(v,w,U.travel,U.eb),warn=[...p.flags];
+ const p=forkPsi(v,w,U.travel,U.eb),warn=[...p.flags];let cs=null;
+ if(v.coilBands){const B=v.coilBands[String(U.travel)]||[],inn=B.filter(b=>w>=b[2]&&w<=b[3]),mid=b=>Math.abs(w-(b[2]+b[3])/2);
+  cs=(inn.length?inn:B).slice().sort((a,b)=>mid(a)-mid(b))[0];if(!inn.length)warn.push(`Your weight is outside PUSH's chart for ${U.travel} mm, so this is the nearest spring. Check sag and ask PUSH if it's off.`);
+  COILF={rate:cs[1],alt:inn.filter(b=>b!==cs)}}else COILF=null;
  {const mx=forkMax(v);if(p.psi!=null&&mx&&p.psi>mx){warn.push(`That's above this fork's ${mx} psi maximum${v.maxByTravel?` at ${U.travel} mm`:""}, so it's capped. Don't exceed ${mx} psi; if you can't reach sag, ask a shop about a firmer spring setup.`);p.psi=mx}}
  $("r-psi").textContent=p.psi!=null?p.psi+" psi":"—";
+ if(cs){$("r-l1").textContent="Spring";$("r-psi").textContent=`${cs[1]} lb/in`;$("r-l3").textContent="Bottom-out air"}
  $("r-sag").innerHTML=sagText([20,20],U.travel);
  const tk=ebV(v).tokens[String(U.travel)];$("r-tok").textContent=v.ramp?interp(v.ramp.W,v.ramp.P,w).psi+" psi":tk?`${tk[0]} stock · ${tk[1]} max`:"—";
- const L=[];
+ if(cs)$("r-tok").textContent="5–50 psi";
+ const L=[];if(cs)L.push(`<b>Spring:</b> ${cs[0]}, ${cs[1]} lb/in, for ${Math.round(w)} lb at ${U.travel} mm on PUSH's chart (${cs[2]}–${cs[3]} lb).${COILF.alt.length?` ${COILF.alt.map(b=>`${b[0]} (${b[1]} lb/in)`).join(" and ")} also cover${COILF.alt.length>1?"":"s"} your weight.`:""}`);
  if(p.src)L.push(`<b>Pressure source:</b> ${p.src}. ${forkMax(v)?`Max ${forkMax(v)} psi${v.maxByTravel?` at ${U.travel} mm`:""}.`:"The maximum is printed on the fork."}`);
  L.push(v.sagNote?v.sagNote:v.sag?"<b>Sag:</b> the app targets 20%, the usual baseline. Fox's manual gives 15–20%: 15% is firmer, 20% is plusher.":"<b>Sag:</b> the app targets 20%, the usual baseline. RockShox doesn't publish a fork sag target in the sources we found.");
  const rb=rebFor(ebV(v),U.damp,w);L.push(`<b>Rebound:</b> ${rb.text}.`);
@@ -1040,7 +1098,7 @@ function renderFork(){
  if(v.abo)L.push("<b>Adjustable Bottom Out:</b> on Ultimate forks, a dial at the bottom of the air leg changes end-of-travel support. Turn it fully clockwise, then 4 clicks counterclockwise (of 8).");
  v.notes.forEach(n=>L.push(n));
  setLines(L);
- warn.push(...v.warns);if(dm.warn)warn.push(dm.warn);if(!tk&&!v.ramp&&U.brand!=="dvo")warn.push("Token or spacer counts for this travel aren't confirmed yet.");
+ warn.push(...v.warns);if(dm.warn)warn.push(dm.warn);if(!tk&&!v.ramp&&!cs&&U.brand!=="dvo"&&U.brand!=="ext")warn.push("Token or spacer counts for this travel aren't confirmed yet.");
  $("r-warn").innerHTML=warn.map(x=>`<li>${x}</li>`).join("");
  renderHowto("air");applyFork(p.psi,rb.r,rb.hr);applyProfile(p.psi)}
 const STROKES=[37.5,40,42.5,45,47.5,50,52.5,55,57.5,60,62.5,65,67.5,70,72.5,75];
@@ -1168,6 +1226,11 @@ const SDMP={
  ttx2:{name:"TTX2Air",r:12,rGuess:true,l:10,lGuess:true,h:3,hGuess:true,init:{l:5,h:1}},
  ttx22:{name:"TTX22m.2",r:12,rGuess:true,l:10,lGuess:true,h:2,init:{l:5,h:1}},
  tpp:{name:"Topaz Prime",r:9,l:5,h:10,init:{l:2,h:7}},
+ e116:{name:"PUSH ElevenSix",r:15,rGuess:true,l:20,lGuess:true,h:15,hGuess:true,init:{l:10,h:7}},
+ storia:{name:"EXT Storia V3",r:20,rGuess:true,l:12,lGuess:true,h:10,hGuess:true,init:{l:6,h:5}},
+ arma:{name:"EXT Arma V3",r:20,rGuess:true,l:12,lGuess:true,h:10,hGuess:true,init:{l:6,h:5}},
+ aria:{name:"EXT Aria",r:20,rGuess:true,l:12,lGuess:true,h:10,hGuess:true,init:{l:6,h:5}},
+ fenix:{name:"FAST Fenix 2.0",r:24,rGuess:true,l:24,lGuess:true,h:0,hFix:.45,init:{l:12}},
  tp3:{name:"Topaz T3 Air",r:9,l:2,lever:["Open","Middle","Firm"],h:0,hFix:.45,init:{l:0}},
  jade:{name:"Jade X",r:15,rGuess:true,l:2,lever:["Open","Middle","Firm"],h:0,hFix:.45,init:{l:0}},
  dlx:{name:"Deluxe / SIDLuxe",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.45,init:{l:0}}};
@@ -1316,8 +1379,9 @@ function applyFork(realPsi,rebR,rebH){
   // scale so main and ramp-up keep the chart's ratio; iterate because the sag pressure depends on the ramp pressure
   base.rp=rr;PS=realPsi?realPsi/90:1;for(let i=0;i<6;i++){base.p=pAt(base,.2);PS=realPsi?realPsi/base.p:1}
   $("rp").min=Math.max(5,Math.round(rr*.7/5)*5);$("rp").max=Math.round(rr*1.3/5)*5;$("rp").value=rr}
+ else if(COILF){base.prof="coil";base.t=0;COIL0=COILF.rate/1.5;base.p=COILF.rate}
  else base.p=pAt(base,.2);
- PS=realPsi?realPsi/base.p:1;$("rp-ctl").hidden=!v.ramp;$("p").step=1;D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
+ PS=COILF?1:realPsi?realPsi/base.p:1;$("rp-ctl").hidden=!v.ramp;$("p").step=1;D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
  $("t").max=TMAX;$("n").max=Math.max(1,NMAX);$("p").min=Math.round(base.p*.55);$("p").max=Math.round(base.p*1.5);
  ["p","t","n","r","l","h","hr"].forEach(k=>{$(k).value=s[k]});if(s.rp!=null)$("rp").value=s.rp;
  $("sp-name").textContent=`${v.spring}, ${U.travel} mm. ${realPsi?"Pressure is scaled to your starting point.":"No starting pressure for this fork yet, so pressure is shown in model units."}`;
@@ -1586,7 +1650,7 @@ function play(){
   if(i<o.length-1)anim=requestAnimationFrame(step);else{dot.style.display="none";setGauge(r.mx,r.mx)}};
  anim=requestAnimationFrame(step);
 }
-function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():renderDamp()}
+function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():renderDamp();if(tab==="s"||tab==="d")saveTune()}
 ["p","t","n","rp"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=+e.target.value;last=k;render()}));
 // rebound is stored as clicks from fully closed; sliders run open-to-closed so the inverse is stored on them
 ["r","l","h","hr"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=(k==="r"||k==="hr")?(+e.target.max)-(+e.target.value):+e.target.value;last2=k;render()}));
@@ -1657,6 +1721,9 @@ function svcPlan(p){
  if(p.brand==="oh"&&p.sk==="ttx22")return[{k:"damper",n:"Damper service",h:50,yr:true,why:"Öhlins' TTX22M manuals give 50 hours or once a year in one edition and 100 hours in another, so this uses the shorter interval. Damper oil and seals wear with use, so damping fades over time."}];
  if(p.brand==="oh")return[{k:"air",n:"Air sleeve service",h:100,why:"Öhlins' workshop manual sets the TTX Air air sleeve service at 100 hours. Fresh seals and grease keep it supple and holding pressure."}];
  if(p.brand==="dvo"&&p.kind==="fork")return[{k:"full",n:"Full service",h:100,why:"DVO's Diamond 36 service guide calls for a full service every 100 hours of ride time."}];
+ if(p.brand==="ext")return[{k:"full",n:"Full service",h:100,yr:true,why:"EXT's manuals call for a full service every 100 hours or once a year (50 hours or six months if you race), with seals and bushings checked every 15 hours."}];
+ if(p.brand==="fast")return[{k:"full",n:"Full service",h:100,yr:true,why:"FAST calls for a service every 100 hours or once a year, whichever comes first, done by FAST or an approved center: it needs vacuum filling."}];
+ if(p.brand==="push")return[{k:"full",n:"Full service",h:100,yr:true,why:"PUSH asks for a yearly service at PUSH or an authorized center, which also renews the warranty. It doesn't publish an hour count, so the app also flags 100 hours, like other makers."}];
  if(p.brand==="dvo")return[{k:"full",n:"Full service",h:100,why:"DVO's shock interval isn't in the documents we found, so this uses DVO's 100-hour fork interval as a guide."}];
  if(p.kind==="fork")return[{k:"lower",n:"Lower leg service",h:50,why:SVC_WHY.lower},{k:"full",n:"Full service (lower legs, air spring, damper)",h:200,yr:true,resets:["lower"],why:SVC_WHY.rsfull}];
  const sk=p.sk;
