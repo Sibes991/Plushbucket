@@ -327,7 +327,7 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;max-width
 input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .rides{list-style:none;margin:0;padding:0}.rides li{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;gap:8px}
 #ride-parts{display:grid;gap:2px}
-/* assistant */
+/* tabs */
 .bnav{display:flex;gap:6px;margin:18px 0 14px;padding:6px;background:var(--pine);border-radius:18px;border:2px solid var(--accent);box-shadow:0 6px 18px rgba(12,23,18,.22)}
 .bnav button{flex:1;border:0;background:none;border-radius:13px;min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:italic 800 condensed 1.12rem/1 var(--display);letter-spacing:.01em;color:var(--on-pine);padding:8px 4px}
 .bnav button svg{width:26px;height:26px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -337,22 +337,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .steps button{min-width:0}
 .bnav button[aria-selected="true"]{background:var(--accent);color:var(--on-accent);box-shadow:0 2px 8px rgba(255,122,46,.35)}
 .bnav button:focus-visible{outline-color:var(--accent)}
-.chat{position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:30;width:min(640px,100%);height:min(78vh,640px);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
-.chat header{display:flex;align-items:center;gap:8px;padding:10px 12px 8px 16px;border-bottom:1px solid var(--line)}
-.chat header b{flex:1;font:italic 700 condensed 1.35rem var(--display)}
-.chat header button{min-height:36px;padding:4px 12px}
-.msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
-.m{max-width:88%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;line-height:1.4}
-.m.u{align-self:flex-end;background:var(--ink);color:var(--bg)}
-.m.a{align-self:flex-start;background:var(--sunk);border:1px solid var(--line)}
-.m.sys{align-self:center;color:var(--muted);font-size:.9rem;text-align:center}
-.notes{margin:0;list-style:none;padding:10px 16px;border-bottom:1px solid var(--line);max-height:30%;overflow-y:auto;font-size:.95rem}
-.notes li{margin:4px 0}.notes small{color:var(--muted)}
-.chat form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
-.chat input{flex:1;font:inherit;min-height:44px;padding:6px 12px;border-radius:12px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);min-width:0}
-.chat form button{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-.sugg{display:flex;flex-wrap:wrap;gap:6px}
-.sugg button{font-size:.88rem;min-height:34px;padding:4px 12px;font-weight:500}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style>
 
@@ -372,7 +356,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 <button role="tab" id="tb-u" aria-selected="true" aria-controls="pane-u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12M8 3v9M16 3v9M7 12h2v9H7zM15 12h2v9h-2z"/></svg><span>My fork</span></button>
 <button role="tab" id="tb-k" aria-selected="false" aria-controls="pane-u"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/><path d="M12 6v2M12 16v2M9 8h6v4H9zM10 12l4 1-4 1 4 1"/></svg><span>My shock</span></button>
 <button role="tab" id="tb-v" aria-selected="false" aria-controls="pane-v"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.3-.7-.7-2.3z"/></svg><span>Service</span></button>
-<button id="fab" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H10l-4 4v-4H5z"/></svg><span>Ask</span></button>
 </nav>
 <div class="steps" id="learn-head" role="tablist" aria-label="Setup steps"><button role="tab" id="st-u" aria-selected="true" aria-controls="pane-u"><b>1</b><span id="st-u-l">Fork</span></button><button role="tab" id="tb-s" aria-selected="false" aria-controls="pane-s"><b>2</b><span>Spring</span></button><button role="tab" id="tb-d" aria-selected="false" aria-controls="pane-d"><b>3</b><span>Damping</span></button></div>
 
@@ -551,19 +534,13 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 <p class="fk" id="svc-where" style="margin-top:14px"></p>
 <section class="card" id="backup" style="margin-top:18px">
 <h2 class="h2" style="margin-top:0">Back up or move to a new phone</h2>
-<p class="fk" style="margin-top:0">Saves everything in one file: your garage, forks and shocks, service dates, ride log, slider settings and assistant notes. Keep it somewhere safe, or open it on your new phone and restore it here.</p>
+<p class="fk" style="margin-top:0">Saves everything in one file: your garage, forks and shocks, service dates, ride log and slider settings. Keep it somewhere safe, or open it on your new phone and restore it here.</p>
 <div class="bkrow"><button class="primary" id="bk-exp">Save backup file</button><button id="bk-pick">Restore from a file</button><input type="file" id="bk-imp" accept=".json,application/json" hidden></div>
 <p class="fk" id="bk-msg" role="status"></p>
 </section>
 </div>
 <footer class="copy"><i>Measured in the lab, tested on the trail.</i><br>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.</footer>
 </main>
-<div class="chat" id="chat" hidden role="dialog" aria-label="Suspension assistant">
-<header><b>Ask about your setup</b><button id="ntog">Notes (0)</button><button id="cx" aria-label="Close">Close</button></header>
-<ul class="notes" id="notes" hidden></ul>
-<div class="msgs" id="msgs" aria-live="polite"></div>
-<form id="cf"><input id="ci" autocomplete="off" placeholder="Ask a question, or tell me how the ride went"><button>Send</button></form>
-</div>
 <script>
 // true inside the iPhone and Android apps (Capacitor shell), false on the website
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
@@ -1792,68 +1769,15 @@ function renderService(){
  parts.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Remove this part and its service history?"))return;G.parts=G.parts.filter(x=>x.id!==b.dataset.del);G.rides.forEach(r=>r.parts=r.parts.filter(x=>x!==b.dataset.del));svcSave();renderService()});
  $("ride-list").querySelectorAll("[data-rdel]").forEach(b=>b.onclick=()=>{G.rides=G.rides.filter(r=>r.id!==b.dataset.rdel);svcSave();renderService()})}
 const SV={wet:0};
-function svcSummary(){if(!G.parts.length)return"none tracked";return G.parts.map(p=>p.label+": "+svcStatus(p).map(s=>`${s.n} ${s.over?"DUE NOW":f1(s.left)+" h left"}`).join(", ")).join(" | ")}
 
-// ---------- assistant ----------
-const NK="fork-notes-v1";let notes=[],hist=[],sampleFn=null,busy=false;
-try{notes=JSON.parse(localStorage.getItem(NK)||"[]")}catch(e){notes=[]}
-function saveNotes(){try{localStorage.setItem(NK,JSON.stringify(notes))}catch(e){}}
-function renderNotes(){$("ntog").textContent=`Notes (${notes.length})`;
- $("notes").innerHTML=notes.length?notes.slice().reverse().map(n=>`<li>${esc(n.text)}<br><small>${esc(n.date)} · ${esc(n.fork)}</small></li>`).join(""):"<li><small>No notes yet. Tell the assistant how a ride went and it will save a note.</small></li>"}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function bubble(cls,text){const d=document.createElement("div");d.className="m "+cls;d.textContent=text;$("msgs").appendChild(d);$("msgs").scrollTop=1e9;return d}
-function context(){
- const dl=$("rv").textContent?`, rebound ${$("rv").textContent}, ${DAMP.x.h?"low-speed":""} compression ${$("lv").textContent}${DAMP.x.h?", high-speed "+$("hv").textContent:""}`:"";
- const tryS=`pressure ${realP(s.p)} psi, ${s.rp!=null?"ramp-up chamber "+s.rp+" psi (this fork has no tokens)":(TCC?`volume spacers ${Math.round(s.t*TCC)} cc (1 cc steps; Fox publishes no cc maximum for this shock, it is set by ribs in the air sleeve)`:"tokens "+s.t+($("r-tok").textContent!=="—"?"":" (token limits for this fork not confirmed)"))}${NMAX?", negative spacers "+s.n+" of "+NMAX:", no user negative spacers on this "+(U.mode==="shock"?"shock":"fork")}${dl}`;
- return `You are the assistant inside a mountain bike fork setup and teaching app. Be brief (2-6 sentences), plain-spoken, and explain the "why" in terms of the app's model: the spring (air pressure, tokens, or the ramp-up chamber on Öhlins forks, and negative spacers on the few shocks that take them) decides how far the fork moves, the damper (rebound, low-speed and high-speed compression) decides how fast. When it helps, point the rider to the Spring or Damping step to see it. Suggest one change at a time, 1-2 clicks or about 5 psi. Always describe dial changes as clockwise (more damping, slower or firmer) or counterclockwise (less damping, faster or softer), and give every setting as clicks counterclockwise from fully closed (turn it fully clockwise first, then count counterclockwise). Never recommend exceeding the fork's maximum pressure or token count. Sag targets are 20% of travel for forks and 30% of stroke for rear shocks. Only state click counts and pressures given below; if something isn't listed, say you don't have it and suggest the fork manual or a shop. If the rider describes how a ride felt, a symptom, or a setting they changed, call save_note with a short factual note (setting + what they felt), then answer.
-
-RIDER'S FORK: ${$("r-title").textContent}
-Riding profile: ${profOf().name}${PROFRES?" ("+[...$("r-prof").querySelectorAll("li")].map(x=>x.textContent).join(" ")+")":""}.
-Starting point shown: ${$("r-psi").textContent}; sag target ${$("r-sag").textContent}; tokens ${$("r-tok").textContent}.
-${liText($("r-lines"))}
-${liText($("r-notes"))}
-Data caveats: ${[...$("r-warn").querySelectorAll("li")].map(x=>x.textContent).join(" ")||"none"}
-Settings currently on the practice sliders: ${tryS}
-Service tracker: ${svcSummary()}
-Setup mode: ${U.mode==="fork"?"fork":"rear shock"}
-Pumping steps shown: ${liText($("pump-steps"))}
-Fixes shown: ${[...$("fixes").querySelectorAll("details")].map(x=>"- "+x.querySelector("summary").textContent+": "+x.querySelector("p").textContent).join("\n")}
-Trail tuning advice shown: ${liText($("trailtune-body"))}
-Rider's saved notes (newest last): ${notes.slice(-12).map(n=>`[${n.date}] ${n.text}`).join(" | ")||"none"}`}
-// read list text even from collapsed sections (innerText is empty there)
-const liText=el=>[...el.querySelectorAll("li")].map(x=>{const b=x.querySelector("b"),t=x.textContent;return "- "+(b&&t.startsWith(b.textContent)&&!/:\s*$/.test(b.textContent)?b.textContent+": "+t.slice(b.textContent.length):t)}).join("\n");
-const TOOLS=[{name:"save_note",description:"Save a short ride note for the rider (settings tried and how the fork felt).",
- inputSchema:{type:"object",properties:{text:{type:"string",description:"One or two sentence factual note"}},required:["text"]},
- execute:({text})=>{notes.push({text:String(text).slice(0,400),date:new Date().toLocaleDateString(),fork:$("r-title").textContent});saveNotes();renderNotes();bubble("sys","Note saved");return{saved:true,count:notes.length}}}];
-async function ask(q){
- if(busy||!q.trim())return;busy=true;bubble("u",q);hist.push({role:"user",content:q});
- const a=bubble("a","Thinking…");
- const msgs=hist.slice(-10).map((m,i,arr)=>i===arr.length-1?{role:"user",content:context()+"\n\nRIDER: "+m.content}:m);
- try{const r=await sampleFn(msgs,{modelTier:"quick",cache:false,tools:TOOLS,onText:({text})=>{a.textContent=text;$("msgs").scrollTop=1e9}});
-  a.textContent=r.text;hist.push({role:"assistant",content:r.text})}
- catch(e){hist.pop();
-  if(e&&e.code==="not_granted"){a.textContent="The assistant needs permission to use Claude. It's off for this visit.";$("fab").hidden=true}
-  else if(e&&e.code==="rate_limited")a.textContent="Too many questions at once. Wait a moment and try again.";
-  else a.textContent=(e&&e.text)||"Something went wrong. Try again."}
- busy=false}
-function openChat(){$("chat").hidden=false;
- if(!$("msgs").children.length){bubble("sys","Ask anything about your fork, or tell me how your last ride felt and I'll save a note.");
-  const sg=document.createElement("div");sg.className="sugg";
-  ["My fork dives under braking","What do tokens actually do?","I'm bottoming out on drops","Rebound or compression first?"].forEach(t=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>{sg.remove();ask(t)};sg.appendChild(b)});
-  $("msgs").appendChild(sg)}
- $("ci").focus()}
-$("fab").onclick=openChat;
-$("cx").onclick=()=>{$("chat").hidden=true};
-$("ntog").onclick=()=>{$("notes").hidden=!$("notes").hidden};
-$("cf").addEventListener("submit",e=>{e.preventDefault();const q=$("ci").value;$("ci").value="";ask(q)});
-renderNotes();
 $("ride-date").value=today();
 $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService()};
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
  if(!(hrs>0)||!ids.length)return;G.rides.push({id:uidGen(),date:$("ride-date").value||today(),h:hrs,wet:!!SV.wet,parts:ids});svcSave();renderService()};
 svcInit();
 // ---------- backup and restore (all data lives in this browser) ----------
-const BKEYS=()=>[SK,TUNESK,NK,LASTK,LDK];
+const BKEYS=()=>[SK,TUNESK,LASTK,LDK];
 // inside Claude the page can't save files, and the service log follows the account there
 if(window.claude)$("backup").hidden=true;
 $("bk-exp").onclick=async()=>{const data={app:"Plushbucket",version:1,saved:new Date().toISOString(),store:{}};
@@ -1875,7 +1799,6 @@ $("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f
   G={parts:g.parts||[],rides:g.rides||[],saved:g.saved||[]};await svcSave();
   $("bk-msg").textContent="Restored. Reloading…";setTimeout(()=>location.reload(),600)}
  catch(x){$("bk-msg").textContent="That file isn't a Plushbucket backup, so nothing was changed."}};
-(async()=>{try{if(window.claude&&claude.use){sampleFn=await claude.use("sample");if(sampleFn)$("fab").hidden=false}}catch(e){}})();
 
 </script>
 
