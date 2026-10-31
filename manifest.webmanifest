@@ -1,7 +1,7 @@
 {
   "name": "Plushbucket",
   "short_name": "Plushbucket",
-  "description": "Plushbucket: MTB suspension setup. Starting pressures, sag and dial settings for your fork and shock, plus a service log.",
+  "description": "Plushbucket: measured in the lab, tested on the trail. MTB suspension setup. Starting pressures, sag and dial settings for your fork and shock, plus a service log.",
   "id": "/",
   "start_url": "/?source=app",
   "scope": "/",
