@@ -10,6 +10,9 @@ on:
         description: "Version shown in the App Store, e.g. 1.0"
         required: true
         default: "1.0"
+  # pushing a tag like ios-1.0-1 also starts it (works from any branch, before the app is merged to main)
+  push:
+    tags: ["ios-*"]
 
 jobs:
   testflight:
@@ -57,7 +60,7 @@ jobs:
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
             PRODUCT_BUNDLE_IDENTIFIER=com.plushbucket.app \
-            MARKETING_VERSION="${{ inputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+            MARKETING_VERSION="${{ inputs.version || '1.0' }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
       - name: Upload to TestFlight
         run: |
