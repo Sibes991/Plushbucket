@@ -10,9 +10,9 @@ on:
         description: "Version shown in the App Store, e.g. 1.0"
         required: true
         default: "1.0"
-  # pushing a tag like ios-1.0-1 also starts it (works from any branch, before the app is merged to main)
+  # pushing to the "testflight" branch also starts it (works before the app is merged to main)
   push:
-    tags: ["ios-*"]
+    branches: [testflight]
 
 jobs:
   testflight:
