@@ -330,6 +330,18 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;max-width
 input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .rides{list-style:none;margin:0;padding:0}.rides li{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;gap:8px}
 #ride-parts{display:grid;gap:2px}
+/* trail notes */
+textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:64px;resize:vertical}
+.tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
+.tn-sy button[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
+.tn-out{padding:12px 14px;border-radius:12px;background:var(--sunk);border-left:4px solid var(--accent)}.tn-out b{display:block;margin-bottom:4px}
+.tn-out .warn{margin:8px 0 0;font-size:.92rem}.tn-out summary{cursor:pointer;color:var(--muted);font-size:.9rem;margin-top:8px}.tn-out details p{margin:6px 0 0;font-size:.95rem}
+.tnl{list-style:none;margin:0;padding:0}.tnl li{border-bottom:1px solid var(--line);padding:10px 0}
+.tnl .meta{font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tnl q{display:block;font-style:italic;margin:4px 0}.tnl .try{margin:4px 0;font-size:.95rem}
+.tnl .oc{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:.9rem}.tnl .oc button{min-height:34px;padding:4px 12px;font-size:.88rem}
+.tnl .tx,.tnl .oc .tx{background:none;border:0;box-shadow:none;color:var(--accent-ink);font-weight:600;min-height:34px;padding:4px 6px;text-decoration:underline}
+#tn-list:not(:empty){margin-top:10px}
 /* tabs */
 .bnav{display:flex;gap:6px;margin:18px 0 14px;padding:6px;background:var(--pine);border-radius:18px;border:2px solid var(--accent);box-shadow:0 6px 18px rgba(12,23,18,.22)}
 .bnav button{flex:1;border:0;background:none;border-radius:13px;min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:italic 800 condensed 1.12rem/1 var(--display);letter-spacing:.01em;color:var(--on-pine);padding:8px 4px}
@@ -540,10 +552,23 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 </section>
 <h2 class="h2">Recent rides</h2>
 <ul class="rides" id="ride-list"></ul>
+<h2 class="h2">Trail notes</h2>
+<section class="card picker" style="margin-top:0">
+<p class="fk" style="margin-top:0">How did it ride? Pick the closest match and the app shows one change to try next ride. Notes are saved with your service log and backup.</p>
+<p class="fk" id="tn-empty" hidden>Add your fork or shock above first, then come back after a ride.</p>
+<div id="tn-form">
+<div class="field"><span class="lab">Which part</span><div class="chips" id="tn-part"></div></div>
+<div class="field"><label for="tn-text">What you felt (optional)</label><textarea id="tn-text" rows="2" maxlength="400" placeholder="e.g. harsh on roots, kicked me off the big jump"></textarea></div>
+<div class="field"><span class="lab">Closest match</span><div class="tn-sy" id="tn-sym"></div></div>
+<div class="tn-out" id="tn-out" hidden></div>
+<div style="margin-top:12px"><button class="primary" id="tn-save" disabled>Save note</button></div>
+</div>
+</section>
+<ul class="tnl" id="tn-list"></ul>
 <p class="fk" id="svc-where" style="margin-top:14px"></p>
 <section class="card" id="backup" style="margin-top:18px">
 <h2 class="h2" style="margin-top:0">Back up or move to a new phone</h2>
-<p class="fk" style="margin-top:0">Saves everything in one file: your garage, forks and shocks, service dates, ride log and slider settings. Keep it somewhere safe, or open it on your new phone and restore it here.</p>
+<p class="fk" style="margin-top:0">Saves everything in one file: your garage, forks and shocks, service dates, ride log, trail notes and slider settings. Keep it somewhere safe, or open it on your new phone and restore it here.</p>
 <div class="bkrow"><button class="primary" id="bk-exp">Save backup file</button><button id="bk-pick">Restore from a file</button><input type="file" id="bk-imp" accept=".json,application/json" hidden></div>
 <p class="fk" id="bk-msg" role="status"></p>
 </section>
@@ -1781,7 +1806,7 @@ async function svcInit(){
  try{if(window.claude&&claude.use){const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
   if(db&&user){const id=await user.id();const can=await user.can("data.write");
    if(id&&can!==false){svcRef=db.doc("data/users/"+id+"/garage");const snap=await svcRef.get();
-    if(snap.exists){const d=snap.data();if(d&&(d.parts||d.saved))G={parts:d.parts||[],rides:d.rides||[],saved:d.saved||G.saved||[]}}
+    if(snap.exists){const d=snap.data();if(d&&(d.parts||d.saved))G={parts:d.parts||[],rides:d.rides||[],saved:d.saved||G.saved||[],notes:d.notes||G.notes||[]}}
     else if(G.parts.length){await svcRef.set(G)}
     svcMode="account"}}}}catch(e){svcRef=null;svcMode="device"}
  if(tab==="v")renderService();renderGarage();maybeLanding()}
@@ -1800,6 +1825,7 @@ function svcStatus(p){const H=effHours(p);return svcPlan(p).map(s=>{
  const over=left<=0||(daysLeft!=null&&daysLeft<=0);return{...s,used,left,daysLeft,over,last:d}})}
 const f1=x=>Math.round(x*10)/10;
 function renderService(){
+ renderNotes();
  $("svc-where").textContent=svcMode==="account"?"Saved to your Claude account, so it follows you to any device.":window.claude?"Saved on this device only. Open the page while signed in with edit access to save it to your account.":NATIVE?"Saved on this phone. Deleting the app erases it, so make a backup now and then.":"Saved on this phone, in this browser. Clearing your browser data erases it.";
  $("svc-add-what").textContent=U.mode==="fork"?$("r-title").textContent.split(" · ").slice(0,-1).join(" · ")||"the fork in Setup":"the shock in Setup";
  const parts=$("svc-parts");
@@ -1825,6 +1851,42 @@ function renderService(){
 const SV={wet:0};
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// ---------- trail notes: what the rider felt, matched to the app's own fixes ----------
+// One change to try, taken from the fix text in FIXES (clockwise = more damping: firmer compression, slower rebound)
+const TRY={"It feels harsh, or rides low in its travel":"Check sag, then add 1 click of low-speed compression (clockwise). Only harsh on sharp, square-edged hits? Add 1 click of high-speed compression instead.",
+ "It bucks or kicks back after a big landing or G-out":"Slow rebound by 1 click (clockwise). If you have a high-speed rebound dial, use that one.",
+ "The front dives on steep descents":"Add 1 click of low-speed compression (clockwise). Leave the air pressure alone.",
+ "The O-ring is pushed all the way up after a ride":"No harsh clunk? Change nothing. Felt a clunk? Add one token or volume spacer, or more bottom-out if you have that dial.",
+ "It sits low or won't fully extend":"Add air until it extends fully, cycle it through about 25% of its travel several times, then reset your pressure.",
+ "It feels stiff off the top or clunks at full extension":"Cycle it through about 25% of its travel several times, then re-pump to your target.",
+ "The pressure reads lower when I attach the pump":"Nothing to fix: set the pressure with the pump on and ignore the drop when you take it off.",
+ "Sag keeps creeping deeper after a few rides":"Recheck sag and adjust the pressure, rather than refilling to a remembered number.",
+ "The pressure drops overnight":"Check the valve core is tight and the cap is on. If it keeps losing air, book a seal service.",
+ "I can't reach sag with the spring I have":"Change the spring rate (up one if sag is too deep), rather than adding preload."};
+const TRYFOX="Press the air release buttons on the backs of the lowers, then recheck sag.";
+const OUTS={better:"Better",same:"No different",worse:"Worse"};
+let TN={part:null,sym:null};
+function fixesFor(p){const fork=p.kind==="fork",foxf=fork&&p.brand==="fox",sh=!fork&&SHK[p.brand]&&SHK[p.brand].shocks[p.sk],kind=sh&&sh.kind==="coil"?"coil":"air";
+ return FIXES.filter(f=>f.b==="any"||(f.b==="fork"&&fork)||(kind==="coil"?f.b==="coil":(f.b==="air"||(f.b==="foxfork"?foxf:f.b==="other"?!foxf:false))))}
+const tryFor=f=>f.b==="foxfork"?TRYFOX:TRY[f.s]||"";
+function renderNotes(){
+ G.notes=G.notes||[];const has=G.parts.length>0;$("tn-empty").hidden=has;$("tn-form").hidden=!has;
+ if(has){if(!G.parts.some(p=>p.id===TN.part)){TN.part=G.parts[0].id;TN.sym=null}
+  const p=G.parts.find(x=>x.id===TN.part),fx=fixesFor(p),noun=p.kind==="fork"?"fork":"shock";
+  chips("tn-part",G.parts.map(x=>[x.id,esc(x.label)]),TN.part,v=>{TN.part=v;TN.sym=null;renderNotes()});
+  if(TN.sym!=null&&!fx[TN.sym])TN.sym=null;
+  $("tn-sym").innerHTML=fx.map((f,i)=>`<button type="button" data-sym="${i}" aria-pressed="${TN.sym===i}">${esc(f.s.replace(/\bfork\b/g,noun))}</button>`).join("");
+  $("tn-sym").querySelectorAll("[data-sym]").forEach(b=>b.onclick=()=>{TN.sym=TN.sym===+b.dataset.sym?null:+b.dataset.sym;renderNotes()});
+  const out=$("tn-out");out.hidden=TN.sym==null;$("tn-save").disabled=TN.sym==null;
+  if(TN.sym!=null){const f=fx[TN.sym],last=G.notes.filter(n=>n.part===p.id&&n.sym===f.s).slice(-1)[0];
+   out.innerHTML=`<b>Try next ride</b>${esc(tryFor(f))}${last&&(last.out==="same"||last.out==="worse")?`<p class="warn">Last time (${esc(last.date)}) this felt ${OUTS[last.out].toLowerCase()}. Go back to your previous setting and try the other ideas under Why.</p>`:""}<details><summary>Why</summary><p>${esc(f.t.replace(/\bfork\b/g,noun))}</p></details>`}}
+ const L=G.notes.slice().reverse().slice(0,30);
+ $("tn-list").innerHTML=L.map(n=>`<li><div class="meta"><span>${esc(n.date)} · ${esc(n.label)}</span><button class="tx" data-ndel="${n.id}" aria-label="Delete note">Delete</button></div><b>${esc(n.sym)}</b>${n.text?`<q>${esc(n.text)}</q>`:""}<p class="try">Tried: ${esc(n.try)}</p><div class="oc">${n.out?`How it felt: <b>${OUTS[n.out]}</b> <button class="tx" data-out="${n.id}|">Change</button>`:`How did it feel?${Object.entries(OUTS).map(([k,v])=>` <button data-out="${n.id}|${k}">${v}</button>`).join("")}`}</div></li>`).join("");
+ $("tn-list").querySelectorAll("[data-out]").forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.out.split("|"),n=G.notes.find(x=>x.id===id);if(n){n.out=k||null;svcSave();renderNotes()}});
+ $("tn-list").querySelectorAll("[data-ndel]").forEach(b=>b.onclick=()=>{G.notes=G.notes.filter(x=>x.id!==b.dataset.ndel);svcSave();renderNotes()})}
+$("tn-save").onclick=()=>{const p=G.parts.find(x=>x.id===TN.part);if(!p||TN.sym==null)return;const f=fixesFor(p)[TN.sym];if(!f)return;
+ G.notes.push({id:uidGen(),date:today(),part:p.id,label:p.label,sym:f.s.replace(/\bfork\b/g,p.kind==="fork"?"fork":"shock"),text:$("tn-text").value.trim().slice(0,400),try:tryFor(f),out:null});
+ $("tn-text").value="";TN.sym=null;svcSave();renderNotes()};
 $("ride-date").value=today();
 $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService()};
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
@@ -1850,7 +1912,7 @@ $("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f
   let g={parts:[],rides:[]};try{g=JSON.parse(d.store[SK]||"{}")}catch(x){}
   if(!confirm(`Restore the backup from ${String(d.saved||"").slice(0,10)}? It has ${(g.parts||[]).length} fork${(g.parts||[]).length===1?"":"s"} or shock${(g.parts||[]).length===1?"":"s"} in the service log and ${(g.rides||[]).length} ride${(g.rides||[]).length===1?"":"s"}. It replaces what's saved on this phone now.`))return;
   BKEYS().forEach(k=>{try{if(d.store[k]!=null)localStorage.setItem(k,d.store[k])}catch(x){}});
-  G={parts:g.parts||[],rides:g.rides||[],saved:g.saved||[]};await svcSave();
+  G={parts:g.parts||[],rides:g.rides||[],saved:g.saved||[],notes:g.notes||[]};await svcSave();
   $("bk-msg").textContent="Restored. Reloading…";setTimeout(()=>location.reload(),600)}
  catch(x){$("bk-msg").textContent="That file isn't a Plushbucket backup, so nothing was changed."}};
 
@@ -1862,7 +1924,7 @@ $("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f
  // the phone apps already are installed and ship their files offline: no service worker, no install prompt
  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())return;
  if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
- const TF="";
+ const TF="https://testflight.apple.com/join/d4QJ23x4";
  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
  // iPhone/iPad with the TestFlight link set: offer the native beta (also to people using the home-screen app)
  if(ios&&TF){const bar=document.getElementById("inst"),go=document.getElementById("inst-go"),sh=document.getElementById("beta-sheet");
