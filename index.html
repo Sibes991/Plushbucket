@@ -44,6 +44,7 @@
  --warn-bg:#2e2716;--warn-ink:#efd59a;--rider:#ff8c47;--frame:#d8e2d9;--dirt:#5c4630;--dirt-edge:#7a5e40;--pine:#0c1712;--on-pine:#eef3ec;--pine-mut:#9fb3a6;--sel-bg:#e8eee6;--sel-ink:#13201a;--sel-mut:#4a5c51;color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);overflow-x:clip}
+.legal{margin:10px auto 4px;max-width:520px;text-align:left}.legal summary{cursor:pointer;text-align:center;font-weight:600;padding:8px 0;list-style-position:inside}.legal p{margin:4px 0 8px}
 .copy{margin:32px 4px 0;padding-top:14px;border-top:1px solid rgba(26,51,40,.12);text-align:center;font-size:.8rem;line-height:1.5;opacity:.7}.copy a{color:inherit;display:inline-block;padding:8px 2px;margin:-8px 0}
 main{max-width:640px;margin:0 auto;padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .hero{position:relative;margin:0 calc(50% - 50vw);background:var(--pine);color:var(--on-pine);padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) 58px;clip-path:polygon(0 0,100% 0,100% calc(100% - 22px),0 100%);overflow:hidden}
@@ -334,6 +335,8 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 .tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
 .tn-sy button[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
 .tn-out{padding:12px 14px;border-radius:12px;background:var(--sunk);border-left:4px solid var(--accent)}.tn-out b{display:block;margin-bottom:4px}
+.tn-ai{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:8px}.tn-ai button{min-height:40px;padding:6px 14px}.tn-ai .fk{margin:0;font-size:.85rem}
+.tn-out .ai{margin:8px 0 0;font-size:.88rem;color:var(--muted)}
 .tn-out .warn{margin:8px 0 0;font-size:.92rem}.tn-out summary{cursor:pointer;color:var(--muted);font-size:.9rem;margin-top:8px}.tn-out details p{margin:6px 0 0;font-size:.95rem}
 .tnl{list-style:none;margin:0;padding:0}.tnl li{border-bottom:1px solid var(--line);padding:10px 0}
 .tnl .meta{font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -557,7 +560,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <p class="fk" id="tn-empty" hidden>Add your fork or shock above first, then come back after a ride.</p>
 <div id="tn-form">
 <div class="field"><span class="lab">Which part</span><div class="chips" id="tn-part"></div></div>
-<div class="field"><label for="tn-text">What you felt (optional)</label><textarea id="tn-text" rows="2" maxlength="400" placeholder="e.g. harsh on roots, kicked me off the big jump"></textarea></div>
+<div class="field"><label for="tn-text">What you felt (optional)</label><textarea id="tn-text" rows="2" maxlength="400" placeholder="e.g. harsh on roots, kicked me off the big jump"></textarea><div class="tn-ai" id="tn-ai-row" hidden><button type="button" id="tn-ai">Match it for me</button><span class="fk" id="tn-ai-msg">Uses the AI built into your iPhone. Works offline, nothing leaves your phone.</span></div></div>
 <div class="field"><span class="lab">Closest match</span><div class="tn-sy" id="tn-sym"></div></div>
 <div class="tn-out" id="tn-out" hidden></div>
 <div style="margin-top:12px"><button class="primary" id="tn-save" disabled>Save note</button></div>
@@ -572,7 +575,9 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <p class="fk" id="bk-msg" role="status"></p>
 </section>
 </div>
-<footer class="copy"><i>Measured in the lab, tested on the trail.</i><br>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.</footer>
+<footer class="copy"><i>Measured in the lab, tested on the trail.</i><br>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.
+<details class="legal"><summary>Disclaimer</summary><p>Plushbucket gives starting points for suspension setup, based on manufacturers' published setup guides and, where those don't exist, rider and tuner sources (labelled in the app). It isn't a substitute for your fork or shock's manual or a qualified mechanic, and makers can change their specs. Always follow the manufacturer's instructions, never exceed the maximum pressure printed on your fork or shock, and check your bike is safe before you ride. Mountain biking is dangerous and you ride at your own risk. Plushbucket is provided as is, without warranty. It isn't affiliated with or endorsed by any suspension brand; brand and product names belong to their owners.</p></details>
+<a href="https://plushbucket.com/terms">Terms &amp; disclaimer</a> · <a href="https://plushbucket.com/privacy">Privacy</a></footer>
 </main>
 <script>
 // true inside the iPhone and Android apps (Capacitor shell), false on the website
@@ -1858,7 +1863,11 @@ const TRY={"It feels harsh, or rides low in its travel":"Check sag, then add 1 c
  "I can't reach sag with the spring I have":"Change the spring rate (up one if sag is too deep), rather than adding preload."};
 const TRYFOX="Press the air release buttons on the backs of the lowers, then recheck sag.";
 const OUTS={better:"Better",same:"No different",worse:"Worse"};
-let TN={part:null,sym:null};
+let TN={part:null,sym:null,ai:false};
+// ids the iPhone's on-device model may answer with (see native/plugins/trail-notes); the app keeps all advice text
+const SYMID={"It feels harsh, or rides low in its travel":"harsh","It bucks or kicks back after a big landing or G-out":"kick","The front dives on steep descents":"dive","The O-ring is pushed all the way up after a ride":"bottomOut","It sits low or won't fully extend":"sitsLow","It feels stiff off the top or clunks at full extension":"stiffTop","The pressure reads lower when I attach the pump":"pumpReading","Sag keeps creeping deeper after a few rides":"sagCreep","The pressure drops overnight":"pressureDrop","I can't reach sag with the spring I have":"coilSag"};
+let TNAI=false;const TNP=(()=>{try{return NATIVE?(Capacitor.registerPlugin?Capacitor.registerPlugin("TrailNotes"):Capacitor.Plugins.TrailNotes):null}catch(e){return null}})();
+if(TNP)Promise.resolve().then(()=>TNP.isAvailable()).then(r=>{TNAI=!!(r&&r.available);if(TNAI)renderNotes()}).catch(()=>{});
 function fixesFor(p){const fork=p.kind==="fork",foxf=fork&&p.brand==="fox",sh=!fork&&SHK[p.brand]&&SHK[p.brand].shocks[p.sk],kind=sh&&sh.kind==="coil"?"coil":"air";
  return FIXES.filter(f=>f.b==="any"||(f.b==="fork"&&fork)||(kind==="coil"?f.b==="coil":(f.b==="air"||(f.b==="foxfork"?foxf:f.b==="other"?!foxf:false))))}
 const tryFor=f=>f.b==="foxfork"?TRYFOX:TRY[f.s]||"";
@@ -1869,17 +1878,26 @@ function renderNotes(){
   chips("tn-part",G.parts.map(x=>[x.id,esc(x.label)]),TN.part,v=>{TN.part=v;TN.sym=null;renderNotes()});
   if(TN.sym!=null&&!fx[TN.sym])TN.sym=null;
   $("tn-sym").innerHTML=fx.map((f,i)=>`<button type="button" data-sym="${i}" aria-pressed="${TN.sym===i}">${esc(f.s.replace(/\bfork\b/g,noun))}</button>`).join("");
-  $("tn-sym").querySelectorAll("[data-sym]").forEach(b=>b.onclick=()=>{TN.sym=TN.sym===+b.dataset.sym?null:+b.dataset.sym;renderNotes()});
+  $("tn-sym").querySelectorAll("[data-sym]").forEach(b=>b.onclick=()=>{TN.sym=TN.sym===+b.dataset.sym?null:+b.dataset.sym;TN.ai=false;renderNotes()});
+  $("tn-ai-row").hidden=!TNAI;
   const out=$("tn-out");out.hidden=TN.sym==null;$("tn-save").disabled=TN.sym==null;
   if(TN.sym!=null){const f=fx[TN.sym],last=G.notes.filter(n=>n.part===p.id&&n.sym===f.s).slice(-1)[0];
-   out.innerHTML=`<b>Try next ride</b>${esc(tryFor(f))}${last&&(last.out==="same"||last.out==="worse")?`<p class="warn">Last time (${esc(last.date)}) this felt ${OUTS[last.out].toLowerCase()}. Go back to your previous setting and try the other ideas under Why.</p>`:""}<details><summary>Why</summary><p>${esc(f.t.replace(/\bfork\b/g,noun))}</p></details>`}}
+   out.innerHTML=`<b>Try next ride</b>${esc(tryFor(f))}${last&&(last.out==="same"||last.out==="worse")?`<p class="warn">Last time (${esc(last.date)}) this felt ${OUTS[last.out].toLowerCase()}. Go back to your previous setting and try the other ideas under Why.</p>`:""}${TN.ai?`<p class="ai">Matched by your iPhone's on-device AI. Not right? Tap a different one above.</p>`:""}<details><summary>Why</summary><p>${esc(f.t.replace(/\bfork\b/g,noun))}</p></details>`}}
  const L=G.notes.slice().reverse().slice(0,30);
  $("tn-list").innerHTML=L.map(n=>`<li><div class="meta"><span>${esc(n.date)} · ${esc(n.label)}</span><button class="tx" data-ndel="${n.id}" aria-label="Delete note">Delete</button></div><b>${esc(n.sym)}</b>${n.text?`<q>${esc(n.text)}</q>`:""}<p class="try">Tried: ${esc(n.try)}</p><div class="oc">${n.out?`How it felt: <b>${OUTS[n.out]}</b> <button class="tx" data-out="${n.id}|">Change</button>`:`How did it feel?${Object.entries(OUTS).map(([k,v])=>` <button data-out="${n.id}|${k}">${v}</button>`).join("")}`}</div></li>`).join("");
  $("tn-list").querySelectorAll("[data-out]").forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.out.split("|"),n=G.notes.find(x=>x.id===id);if(n){n.out=k||null;svcSave();renderNotes()}});
  $("tn-list").querySelectorAll("[data-ndel]").forEach(b=>b.onclick=()=>{G.notes=G.notes.filter(x=>x.id!==b.dataset.ndel);svcSave();renderNotes()})}
 $("tn-save").onclick=()=>{const p=G.parts.find(x=>x.id===TN.part);if(!p||TN.sym==null)return;const f=fixesFor(p)[TN.sym];if(!f)return;
- G.notes.push({id:uidGen(),date:today(),part:p.id,label:p.label,sym:f.s.replace(/\bfork\b/g,p.kind==="fork"?"fork":"shock"),text:$("tn-text").value.trim().slice(0,400),try:tryFor(f),out:null});
- $("tn-text").value="";TN.sym=null;svcSave();renderNotes()};
+ G.notes.push({id:uidGen(),date:today(),part:p.id,label:p.label,sym:f.s.replace(/\bfork\b/g,p.kind==="fork"?"fork":"shock"),text:$("tn-text").value.trim().slice(0,400),try:tryFor(f),out:null,ai:!!TN.ai});
+ $("tn-text").value="";TN.sym=null;TN.ai=false;$("tn-ai-msg").textContent="Uses the AI built into your iPhone. Works offline, nothing leaves your phone.";svcSave();renderNotes()};
+$("tn-ai").onclick=async()=>{const p=G.parts.find(x=>x.id===TN.part),text=$("tn-text").value.trim(),msg=$("tn-ai-msg"),btn=$("tn-ai");if(!p||!TNP)return;
+ if(!text){msg.textContent="Type how it felt first, then tap Match.";return}
+ const fx=fixesFor(p),noun=p.kind==="fork"?"fork":"shock";btn.disabled=true;msg.textContent="Matching…";
+ try{const r=await TNP.classify({text,part:noun,ids:fx.map(f=>SYMID[f.s]),labels:fx.map(f=>f.s.replace(/\bfork\b/g,noun))});
+  const i=fx.findIndex(f=>SYMID[f.s]===(r&&r.id));
+  if(i>=0){TN.sym=i;TN.ai=true;msg.textContent="Matched. Check it below.";renderNotes()}else msg.textContent="No close match. Pick the nearest one below."}
+ catch(e){msg.textContent="Couldn't match that just now. Pick one below."}
+ btn.disabled=false};
 $("ride-date").value=today();
 $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService()};
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
