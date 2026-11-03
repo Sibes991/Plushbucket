@@ -24,6 +24,11 @@ jobs:
       TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     steps:
       - uses: actions/checkout@v4
+      # Xcode 26 or newer is needed for Apple's on-device AI (Foundation Models) used by Trail notes
+      - uses: maxim-lobanov/setup-xcode@v1
+        with: { xcode-version: latest-stable }
+      - run: xcodebuild -version
+        working-directory: .
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
 
