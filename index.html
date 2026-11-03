@@ -24,7 +24,6 @@
 <p class="ios-sheet" id="ios-sheet" hidden>On iPhone or iPad: in Safari, tap Share <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg> (on newer iOS it's in the <b>···</b> menu), then choose <b>Add to Home Screen</b>. Chrome on iPhone has the same option under Share.</p>
 <title>Plushbucket</title>
 <!-- Plushbucket · plushbucket.com · © 2026 Plushbucket. All rights reserved. -->
-<meta name="claude:viewport-fit-sides" content="cover">
 <link href="https://fonts.googleapis.com/css2?family=Saira:ital,wdth,wght@0,50..125,400..800;1,50..125,500..800&display=swap" rel="stylesheet">
 <style>
 /* Trail look: pine-forest neutrals, dirt for the ground, one loud orange. Signature: the topo-map header with an orange trail line. */
@@ -1803,12 +1802,6 @@ const uidGen=()=>Math.random().toString(36).slice(2,9);
 async function svcInit(){
  try{const raw=localStorage.getItem(SK);if(raw)G=JSON.parse(raw)}catch(e){}
  maybeLanding();
- try{if(window.claude&&claude.use){const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
-  if(db&&user){const id=await user.id();const can=await user.can("data.write");
-   if(id&&can!==false){svcRef=db.doc("data/users/"+id+"/garage");const snap=await svcRef.get();
-    if(snap.exists){const d=snap.data();if(d&&(d.parts||d.saved))G={parts:d.parts||[],rides:d.rides||[],saved:d.saved||G.saved||[],notes:d.notes||G.notes||[]}}
-    else if(G.parts.length){await svcRef.set(G)}
-    svcMode="account"}}}}catch(e){svcRef=null;svcMode="device"}
  if(tab==="v")renderService();renderGarage();maybeLanding()}
 async function svcSave(){try{localStorage.setItem(SK,JSON.stringify(G))}catch(e){}
  if(svcRef){try{await svcRef.set(JSON.parse(JSON.stringify(G)))}catch(e){svcMode="device";svcRef=null;$("svc-where").textContent="Couldn't save to your account just now, so this is saved on this device only."}}}
@@ -1826,7 +1819,7 @@ function svcStatus(p){const H=effHours(p);return svcPlan(p).map(s=>{
 const f1=x=>Math.round(x*10)/10;
 function renderService(){
  renderNotes();
- $("svc-where").textContent=svcMode==="account"?"Saved to your Claude account, so it follows you to any device.":window.claude?"Saved on this device only. Open the page while signed in with edit access to save it to your account.":NATIVE?"Saved on this phone. Deleting the app erases it, so make a backup now and then.":"Saved on this phone, in this browser. Clearing your browser data erases it.";
+ $("svc-where").textContent=NATIVE?"Saved on this phone. Deleting the app erases it, so make a backup now and then.":"Saved on this phone, in this browser. Clearing your browser data erases it.";
  $("svc-add-what").textContent=U.mode==="fork"?$("r-title").textContent.split(" · ").slice(0,-1).join(" · ")||"the fork in Setup":"the shock in Setup";
  const parts=$("svc-parts");
  if(!G.parts.length){parts.innerHTML=`<p class="fk">No fork or shock yet. Pick yours on the Setup tab, then add it here.</p>`}
@@ -1894,8 +1887,6 @@ $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ri
 svcInit();
 // ---------- backup and restore (all data lives in this browser) ----------
 const BKEYS=()=>[SK,TUNESK,LASTK,LDK];
-// inside Claude the page can't save files, and the service log follows the account there
-if(window.claude)$("backup").hidden=true;
 $("bk-exp").onclick=async()=>{const data={app:"Plushbucket",version:1,saved:new Date().toISOString(),store:{}};
  BKEYS().forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)data.store[k]=v}catch(e){}});data.store[SK]=JSON.stringify(G);
  const name=`plushbucket-backup-${today()}.json`,blob=new Blob([JSON.stringify(data,null,1)],{type:"application/json"});
