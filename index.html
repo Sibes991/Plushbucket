@@ -330,6 +330,20 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;max-width
 input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .rides{list-style:none;margin:0;padding:0}.rides li{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;gap:8px}
 #ride-parts{display:grid;gap:2px}
+/* setup card and balance check */
+.cardrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}.cardrow .fk{margin:0;flex:1;min-width:150px}
+#card-ov{position:fixed;inset:0;z-index:60;background:rgba(12,23,18,.72);overflow:auto;padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px))}
+.scard{max-width:460px;margin:0 auto;background:#fff;color:#13221b;border-radius:16px;padding:16px 16px 12px;font-size:.86rem;line-height:1.35}
+.scard .sc-h{display:flex;justify-content:space-between;align-items:baseline;font:italic 800 .8rem var(--display);letter-spacing:.14em;color:#b4480f}.scard .sc-h span{font:500 .78rem var(--body,inherit);letter-spacing:0;color:#4b5c53}
+.scard h2{margin:4px 0 0;font:italic 800 semi-condensed 1.5rem/1.1 var(--display);color:#13221b}.scard .sc-sub{margin:2px 0 0;color:#4b5c53}
+.scard h3{margin:12px 0 6px;padding-top:10px;border-top:2px solid #1a3328;font:700 .92rem/1.25 var(--body,inherit);color:#13221b}
+.scard .sc-st{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.scard .sc-st div{background:#f1f3ee;border-radius:8px;padding:6px 8px}.scard .sc-st small{display:block;color:#4b5c53;font-size:.72rem}.scard .sc-st b{font:italic 800 semi-condensed 1.15rem/1.15 var(--display);color:#b4480f}
+.scard ul{list-style:none;margin:6px 0 0;padding:0}.scard li{padding:3px 0;border-bottom:1px solid #e3e7df}.scard li b{color:#13221b}
+.scard .sc-f{margin:10px 0 0;font-size:.74rem;color:#4b5c53}
+.scbtns{max-width:460px;margin:10px auto 0;display:flex;gap:8px;justify-content:flex-end;align-items:center}.scbtns .fk{margin:0;flex:1;color:#f6efe4}
+.bal-out{margin-top:12px}.bal-out .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bal-out .bx{background:var(--sunk);border-radius:10px;padding:10px 12px}.bal-out .bx small{display:block;color:var(--muted)}.bal-out .bx b{font:italic 800 semi-condensed 1.4rem/1.1 var(--display)}
+.bal-out .bx.ok b{color:var(--ok,#2e7d4f)}.bal-out .bx.off b{color:var(--accent-ink)}.bal-out p{margin:10px 0 0}
+@media print{body>*:not(#card-ov){display:none!important}#card-ov{position:static;background:#fff;padding:0}.scbtns{display:none}.scard{max-width:none}}
 /* trail notes */
 textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:64px;resize:vertical}
 .tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
@@ -422,6 +436,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <ul class="lines" id="r-lines"></ul>
 <ul class="notes2" id="r-notes"></ul>
 <ul class="warn" id="r-warn"></ul>
+<div class="cardrow"><button type="button" id="card-open">Setup card</button><span class="fk">Every number for this bike on one screen, to screenshot or print.</span></div>
 </section>
 <details class="sect coilg" id="coil-guide" open hidden><summary>Choose your coil spring</summary><div class="sect-body">
 <p class="fk" style="margin-top:0">The right rate depends on your frame as much as your weight. If your frame maker publishes a spring chart, start there. If not, estimate it here, then confirm with sag.</p>
@@ -433,6 +448,14 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <div class="cg-out" id="cg-out"></div>
 <h3 class="cg-h">Check your sag</h3><ol class="lines cg-chk" id="cg-chk"></ol>
 <h3 class="cg-h">What fits your shock</h3><ul class="lines" id="cg-fit"></ul>
+</div></details>
+<details class="sect" id="bal"><summary>Balance check: front and rear sag</summary><div class="sect-body">
+<p class="fk" style="margin-top:0">Measure sag at both ends, the same way each time, and the app tells you which end to change. A bike that sits level front to rear steers and grips the way it was designed to.</p>
+<div class="grid2" style="margin-top:12px">
+<div class="field"><label for="bal-f" id="bal-fl">Fork sag you measured (mm)</label><input id="bal-f" type="number" inputmode="decimal" min="0" max="120" step="0.5"></div>
+<div class="field"><label for="bal-r" id="bal-rl">Shock sag you measured (mm)</label><input id="bal-r" type="number" inputmode="decimal" min="0" max="50" step="0.5"></div>
+</div>
+<div class="bal-out" id="bal-out"></div>
 </div></details>
 <div class="addg" id="addg" hidden></div><datalist id="bike-names"></datalist>
 <div class="cta" id="cta"><button class="primary" id="go-s">Next: set the spring</button></div>
@@ -616,6 +639,12 @@ const DMP={
  c31:{name:"Charger 3.1 RC2",r:18,l:15,h:5,lRange:25,start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5).`,init:{l:7,h:2}},
  c32:{name:"Charger 3.2 RC2",r:18,rGuess:true,l:15,h:5,lLab:"−7 to +7",hLab:"−2 to +2",start:`Low-speed 8 and high-speed 3 ${CWO} (of 15 and 5). That lands on 0 on the numbered bezel.`,init:{l:7,h:2}},
  c21:{name:"Charger 2.1 RC2",r:18,rGuess:true,l:20,h:5,start:`Low-speed 10 and high-speed 3 ${CWO} (of 20 and 5), about halfway. RockShox doesn't print a starting point for this damper; the 20 low-speed clicks and 5 high-speed positions are from ENDURO's Lyrik test, so count your rebound dial.`,init:{l:10,h:2}},
+ helm:{name:"Helm MKII damper",r:10,l:17,lGuess:true,h:10,start:`Start both dials about halfway: turn each fully clockwise, then back it out half its clicks. High-speed has 10 positions. Cane Creek lists the low-speed dial as 10, 17 or 20 positions depending on which of its pages you read, so count yours. Its manual gives no base tune.`,init:{l:8,h:5},rebText:`5 ${CWO} (of 10), about halfway. Cane Creek's manual gives no starting clicks, and its support page lists 15 rebound positions where the manual says 10, so count your dial`,rebR:5},
+ mzg2:{name:"MC² Pro-X / TPC²",r:10,hr:8,l:10,h:8,rebW:[[0,140,9,10,7,8],[140,160,8,9,6,8],[160,180,7,8,5,7],[180,200,6,7,4,6],[200,220,4,5,3,6],[220,240,3,4,2,5],[240,999,2,3,1,4]],start:`Low-speed 4–6 and high-speed 4–6 ${CWO} (of 10 and 8), Manitou's mid setting for mixed trails. For a plusher ride use 6–9 and 5–7. For a firmer, bike-park feel use 2–4 on both.`,init:{l:5,h:3}},
+ mzg1:{name:"MC² / TPC (Gen 1)",r:10,l:10,h:4,rebText:`4–7 ${CWO} (of 10), Manitou's enduro setting for a 170 lb rider. Trail is 5–8 and downhill 3–6. Lighter riders run more clicks out`,rebR:5,start:`Low-speed 3–7 and high-speed 2–3 ${CWO} (of 10 and 4), Manitou's enduro setting. Trail: 1–4 and 3–4. Downhill: 2–5 and 1–2.`,init:{l:5,h:2}},
+ mat3:{name:"MC² / TPC (Mattoc Pro)",r:20,l:10,h:4,rebW:[[0,130,14],[130,150,12],[150,170,10],[170,190,8],[190,210,6],[210,230,4],[230,999,2]],start:`Compliant tune: low-speed 6–10 and high-speed 4 ${CWO} (of 10 and 4), which is close to fully open. Aggressive tune: low-speed 0–5 and high-speed 1–2. From Manitou's Mattoc Pro guide.`,init:{l:3,h:0}},
+ dor:{name:"TPC+ (Dorado Pro)",r:24,l:15,h:15,rebText:`7–12 ${CWO} (of 24), Manitou's DH race setting for a 170 lb rider. Standard is 6–10 and park 5–9`,rebR:9,start:`TPC+ low-speed 4–7 and high-speed 6–12 ${CWO} (of 15 each), Manitou's DH race setting. Standard: 5–10 and 10–15. Park: 3–5 and 4–7.`,init:{l:9,h:6}},
+ r8:{name:"VTT Pro-X",r:18,l:2,lever:["Open","Firm","Lock"],h:0,hFix:.4,rebW:[[0,110,18],[110,130,16],[130,150,14],[150,170,12],[170,190,10],[190,210,8],[210,999,6]],start:`Lever in Open for descending. Firm suits flow trails and technical climbs; Lock is for smooth climbs. The Open Mode Adjust dial (20 clicks) fine-tunes Open only: start about halfway.`,init:{l:0}},
  p91:{name:"PUSH Nine.One damper",r:18,l:28,h:28,start:`Low- and high-speed 14 ${CWO} (of 28), about halfway. PUSH tunes each fork and lists starting clicks on its setup card: use those if you have them.`,init:{l:14,h:14},rebText:`9 ${CWO} (of 18), about halfway. Use the clicks on PUSH's setup card if you have it`,rebR:9},
  extera:{name:"EXT Era damper",r:30,rGuess:true,l:12,lGuess:true,h:0,hFix:.5,start:`4 ${CWO}, EXT's starting point.`,init:{l:8},rebText:`20 ${CWO}, EXT's starting point`,rebR:20},
  c3rc:{name:"Charger 3 RC",r:18,rGuess:true,l:10,lGuess:true,h:0,hFix:.5,start:`Compression at half its total clicks: turn it fully clockwise (closed), then back it out counterclockwise half the clicks. We couldn't find RockShox's click count for this dial, so count yours.`,init:{l:5}},
@@ -660,6 +689,32 @@ CAT.ext={name:"EXT",forks:{
   sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. EXT's quick manual doesn't give a sag target.",
   notes:["Pressure chart from EXT's Era V2S quick manual: about 1 psi per kg of rider weight (60 psi at 60 kg, 100 psi at 100 kg), with one volume reducer fitted. Maximum 200 psi.","EXT's chart doesn't change with travel; shorter travel may need more pressure, so set it by sag.","EXT counts every dial from fully closed (click 0), like this app."],
   warns:["EXT's quick manual doesn't list how many volume reducers fit, so the token numbers aren't shown."],reb:{},start:{}}]}]}}};
+CAT.cc={name:"Cane Creek",forks:{
+ helm:{name:"Helm MKII",sub:"35 mm · air or coil · trail/enduro",years:[{label:"Current",versions:[
+  {name:"Air 29",spring:"Cane Creek dual air",maxPsi:150,travel:[120,130,140,150,160],chart:{kind:"interp",W:[100,120,140,160,180,200,220,240,260],byTravel:{"120":[35,42,49,56,63,70,77,84,91],"130":[35,42,49,56,63,70,77,84,91],"140":[35,42,49,56,63,70,77,84,91],"150":[35,42,49,56,63,70,77,84,91],"160":[35,42,49,56,63,70,77,84,91]}},ebike:"none",tokens:{},sag:[15,25],dampers:["helm"],shape:"std",abo:false,tokLabel:"Volume positions",tokText:"8 positions",
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Cane Creek's Helm manual gives 15–25%.",
+  notes:["Starting pressure: Cane Creek's manual says 30–40% of your body weight in psi, and the app uses 35%. Stay between 30 and 150 psi. The same pressure applies at every travel setting, so set it by sag.","The Helm has separate positive and negative chambers. After every pressure change, press the equalizer button at the bottom of the left leg with the fork unweighted, then recheck the pressure.","Volume: the air piston has 8 indexed positions in place of tokens. A higher volume-reduction position makes the fork ramp up more at the end of its travel. Let all the air out before changing it.","Travel changes in 10 mm steps with clip-on spacers inside the air spring; two come with the fork."],warns:[],reb:{},start:{}},
+  {name:"Air 27.5",spring:"Cane Creek dual air",maxPsi:150,travel:[130,140,150,160,170],chart:{kind:"interp",W:[100,120,140,160,180,200,220,240,260],byTravel:{"130":[35,42,49,56,63,70,77,84,91],"140":[35,42,49,56,63,70,77,84,91],"150":[35,42,49,56,63,70,77,84,91],"160":[35,42,49,56,63,70,77,84,91],"170":[35,42,49,56,63,70,77,84,91]}},ebike:"none",tokens:{},sag:[15,25],dampers:["helm"],shape:"std",abo:false,tokLabel:"Volume positions",tokText:"8 positions",
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Cane Creek's Helm manual gives 15–25%.",
+  notes:["Starting pressure: Cane Creek's manual says 30–40% of your body weight in psi, and the app uses 35%. Stay between 30 and 150 psi. The same pressure applies at every travel setting, so set it by sag.","The Helm has separate positive and negative chambers. After every pressure change, press the equalizer button at the bottom of the left leg with the fork unweighted, then recheck the pressure.","Volume: the air piston has 8 indexed positions in place of tokens. A higher volume-reduction position makes the fork ramp up more at the end of its travel. Let all the air out before changing it.","Travel changes in 10 mm steps with clip-on spacers inside the air spring; two come with the fork."],warns:[],reb:{},start:{}},
+  {name:"Coil",spring:"Cane Creek coil spring",maxPsi:null,travel:[130,140,150,160],chart:{kind:"none"},coilBands:{"all":[["Red",35,90,120],["Black",45,120,160],["Green",55,160,200],["Blue",65,200,240]]},coilL3:["Preload","Adjustable"],pump:"ccCoil",ebike:"none",tokens:{},sag:null,dampers:["helm"],shape:"std",abo:false,
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Cane Creek's Helm manual gives 10–25% for the coil fork.",
+  notes:["Spring chart from Cane Creek's Helm MKII page, by rider weight. The 55 lb/in green spring is fitted at the factory. Cane Creek notes the right rate also depends on travel, head angle and riding style.","Preload: turn the adjuster counterclockwise until it stops to remove all preload, then add clockwise. If sag is still over 25% at full preload, fit a firmer spring. Under 10% with none, fit a softer one.","Travel is set in 10 mm steps from 130 to 160 mm on the compression rod."],warns:[],reb:{},start:{}}]}]}}};
+CAT.man={name:"Manitou",forks:{
+ mezzer:{name:"Mezzer",sub:"37 mm · IRT air · enduro",years:[
+  {label:"Gen 2",versions:[{name:"Pro",spring:"Dorado Air + IRT",maxPsi:120,travel:[140,150,160,170],chart:{kind:"interp",W:[130,150,170,190,210,230,250],byTravel:{"140":[40,49,59,68,77,86,95],"150":[39,48,57,66,75,84,93],"160":[38,47,55,64,73,82,91],"170":[37,45,54,62,71,80,88]}},ramp:{W:[130,150,170,190,210,230,250],P:[61,74,87,100,113,126,139]},rampT:{W:[130,150,170,190,210,230,250],byTravel:{"140":[61,74,87,100,113,126,139],"150":[59,72,85,98,111,124,137],"160":[57,70,83,96,109,122,135],"170":[55,68,81,94,107,120,133]}},rampName:"IRT chamber",rampLine:"<b>IRT chamber:</b> Manitou's second air chamber. It sets mid-stroke support and bottom-out resistance in place of tokens. Fill it first, through the valve on top of the fork leg, then fill the main chamber through the valve at the bottom of the leg. Never above 150 psi in the IRT.",ebike:"none",tokens:{},sag:[20,25],dampers:["mzg2"],shape:"std",abo:false,sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's pressures are based on 20–25% sag, measured standing with about 70% of your weight on the pedals.",ebNote:"Manitou's guide adds 3–4 psi to the main chamber and 5–10 psi to the IRT for e-bike or downhill use. Add those to the numbers shown.",
+  notes:["Pressures from Manitou's Mezzer Gen 2 Pro and LT Pro set-up guide, by weight band and travel. For trail riding Manitou takes 3–4 psi off the main chamber and 5–10 psi off the IRT; for e-bike or downhill use it adds the same.","Maximum: 120 psi main, 150 psi IRT. Keep the fork unweighted while you pump.","High-speed dials build on the low-speed setting: for more high-speed damping you may need to raise low-speed too (Manitou).","Hydraulic bottom-out works over the last 30 mm of travel and isn't adjustable."],warns:[],reb:{},start:{}},
+   {name:"LT Pro",spring:"Dorado Air + IRT",maxPsi:120,travel:[180,190],chart:{kind:"interp",W:[130,150,170,190,210,230,250],byTravel:{"180":[35,44,52,61,69,77,86],"190":[34,42,51,59,67,75,83]}},ramp:{W:[130,150,170,190,210,230,250],P:[53,66,79,92,105,118,131]},rampT:{W:[130,150,170,190,210,230,250],byTravel:{"180":[53,66,79,92,105,118,131],"190":[51,64,77,90,103,116,129]}},rampName:"IRT chamber",rampLine:"<b>IRT chamber:</b> Manitou's second air chamber. It sets mid-stroke support and bottom-out resistance in place of tokens. Fill it first, through the valve on top of the fork leg, then fill the main chamber through the valve at the bottom of the leg. Never above 150 psi in the IRT.",ebike:"none",tokens:{},sag:[20,25],dampers:["mzg2"],shape:"std",abo:false,sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's pressures are based on 20–25% sag, measured standing with about 70% of your weight on the pedals.",ebNote:"Manitou's guide adds 3–4 psi to the main chamber and 5–10 psi to the IRT for e-bike or downhill use. Add those to the numbers shown.",
+  notes:["Pressures from Manitou's Mezzer Gen 2 Pro and LT Pro set-up guide, by weight band and travel. For trail riding Manitou takes 3–4 psi off the main chamber and 5–10 psi off the IRT; for e-bike or downhill use it adds the same.","Maximum: 120 psi main, 150 psi IRT. Keep the fork unweighted while you pump.","High-speed dials build on the low-speed setting: for more high-speed damping you may need to raise low-speed too (Manitou).","Hydraulic bottom-out works over the last 30 mm of travel and isn't adjustable."],warns:[],reb:{},start:{}}]},
+  {label:"Gen 1",versions:[{name:"Pro",spring:"Dorado Air + IRT",maxPsi:120,travel:[140,150,160,170,180],chart:{kind:"interp",W:[120,140,160,180,200,220],byTravel:{"140":[44,52,60,68,75,82],"150":[42,49,56,63,70,77],"160":[40,46,52,59,66,73],"170":[38,44,50,56,62,68],"180":[35,41,46,52,58,64]}},ramp:{W:[120,140,160,180,200,220],P:[79,84,90,97,107,116]},rampT:{W:[120,140,160,180,200,220],byTravel:{"140":[79,84,90,97,107,116],"150":[72,77,85,93,101,109],"160":[70,76,84,90,97,105],"170":[65,71,77,83,91,100],"180":[60,67,73,78,85,92]}},rampName:"IRT chamber",rampLine:"<b>IRT chamber:</b> Manitou's second air chamber. It sets mid-stroke support and bottom-out resistance in place of tokens. Fill it first, through the valve on top of the fork leg, then fill the main chamber through the valve at the bottom of the leg. Never above 200 psi in the IRT.",ebike:"none",tokens:{},sag:[20,25],dampers:["mzg1"],shape:"std",abo:false,sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's pressures are based on 20–25% sag, measured standing with about 70% of your weight on the pedals.",
+  notes:["Pressures from Manitou's Mezzer Gen 1 Pro set-up guide, by rider weight and travel; the top row is for riders over 220 lb. Manitou adds 10 psi to the IRT for downhill use and takes 10 psi off for trail.","Maximum: 120 psi main, 200 psi IRT. Keep the fork unweighted while you pump.","The high-speed and low-speed compression dials work together: to change support or comfort you may need to move both (Manitou)."],warns:[],reb:{},start:{}}]}]},
+ mattoc:{name:"Mattoc",sub:"34 mm · IRT air · trail",years:[{label:"Gen 3",versions:[{name:"Pro",spring:"Dorado Air + IRT",maxPsi:120,travel:[110,120,130,140,150],chart:{kind:"interp",W:[120,140,160,180,200,220,240],byTravel:{"110":[44,54,65,75,86,96,112],"120":[42,51,61,70,80,89,104],"130":[42,52,62,71,81,91,106],"140":[38,48,56,66,74,84,97],"150":[38,48,56,66,74,84,97]}},ramp:{W:[120,140,160,180,200,220,240],P:[59,74,90,101,124,141,150]},rampT:{W:[120,140,160,180,200,220,240],byTravel:{"110":[59,74,90,101,124,141,150],"120":[56,70,85,95,116,132,148],"130":[56,72,86,96,117,134,150],"140":[51,65,78,88,107,123,138],"150":[51,65,78,88,107,123,138]}},rampName:"IRT chamber",rampLine:"<b>IRT chamber:</b> Manitou's second air chamber. It sets mid-stroke support and bottom-out resistance in place of tokens. Fill it first, through the valve on top of the fork leg, then fill the main chamber through the valve at the bottom of the leg. Never above 150 psi in the IRT.",ebike:"none",tokens:{},sag:[20,25],dampers:["mat3"],shape:"std",abo:false,sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's pressures are based on 20–25% sag, measured standing with about 70% of your weight on the pedals.",
+  notes:["Pressures from Manitou's Mattoc Pro (Gen 3) set-up guide, by rider weight and travel. Raise the IRT about 10% for more mid- and end-stroke support, or lower it 10% for a more linear feel.","Maximum: 120 psi main, 150 psi IRT. Keep the fork unweighted while you pump.","Hydraulic bottom-out works over the last 30 mm of travel. Arm fatigue usually means too much high-speed compression (Manitou)."],warns:[],reb:{},start:{}}]}]},
+ dorado:{name:"Dorado",sub:"37 mm · inverted dual crown · DH",years:[{label:"2022 on",versions:[{name:"Pro",spring:"Dorado Air + IRT",maxPsi:120,travel:[180,190,203],chart:{kind:"interp",W:[120,140,160,180,200,220],byTravel:{"180":[45,50,55,60,65,75],"190":[45,50,55,60,65,75],"203":[45,50,55,60,65,75]}},ramp:{W:[120,140,160,180,200,220],P:[70,77,84,91,98,110]},rampT:{W:[120,140,160,180,200,220],byTravel:{"180":[70,77,84,91,98,110],"190":[70,77,84,91,98,110],"203":[70,77,84,91,98,110]}},rampName:"IRT chamber",rampLine:"<b>IRT chamber:</b> Manitou's second air chamber. It sets mid-stroke support and bottom-out resistance in place of tokens. Fill it first, through the valve on top of the fork leg, then fill the main chamber through the valve at the bottom of the leg. Never above 200 psi in the IRT.",ebike:"none",tokens:{},sag:[20,30],dampers:["dor"],shape:"std",abo:false,sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's Dorado pressures are based on 20–30% sag.",
+  notes:["Pressures from Manitou's 2022-on Dorado Pro set-up guide. It gives three IRT levels for each weight; the app shows the middle one. For the least progressive setup run about 5 psi less in the main chamber and 20% less in the IRT; for the most progressive, about 5–10 psi more main and 40% more IRT.","Maximum: 120 psi main, 200 psi IRT. Manitou's chart doesn't change with travel.","With the fork fully extended, press the TSR button now and then to release pressure that builds up in the lowers from heat and altitude."],warns:[],reb:{},start:{}}]}]},
+ r8:{name:"R8",sub:"32 mm · cross-country",years:[{label:"Pro",versions:[{name:"Pro",spring:"Dorado Air",maxPsi:150,travel:[100,120],chart:{kind:"interp",W:[100,120,140,160,180,200,220],byTravel:{"100":[50,63,74,85,97,109,122],"120":[46,56,66,76,87,97,108]}},ebike:"none",tokens:{},sag:[15,20],dampers:["r8"],shape:"std",abo:false,pump:"manR8",tokLabel:"IVA position",tokText:{"100":"IVA 2","120":"IVA 1"},
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's R8 pressures are based on 15–20% sag.",
+  notes:["Pressures from Manitou's R8 Pro set-up guide: at 100 mm with the IVA piston in position 2, at 120 mm in position 1. Maximum 150 psi.","IVA (Incremental Volume Adjustment) takes the place of tokens: position 1 is the most linear and position 3 the most progressive. Always let the air out before moving it.","At 120 mm Manitou also lists a setup with no IVA fitted, for riders up to 160 lb, at 4–9 psi more than the numbers shown."],warns:[],reb:{},start:{}}]}]}}};
 CAT.dvo={name:"DVO",forks:{
  diamond:{name:"Diamond",sub:"35 mm · OTT · trail/enduro",years:[{label:"D1 (OTT)",versions:[{name:"OTT air",spring:"DVO air spring with OTT",maxPsi:170,travel:[130,140,150,160,170],
   chart:{kind:"interp",W:DVOW,byTravel:Object.fromEntries([130,140,150,160,170].map(t=>[String(t),[90,100,110,125,130,135,140]]))},ebike:"none",tokens:{},sag:[15,20],sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's range is 15–20%: 15% is firmer, 20% is plusher.",
@@ -684,10 +739,10 @@ Object.assign(DMP,{
   rebPsi:[[50,55,24,20],[55,60,22,18],[60,65,20,16],[65,70,18,14],[70,75,16,12],[75,80,14,10],[80,90,12,8],[90,95,10,6],[95,101,8,4]]},
  dvogen:{name:"DVO damper",r:20,rGuess:true,l:6,lGuess:true,h:20,hGuess:true,start:`Compression fully open, or 1 click in from open. Check DVO's setup guide for its exact numbers.`,init:{l:1,h:4},rebText:"check DVO's setup guide for the starting number, then count it counterclockwise from fully closed"}});
 SHK.oh={name:"Öhlins",shocks:{
- ttx1:{name:"TTX1Air",sub:"air · trail/enduro",years:"2023–2027",kind:"air",maxPsi:300,sag:[25,30],start:"weight",spacers:"Volume spacers come with the shock.",
-  notes:["Dials: low-speed compression 10 clicks, high-speed 3, rebound 12.","The m.2 version adds new seals and a reworked spacer system."]},
- ttx2:{name:"TTX2Air",sub:"air · enduro",years:"2023–2027",kind:"air",maxPsi:null,sag:[25,30],start:"weight",spacers:"Volume spacers come with the shock.",
-  notes:["Double-can design with a larger air volume than the TTX1Air."],warns:["The TTX2Air's maximum pressure isn't in our sources. Check the label on the air can."]},
+ ttx1:{name:"TTX1Air",sub:"air · trail/enduro",years:"2023–2027",kind:"air",maxPsi:300,sag:[25,30],start:"weight",spacers:"Volume spacers of 2,000 mm³ each. Öhlins ships the TTX1Air with one and allows up to five (10,000 mm³).",
+  notes:["Dials: low-speed compression 10 clicks, high-speed 3, rebound 12.","High-speed compression positions are 1 (soft), 2 (medium) and P (pedaling platform). Öhlins ships it at 2. Its manual gives 25–35% sag.","The m.2 version adds new seals and a reworked spacer system."]},
+ ttx2:{name:"TTX2Air",sub:"air · enduro",years:"2023–2027",kind:"air",maxPsi:300,sag:[25,30],start:"weight",spacers:"Volume spacers of 2,000 mm³ each. Depending on the shock size, Öhlins ships the TTX2Air with five or six and allows up to eight or nine (16,000 or 18,000 mm³).",
+  notes:["Double-can design with a larger air volume than the TTX1Air.","High-speed compression positions are 1 (soft), 2 (medium) and P (pedaling platform). Öhlins ships it at 2. Its manual gives 25–35% sag and doesn't list click totals for low-speed compression or rebound, so count your dials."],warns:["Öhlins' TTX Air manual gives a 300 psi maximum for the single tube air spring and 325 psi for the double tube, without saying which shock has which. The app uses the lower 300 psi limit."]},
  ttx22:{name:"TTX22m.2",sub:"coil · enduro/DH",years:"2023–2027",kind:"coil",sag:[30,30],preload:"2 turns",
   notes:["High-speed compression has 3 positions: I soft, II medium, III hard. Öhlins' factory setting is II.","Öhlins counts its adjusters from fully closed and doesn't list totals or starts for low-speed compression and rebound, so count your dials.","Preload: no more than 2 full turns (Öhlins' TTX22M manual). Öhlins gives 25–30% sag in one edition of the manual and 25–35% in another."]}}};
 SHK.push={name:"PUSH",shocks:{
@@ -707,6 +762,50 @@ SHK.fast={name:"FAST",shocks:{
  fenix:{name:"Fenix 2.0",sub:"coil · custom tune",years:"current",kind:"coil",sag:[30,30],
   lever:"Climb lever: firms the shock for climbing without locking it out.",
   notes:["FAST tunes each Fenix to your bike and weight and supplies the spring. FAST's Holy Grail manual gives sag of about 28% for trail, 30% for freeride and 33% for downhill; the app uses 30%.","Dials count from fully closed: low/mid-speed compression and low-speed rebound, about 24 clicks each (ENDURO's test). Move 2–3 clicks at a time, then fine-tune.","FAST's Fenix product page doesn't give a preload limit; its older Holy Grail shock allows up to 3 turns. If you need more, ask FAST for a firmer spring."]}}};
+SHK.cc={name:"Cane Creek",shocks:{
+ kair:{name:"Kitsuma Air",sub:"air · enduro/DH · 4-way",years:"current",kind:"air",maxPsi:300,sag:[25,35],sagBy:"Cane Creek's manual",start:"weight",rule:"Cane Creek's manual says 75–100% of your weight",
+  spacers:"Volume reduction bands go in the positive air chamber only; large bands can be cut down. Add them only after sag is right, if the bike uses too much travel.",
+  lever:"Climb switch, 3 positions: Open, Climb (firms the low-speed circuit) and Firm (closes both, for pavement and gravel climbs). Set sag in Open.",
+  rebLine:"start low-speed and high-speed rebound in the middle of their ranges: low-speed has 11 positions and high-speed 13. Cane Creek's manual gives no base tune.",
+  compLine:"start low-speed and high-speed compression in the middle of their ranges: low-speed has 11 positions and high-speed 13. All four dials turn by hand.",
+  notes:["Run it between 50 and 300 psi. Recheck the pressure after cycling the shock: it drops a little as the chambers equalize.","Cane Creek counts positions, and the count can vary a little between builds. Clockwise closes the circuit: firmer compression, slower rebound. Stop at the first resistance: there is no hard stop."]},
+ kcoil:{name:"Kitsuma Coil",sub:"coil · enduro/DH · 4-way",years:"current",kind:"coil",sag:[25,35],sagBy:"Cane Creek's manual",preload:"6 turns",
+  lever:"Climb switch, 3 positions: Open, Climb (firms the low-speed circuit) and Firm (closes both, for pavement and gravel climbs). Set sag in Open.",
+  rebLine:"start low-speed and high-speed rebound in the middle of their ranges: low-speed has 11 positions and high-speed 13. Cane Creek's manual gives no base tune.",
+  compLine:"start low-speed and high-speed compression in the middle of their ranges: low-speed has 11 positions and high-speed 13. All four dials turn by hand.",
+  notes:["Preload: keep at least 1 full turn and never more than 6. If you need less than 1 turn for sag, fit a softer spring; more than 6, a firmer one.","Cane Creek counts positions, and the count can vary a little between builds. Clockwise closes the circuit: firmer compression, slower rebound. Stop at the first resistance: there is no hard stop."]},
+ tigon:{name:"Tigon",sub:"coil · air-charged ramp tube",years:"current",kind:"coil",sag:[25,35],sagBy:"Cane Creek's manual",preload:"6 turns",
+  lever:"Climb switch, 2 positions. Set sag with it open.",
+  rebLine:"about halfway: 7 clicks counterclockwise from fully closed (of 15 positions). Cane Creek's manual gives no base tune.",
+  compLine:"low-speed about halfway, 6 clicks counterclockwise from fully closed (of 12 positions). High-speed has a single turn of range, adjusted with the built-in 3 mm tool: start in the middle.",
+  notes:["Ramp tube: 0–30 psi of air adds progression to the coil spring, for more mid-stroke support and bottom-out resistance. Set sag with 0 psi first, add air only if the bike uses too much travel, then recheck sag.","Preload: keep at least 1 full turn and never more than 6. Past about 3 turns, the next spring rate up will work better (Cane Creek).","Cane Creek counts positions, and the count can vary a little between builds. Clockwise closes the circuit: firmer compression, slower rebound. Stop at the first resistance: there is no hard stop."]},
+ ail:{name:"Air IL",sub:"air · inline · trail",years:"current",kind:"air",maxPsi:350,sag:[25,35],sagBy:"Cane Creek's manual",start:"weight",startMul:1.2,startWhy:"(Cane Creek's manual starts at 1.2 times your weight)",rule:"Cane Creek's manual: 1.2 times your weight",
+  spacers:"Volume spacers go in the positive air chamber only, never the negative; large bands can be cut down. Add them only after sag is right.",
+  lever:"Climb switch, 2 positions: Open and Climb. Set sag in Open.",
+  rebLine:"low-speed about halfway, 12 clicks counterclockwise from fully closed (of 25). High-speed rebound has 4.5 turns of range, set with the built-in 3 mm tool: start about 2 turns out from closed.",
+  compLine:"low-speed about halfway, 12 clicks counterclockwise from fully closed (of 25). High-speed compression has 4.5 turns of range: start about 2 turns out from closed.",
+  notes:["Run it between 50 and 350 psi. Recheck the pressure after cycling the shock: it drops a little as the chambers equalize.","Cane Creek counts positions, and the count can vary a little between builds. Clockwise closes the circuit: firmer compression, slower rebound. Stop at the first resistance: there is no hard stop."]},
+ cil:{name:"Coil IL",sub:"coil · inline · trail",years:"current",kind:"coil",sag:[25,35],sagBy:"Cane Creek's manual",preload:"6 turns",
+  lever:"Climb switch, 2 positions: Open and Climb. Set sag in Open.",
+  rebLine:"low-speed about halfway, 12 clicks counterclockwise from fully closed (of 25). High-speed rebound has 4.5 turns of range, set with the built-in 3 mm tool: start about 2 turns out from closed.",
+  compLine:"low-speed about halfway, 12 clicks counterclockwise from fully closed (of 25). High-speed compression has 4.5 turns of range: start about 2 turns out from closed.",
+  notes:["Preload: keep at least 1 full turn and never more than 6. Past 2–3 turns, the next spring rate up will work better (Cane Creek).","Cane Creek doesn't recommend coil shocks on clevis-mount frames.","Cane Creek counts positions, and the count can vary a little between builds. Clockwise closes the circuit: firmer compression, slower rebound. Stop at the first resistance: there is no hard stop."]}}};
+SHK.man={name:"Manitou",shocks:{
+ marapro:{name:"Mara Pro",sub:"air · piggyback · enduro",years:"Gen 2",kind:"air",maxPsi:350,sag:[25,30],sagBy:"Manitou's guide",start:"weight",
+  lever:"Platform lever: Party mode (open) for descending, Work mode for climbing. In Work mode the compression dials are bypassed by a preset platform. The DH version has no lever.",
+  rebLine:"6 clicks counterclockwise from fully closed (of 12), Manitou's baseline for a 170 lb rider. Heavier riders run fewer clicks out.",
+  compLine:"low-speed (inner dial) 10–15 clicks counterclockwise from fully closed (of 30): 10 for an aggressive tune, 15 for a compliant one. High-speed (outer dial) is the one Manitou counts from fully open: 3 clicks clockwise from open for an aggressive tune, 1 for a compliant one (of 6).",
+  notes:["Manitou's Mara Pro Gen 2 guide gives no pressure chart, so the app starts at your body weight. Use your frame maker's sag if it gives one. Never above 350 psi.","Add air about 75 psi at a time and cycle the shock past the sag point with the pump attached, so the balance groove evens out the positive and negative chambers. The first few cycles can feel firm or top out.","Make changes as small as 3 psi or 1 volume ring (Manitou)."]},
+ marail:{name:"Mara Inline Pro",sub:"air · inline · trail",years:"Gen 2",kind:"air",maxPsi:350,sag:[20,30],sagBy:"Manitou's guide",start:"weight",
+  lever:"IPA lever, 4 positions: Aggressive Descend (plushest), Trail Control, Technical Climb and Aggressive Climb (firmest platform). Start in Aggressive Descend.",
+  rebLine:"7 clicks counterclockwise from fully closed (of 17), Manitou's setting for a 170 lb rider. Heavier riders run fewer clicks out.",
+  notes:["Manitou's Mara Inline Pro guide gives no pressure chart, so the app starts at your body weight. Never above 350 psi.","Add air about 75 psi at a time and cycle the shock past the sag point with the pump attached, so the balance groove evens out the positive and negative chambers. The first few cycles can feel firm or top out.","Make changes as small as 3 psi or 1 volume ring (Manitou)."]}}};
+SHK.fox.shocks.fx.notes.push("Dials: rebound has 16 clicks and the low-speed compression knob 11 (Fox's spec list, reported by BikeRadar).");
+SHK.fox.shocks.dhx.notes.push("Dials: rebound has 16 clicks. The low-speed compression dial is numbered 0 to 10, where 0 is the firmest (BikeRadar and Blister).");
+SHK.rs.shocks.sdc.notes.push("Dials on Ultimate shocks: rebound 15 clicks; low-speed and high-speed compression have 5 positions each (Pinkbike and NSMB). Hydraulic bottom-out is fixed on the air shock.");
+SHK.rs.shocks.sdd.notes.push("Dials on Ultimate shocks: rebound 15 clicks; low-speed and high-speed compression have 5 positions each (MBR).");
+SHK.rs.shocks.vad.notes.push("Dials: rebound 20 clicks; low-speed and high-speed compression have 5 positions each, −2 to +2 (Vital MTB's spec list).");
+SHK.rs.shocks.rcoil.notes.push("Dials on Ultimate coil shocks: rebound 20 clicks, low-speed and high-speed compression 5 positions each, and Hydraulic Bottom Out 5 settings (Pinkbike and NSMB). RockShox's starting point is the middle (0) of each compression dial.");
 SHK.dvo={name:"DVO",shocks:{
  tpp:{name:"Topaz Prime",sub:"air · 2024 on",years:"2024–2027",kind:"air",tmax:2,neg:2,maxPsi:300,sag:[20,30],
   dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
@@ -802,11 +901,12 @@ function forkPsi(v,w,trav,eb){
  const P=c.byTravel[String(trav)];if(!P){o.flags.push("No chart value for this travel.");return o}
  const r=interp(c.W,P,w);o.psi=r.psi;o.flags.push(...r.flags);o.src=`${CAT[U.brand].name} chart`;
  if(eb&&v.ebike==="rs"){o.psi+=10;o.src+=", +10 psi for e-bike"}
- else if(eb)o.flags.push(`${CAT[U.brand].name} doesn't publish an e-bike adjustment for this fork. Start at the chart and set it by sag.`);
+ else if(eb)o.flags.push(v.ebNote||`${CAT[U.brand].name} doesn't publish an e-bike adjustment for this fork. Start at the chart and set it by sag.`);
  return o}
 const dvoBand=w=>Math.max(0,Math.min(6,Math.floor((w-120)/20)));
 const THW=[100,120,140,160,180,200,220,240];
 // some forks have a lower maximum at longer travel (Pike 2023–24)
+const rampOf=v=>v.rampT?{W:v.rampT.W,P:v.rampT.byTravel[String(U.travel)]||v.ramp.P}:v.ramp;
 const forkMax=v=>(v.maxByTravel||{})[String(U.travel)]??v.maxPsi;
 function rebFor(v,id,w){const dm=DMP[id],ov=(v.reb||{})[id],i=band10(w);
  if(ov&&ov.th){const T=ov.th[String(U.travel)];if(T){let j=0,b=1e9;THW.forEach((x,k)=>{if(T[k]!=null&&Math.abs(x-w)<b){b=Math.abs(x-w);j=k}});const z=T[j];
@@ -815,6 +915,9 @@ function rebFor(v,id,w){const dm=DMP[id],ov=(v.reb||{})[id],i=band10(w);
  if(v.dvo){const j=dvoBand(w),rg=v.dvo.reb[j];return{text:`${cwc(rg,dm.r)}, from DVO's base tune`,r:Math.round(rg.split("–").reduce((a,b)=>+a+ +b,0)/2)}}
  if(dm.rebPsi){const ps=forkPsi(v,w,U.travel,U.eb).psi;if(ps!=null){const row=dm.rebPsi.find(x=>ps>=x[0]&&ps<x[1])||(ps<dm.rebPsi[0][0]?dm.rebPsi[0]:dm.rebPsi[dm.rebPsi.length-1]);
   return{text:`${row[3]}–${row[2]} ${CWO} (of ${dm.r}), from DVO's chart for ${row[0]}–${Math.min(row[1],100)} psi. The lower number is slower and the higher is faster`,r:Math.round((row[2]+row[3])/2)}}}
+ if(dm.rebW){const row=dm.rebW.find(x=>w>=x[0]&&w<x[1])||dm.rebW[dm.rebW.length-1],nm=CAT[U.brand].name,mid=(a,b)=>Math.round((a+b)/2);
+  if(row.length>=6)return{text:`low-speed ${row[2]}–${row[3]} and high-speed ${row[4]}–${row[5]} ${CWO} (of ${dm.r} and ${dm.hr}), from ${nm}'s chart for your weight. The lower numbers are slower`,r:mid(row[2],row[3]),hr:mid(row[4],row[5])};
+  return{text:`${row[2]} ${CWO} (of ${dm.r}), from ${nm}'s chart for your weight. Heavier riders run fewer clicks out`,r:row[2]}}
  if(dm.rebText)return{text:dm.rebText,r:dm.rebR??Math.round(dm.r/2)};
  if(!dm.fox)return{text:`get your number from the RockShox TrailHead app (scan the QR code on the crown or enter the serial number). TrailHead counts from fully closed like this app: −9 means turn it fully clockwise, then 9 clicks counterclockwise`,r:null}
  if(dm.fox==="x2"||ov&&ov.lsr){const L=(ov&&ov.lsr)||DEFREB.lsr,H=(ov&&ov.hsr)||DEFREB.hsr;// if the maker's table goes past the usual total (the Fox 40 lists up to 10 HSR clicks), the total isn't known for this fork
@@ -873,6 +976,33 @@ const PUMP={
   `Fill the ++ chamber first, to the pressure EXT's chart pairs with your + pressure, never above 600 psi.`,
   `Then fill the + chamber to the starting pressure, never above 280 psi, cycling the shock a few times as you go.`,
   `Measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure. Aim for 30%.`],
+ cc:[`Turn both compression dials fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Thread a shock pump onto the air valve on top of the fork and pump the positive chamber to the starting pressure, between 30 and 150 psi.`,
+  `With the fork unweighted, press the equalizer button at the bottom of the left leg so air fills the negative chamber. The pressure drops a little: top up and equalize again until it holds.`,
+  `Remove the pump and measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position, step off without bouncing, and measure. Cane Creek's range is 15–25%.`,
+  `Adjust in small steps, and equalize after every change.`],
+ ccCoil:[`Turn both compression dials fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Check the spring fitted matches your weight on the chart above. Swapping it means opening the fork, a job for a shop if you're not set up for it.`,
+  `Turn the preload adjuster counterclockwise until it stops, so there's no preload.`,
+  `Measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position, step off without bouncing, and measure. Cane Creek's range is 10–25%.`,
+  `Sag over 20–25%? Add preload clockwise. Still over 25% at full preload? Fit the next spring up. Under 10% with no preload? Go one softer.`],
+ man:[`Turn compression fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Keep the fork unweighted. Fill the IRT chamber first, through the valve on top of the fork leg, to the IRT pressure above.`,
+  `Then fill the main chamber, through the valve at the bottom of the leg, to the main pressure above. Never go over the maximums.`,
+  `Remove the pump and measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position, step off without bouncing, and measure. Manitou's numbers are based on 20–25% sag, standing with about 70% of your weight on the pedals.`,
+  `Use the main chamber to set sag. Change the IRT about 10% at a time: more for mid-stroke support and bottom-out resistance, less for a more linear feel.`],
+ manR8:[`Put the lever in Open. Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Keep the fork unweighted, thread a shock pump onto the air valve and pump to the starting pressure, never above 150 psi.`,
+  `Remove the pump and measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position, step off without bouncing, and measure. Manitou's numbers are based on 15–20% sag.`,
+  `Adjust in small steps until sag is on target. To change the end-of-travel ramp, let the air out first, then move the IVA piston.`],
+ ccShock:[`Open the climb switch and set each dial to its starting position above.`,
+  `Thread a shock pump onto the air valve and pump to the starting pressure, never above the maximum.`,
+  `Cycle the shock a few times so the chambers equalize, then recheck: the pressure drops a little. Top up until it holds.`,
+  `Measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure. Start at 30%.`],
+ manShock:[`Put the lever in its open position. Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `With the shock unweighted, thread on a shock pump and add air about 75 psi at a time. After each step, with the pump still attached, cycle the shock a few times past the sag point to balance the positive and negative chambers.`,
+  `The first few cycles can feel firm or top out. That's normal until the negative chamber fills.`,
+  `At your starting pressure, cycle the shock and recheck the pressure, never above 350 psi. Then measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure.`],
  dvoShock:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above.`,
   `Set the reservoir bladder pressure through the valve under the reservoir cap, using the range above.`,
   `Thread a shock pump onto the main air valve and set the pressure to your body weight in pounds, never above the maximum. Cycle the shock slowly through about 25% of its travel a few times and top up.`,
@@ -906,8 +1036,8 @@ const PUMP={
   `Add preload clockwise only if you need it. Fox's limit is two full turns after the spring stops moving; other brands set their own, so check your shock's manual. Too much preload can bind the spring and damage the shock.`,
   `Measure sag: the difference in exposed spring length (top coil to bottom coil) with and without you on the bike. Or use the O-ring as on an air shock if you can reach it. The coil spring guide on the Setup step has the steps and your target in mm.`,
   `If sag is too deep even with as much preload as your shock allows, you need a firmer spring. If it's too shallow with almost no preload, you need a softer one.`]};
-["foxShock","rsShock","ohShock","dvoShock","mzShock","coil"].forEach(k=>PUMP[k].push(`Changed the shock a lot? Recheck fork sag too. A firmer shock shifts more of your weight onto the fork, so go back and forth until both are on target.`));
-["rs","fox","mz","oh","dvo"].forEach(k=>PUMP[k].push(`Setting up the shock too? Recheck fork sag after you've set it: big shock changes shift your weight and change the fork's sag.`));
+["foxShock","rsShock","ohShock","dvoShock","mzShock","coil","ccShock","manShock"].forEach(k=>PUMP[k].push(`Changed the shock a lot? Recheck fork sag too. A firmer shock shifts more of your weight onto the fork, so go back and forth until both are on target.`));
+["rs","fox","mz","oh","dvo","cc","ccCoil","man","manR8"].forEach(k=>PUMP[k].push(`Setting up the shock too? Recheck fork sag after you've set it: big shock changes shift your weight and change the fork's sag.`));
 const FIXES=[
  {s:"It feels harsh, or rides low in its travel",b:"any",t:"Check sag first. Then, before opening compression, try adding a click or two of low-speed compression. Opening it lets the fork sink past the soft early part of its travel and ride in the firmer middle (packing down), which feels harsher, not softer. A little more support keeps it riding up where it's supple. Only harsh on sharp, square-edged hits? Try a couple of clicks more high-speed compression first: opened too far, the fork blows past its early travel into the firmer middle. If firmer just feels harsher, go back and open it a click. Also check rebound isn't so slow that it can't recover between bumps."},
  {s:"It bucks or kicks back after a big landing or G-out",b:"any",t:"Rebound is too fast for big hits. If you have a high-speed rebound dial, slow it a click or two: it controls the return from deep in the travel. Otherwise slow rebound a click. It should come back up under control instead of throwing the bike at you."},
@@ -921,7 +1051,7 @@ const FIXES=[
  {s:"The pressure drops overnight",b:"air",t:"A few psi between rides is normal with temperature swings. If it keeps losing air, check that the valve core is tight and the cap is on. A steady leak means a seal needs service."},
  {s:"I can't reach sag with the spring I have",b:"coil",t:"Preload is only for fine-tuning; stay within your shock's limit (two turns after the spring stops moving on Fox shocks). Go up a spring rate if sag is too deep, down one if it's too shallow. Springs usually come in 25 or 50 lb/in steps, though some brands only offer 50."}];
 function renderHowto(kind){
- const key=U.mode==="fork"?U.brand:kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock",ext:"extShock"}[U.sb];
+ const key=U.mode==="fork"?(verOf().pump||U.brand):kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock",ext:"extShock",cc:"ccShock",man:"manShock"}[U.sb];
  $("pump-steps").innerHTML=PUMP[key].map(x=>`<li>${x}</li>`).join("");
  $("sag-tips").innerHTML=`<b>For a reading you can trust:</b> once you're on the bike, bounce gently a couple of times to free up the seals before the final reading. Measure in the same position every time: standing and centered over the bike for trail and enduro riding, or seated if you mostly ride seated, like cross-country. A wall or door frame to lean an elbow on helps. Ride with a pack? Wear it.`;
  const ok=f=>f.b==="any"||(f.b==="fork"&&U.mode==="fork")||(kind==="coil"?f.b==="coil":(f.b==="air"||(f.b==="foxfork"?(U.mode==="fork"&&U.brand==="fox"):f.b==="other"?!(U.mode==="fork"&&U.brand==="fox"):false)));
@@ -931,7 +1061,7 @@ function renderHowto(kind){
 // ---------- setup rendering ----------
 const sagText=(sg,len)=>{const mm=x=>Math.round(len*x/10)/10;return sg[0]===sg[1]?`${mm(sg[0])} mm<em> ${sg[0]}% of travel</em>`:`${mm(sg[0])}–${mm(sg[1])} mm<em> ${sg[0]}–${sg[1]}% of travel</em>`};
 const capf=s=>s.charAt(0).toUpperCase()+s.slice(1);
-function setLines(L){if(L.some(x=>/counterclockwise from fully closed/.test(x)))L.push("Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. \"Of\" is the dial's total. Where a maker counts from fully open, the app has converted it.");NEEDCOUNT=false;const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});$("r-lines").innerHTML=P.join("");$("r-notes").innerHTML=N.join("")}
+function setLines(L){if(L.some(x=>/counterclockwise from fully closed/.test(x)))L.push("Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. \"Of\" is the dial's total. Where a maker counts from fully open, the app has converted it.");NEEDCOUNT=false;const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});const one=h=>h.replace(/(^|[^\d–-])1 clicks\b/g,"$11 click");$("r-lines").innerHTML=one(P.join(""));$("r-notes").innerHTML=one(N.join(""))}
 const SNAPK={fork:["brand","fork","year","ver","travel","damp","w","unit","eb"],shock:["sb","sk","stroke","rate","w","unit","eb","wtrav","csag","cbias","bike","levA","levB"]};
 const snapOf=m=>Object.fromEntries(SNAPK[m].map(k=>[k,U[k]]));
 
@@ -1099,7 +1229,43 @@ function renderSetup(){
  {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else src=tuneLoad()[k]||null;
   if(src&&src.s&&src.s.prof===D.prof){s={...src.s};R={...(src.R||src.s)};cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
   TUNEK=k;saveTune()}
- rememberLast();renderGarage();renderAddPrompt()}
+ rememberLast();renderGarage();renderAddPrompt();renderBal()}
+// ---------- balance check: measured sag at both ends against the profile's targets ----------
+function renderBal(){if(!$("bal-out"))return;const P=profOf(),tf=P.sag[0],tr=P.sag[1],T=U.travel,S=U.stroke,f=parseFloat($("bal-f").value),r=parseFloat($("bal-r").value),mm=x=>Math.round(x*10)/10;
+ $("bal-fl").textContent=`Fork sag you measured (mm, of ${T} mm travel)`;$("bal-rl").textContent=`Shock sag you measured (mm, of ${S} mm stroke)`;
+ const out=$("bal-out"),tgt=`${P.name} targets: ${tf}% front (${mm(T*tf/100)} mm) and ${tr}% rear (${mm(S*tr/100)} mm of shock stroke).`;
+ if(!(f>0)||!(r>0)){out.innerHTML=`<p class="fk">${tgt} Enter both measurements to compare. The fork and shock sizes come from the ones you picked above.</p>`;return}
+ const pf=f/T*100,pr=r/S*100;
+ if(pf>50||pr>60){out.innerHTML=`<p class="fk">Those numbers look too big for ${T} mm of fork travel and a ${S} mm shock stroke. Check you measured in millimetres, and that the fork and shock above are yours.</p>`;return}
+ const df=pf-tf,dr=pr-tr,okf=Math.abs(df)<=2,okr=Math.abs(dr)<=2,nf=df/tf,nr=dr/tr;
+ const sh=SHK[U.sb]&&SHK[U.sb].shocks[U.sk],fcoil=(()=>{try{const b=CAT[U.brand].forks[U.fork],y=b.years.find(x=>x.label===U.year)||b.years[0];return!!(y.versions[U.ver]||y.versions[0]).coilBands}catch(e){return false}})(),scoil=!!(sh&&sh.kind==="coil");
+ const fix=(d,coil,fork)=>d>2?(coil?(fork?"too deep: add preload if your fork has it, or go one spring firmer":"too deep: add preload up to your shock's limit, or fit a firmer spring"):`too deep: add air about ${fork?5:10} psi at a time`):d<-2?(coil?(fork?"too shallow: back off the preload, or go one spring softer":"too shallow: back off the preload, or fit a softer spring"):`too shallow: let air out about ${fork?5:10} psi at a time`):"on target";
+ let verdict;
+ if(okf&&okr)verdict="<b>Balanced.</b> Both ends are within 2 points of target, so leave the springs alone and tune with the dials.";
+ else if(nf-nr>.12)verdict="<b>The front sits deeper than the rear.</b> The bike rides nose-low: steering gets steeper and twitchier, and the fork dives under braking and on steep ground.";
+ else if(nr-nf>.12)verdict="<b>The rear sits deeper than the front.</b> The bike sits back: the front goes light, steers slowly and can push wide in corners, and it wallows on climbs.";
+ else verdict=df>0?"<b>Both ends are too soft by a similar amount.</b> The bike sits level but low, so it uses its travel too easily and can bottom out.":"<b>Both ends are too firm by a similar amount.</b> The bike sits level but high, so it feels harsh and has less grip.";
+ const first=okf&&okr?"":Math.abs(nf)>=Math.abs(nr)?"Start with the fork":"Start with the shock";
+ out.innerHTML=`<div class="row2"><div class="bx ${okf?"ok":"off"}"><small>Fork · target ${tf}%</small><b>${mm(pf)}%</b></div><div class="bx ${okr?"ok":"off"}"><small>Shock · target ${tr}%</small><b>${mm(pr)}%</b></div></div>
+ <p>${verdict}</p><ul class="lines"><li><b>Fork</b>${capf(fix(df,fcoil,true))}.</li><li><b>Shock</b>${capf(fix(dr,scoil,false))}.</li></ul>
+ ${first?`<p class="fk">${first}, the end that's furthest off, then measure both again: changing one end shifts your weight onto the other. Targets are the app's for the ${P.name} profile; if your frame maker gives a rear sag, use that.</p>`:""}`}
+// ---------- setup card: every number for the bike on one screen ----------
+function cardGrab(){const one=t=>{const m=t.trim().match(/^([\s\S]*?[.!?])(\s|$)/);return m?m[1]:t.trim()};
+ return{mode:U.mode,title:$("r-title").textContent,l1:$("r-l1").textContent,psi:$("r-psi").textContent,sag:$("r-sag").innerText.replace(/\s+/g," "),l3:$("r-l3").textContent,tok:$("r-tok").textContent,
+  lines:[...$("r-lines").children].map(li=>{const b=li.querySelector("b"),h=b?b.textContent:"";return[h,one(li.textContent.slice(h.length))]}),
+  prof:$("r-prof").hidden?[]:[...$("r-prof").querySelectorAll("li")].map(li=>one(li.textContent).replace(/\), \d+ clicks? (slower|faster|firmer|softer)[^.]*\./,")."))}}
+function openCard(){const m=U.mode,key=idOf(m,U),sv=G.saved||[],hit=sv.find(x=>x.kind===m&&idOf(m,x.snap)===key);let parts=[cardGrab()];
+ if(hit){const o=sv.find(x=>x.kind!==m&&(x.bike||x.id)===(hit.bike||hit.id));
+  if(o){const keep={...U};try{Object.assign(U,o.snap);U.mode=o.kind;renderSetup();parts.push(cardGrab())}catch(e){}Object.keys(U).forEach(k=>delete U[k]);Object.assign(U,keep);renderSetup()}}
+ parts.sort((a,b)=>a.mode===b.mode?0:a.mode==="fork"?-1:1);
+ const P=profOf(),sec=p=>`<h3>${esc(p.title)}</h3><div class="sc-st"><div><small>${esc(p.l1)}</small><b>${esc(p.psi)}</b></div><div><small>Sag target</small><b>${esc(p.sag)}</b></div><div><small>${esc(p.l3)}</small><b>${esc(p.tok)}</b></div></div>
+  <ul>${p.lines.map(([h,t])=>`<li><b>${esc(h)}:</b> ${esc(t)}</li>`).join("")}${p.prof.map(t=>`<li><b>${esc(P.name)}:</b> ${esc(t)}</li>`).join("")}</ul>`.replace(/ clicks? counterclockwise from fully closed/g," out");
+ let ov=$("card-ov");if(!ov){ov=document.createElement("div");ov.id="card-ov";document.body.appendChild(ov)}
+ ov.innerHTML=`<div class="scard" role="dialog" aria-label="Setup card"><div class="sc-h"><b>PLUSHBUCKET</b><span>${today()}</span></div><h2>${esc(hit&&hit.name||"My setup")}</h2><p class="sc-sub">${esc(String(U.w))} ${U.unit} rider${U.eb?" · e-bike":""} · ${esc(P.name)} profile</p>
+  ${parts.map(sec).join("")}
+  <p class="sc-f">"Out" means clicks counterclockwise from fully closed.${P.id==="trail"?"":` ${esc(P.name)} lines are the app's changes from the maker's starting point.`} Starting points only: check sag, and never exceed the maximum pressure printed on your fork or shock. plushbucket.com</p></div>
+  <div class="scbtns"><span class="fk">${parts.length<2?"Add your fork and shock to the same bike in your garage to get both on one card.":"Take a screenshot to keep it."}</span>${NATIVE?"":`<button type="button" id="card-print">Print</button>`}<button type="button" class="primary" id="card-close">Close</button></div>`;
+ ov.hidden=false;ov.scrollTop=0;$("card-close").onclick=()=>{ov.hidden=true};if($("card-print"))$("card-print").onclick=()=>window.print();ov.onclick=e=>{if(e.target===ov)ov.hidden=true}}
 let TUNEK=null,TUNES=null;const TUNESK="tune-state-v2";
 // slider settings are kept per part (fork and shock separately), so switching between them doesn't lose either
 function tuneLoad(){if(!TUNES){try{TUNES=JSON.parse(localStorage.getItem(TUNESK)||"{}")||{}}catch(e){TUNES={}}}return TUNES}
@@ -1115,29 +1281,30 @@ function renderFork(){
  chips("c-travel",v.travel.map(t=>[t,t+" mm"]),U.travel,x=>{U.travel=+x;renderSetup()});
  chips("c-damp",v.dampers.map(k=>[k,DMP[k].name]),U.damp,x=>{U.damp=x;renderSetup()});
  $("r-title").textContent=`${B.name} ${fk.name} ${U.year}${y.versions.length>1?" · "+v.name:""} · ${U.travel} mm · ${dm.name}${U.eb?" · e-bike":""}`;
- $("r-l1").textContent=v.ramp?"Main chamber":"Starting pressure";$("r-l3").textContent=v.ramp?"Ramp-up chamber":U.brand==="fox"?"Volume spacers":"Tokens";
+ $("r-l1").textContent=v.ramp?"Main chamber":"Starting pressure";$("r-l3").textContent=v.ramp?(v.rampName||"Ramp-up chamber"):v.tokLabel||(U.brand==="fox"?"Volume spacers":"Tokens");
  const p=forkPsi(v,w,U.travel,U.eb),warn=[...p.flags];let cs=null;
- if(v.coilBands){const B=v.coilBands[String(U.travel)]||[],inn=B.filter(b=>w>=b[2]&&w<=b[3]),mid=b=>Math.abs(w-(b[2]+b[3])/2);
-  cs=(inn.length?inn:B).slice().sort((a,b)=>mid(a)-mid(b))[0];if(!inn.length)warn.push(`Your weight is outside PUSH's chart for ${U.travel} mm, so this is the nearest spring. Check sag and ask PUSH if it's off.`);
+ if(v.coilBands){const B=v.coilBands[String(U.travel)]||v.coilBands.all||[],inn=B.filter(b=>w>=b[2]&&w<=b[3]),mid=b=>Math.abs(w-(b[2]+b[3])/2);
+  cs=(inn.length?inn:B).slice().sort((a,b)=>mid(a)-mid(b))[0];if(!inn.length)warn.push(`Your weight is outside ${CAT[U.brand].name}'s chart${v.coilBands.all?"":` for ${U.travel} mm`}, so this is the nearest spring. Check sag and ask ${CAT[U.brand].name} if it's off.`);
   COILF={rate:cs[1],alt:inn.filter(b=>b!==cs)}}else COILF=null;
  {const mx=forkMax(v);if(p.psi!=null&&mx&&p.psi>mx){warn.push(`That's above this fork's ${mx} psi maximum${v.maxByTravel?` at ${U.travel} mm`:""}, so it's capped. Don't exceed ${mx} psi; if you can't reach sag, ask a shop about a firmer spring setup.`);p.psi=mx}}
  $("r-psi").textContent=p.psi!=null?p.psi+" psi":"—";
- if(cs){$("r-l1").textContent="Spring";$("r-psi").textContent=`${cs[1]} lb/in`;$("r-l3").textContent="Bottom-out air"}
+ if(cs){$("r-l1").textContent="Spring";$("r-psi").textContent=`${cs[1]} lb/in`;$("r-l3").textContent=v.coilL3?v.coilL3[0]:"Bottom-out air"}
  $("r-sag").innerHTML=sagText([20,20],U.travel);
- const tk=ebV(v).tokens[String(U.travel)];$("r-tok").textContent=v.ramp?interp(v.ramp.W,v.ramp.P,w).psi+" psi":tk?`${tk[0]} stock · ${tk[1]} max`:"—";
- if(cs)$("r-tok").textContent="5–50 psi";
- const L=[];if(cs)L.push(`<b>Spring:</b> ${cs[0]}, ${cs[1]} lb/in, for ${Math.round(w)} lb at ${U.travel} mm on PUSH's chart (${cs[2]}–${cs[3]} lb).${COILF.alt.length?` ${COILF.alt.map(b=>`${b[0]} (${b[1]} lb/in)`).join(" and ")} also cover${COILF.alt.length>1?"":"s"} your weight.`:""}`);
+ const tk=ebV(v).tokens[String(U.travel)];$("r-tok").textContent=v.ramp?interp(rampOf(v).W,rampOf(v).P,w).psi+" psi":tk?`${tk[0]} stock · ${tk[1]} max`:"—";
+ if(cs)$("r-tok").textContent=v.coilL3?v.coilL3[1]:"5–50 psi";
+ if(v.tokText)$("r-tok").textContent=typeof v.tokText==="string"?v.tokText:v.tokText[String(U.travel)]||"—";
+ const L=[];if(cs)L.push(`<b>Spring:</b> ${cs[0]}, ${cs[1]} lb/in, for ${Math.round(w)} lb${v.coilBands.all?"":` at ${U.travel} mm`} on ${CAT[U.brand].name}'s chart (${cs[2]}–${cs[3]} lb).${COILF.alt.length?` ${COILF.alt.map(b=>`${b[0]} (${b[1]} lb/in)`).join(" and ")} also cover${COILF.alt.length>1?"":"s"} your weight.`:""}`);
  if(p.src)L.push(`<b>Pressure source:</b> ${p.src}. ${forkMax(v)?`Max ${forkMax(v)} psi${v.maxByTravel?` at ${U.travel} mm`:""}.`:"The maximum is printed on the fork."}`);
  L.push(v.sagNote?v.sagNote:v.sag?"<b>Sag:</b> the app targets 20%, the usual baseline. Fox's manual gives 15–20%: 15% is firmer, 20% is plusher.":"<b>Sag:</b> the app targets 20%, the usual baseline. RockShox doesn't publish a fork sag target in the sources we found.");
  const rb=rebFor(ebV(v),U.damp,w);L.push(`<b>Rebound:</b> ${rb.text}.`);
  L.push(`<b>Compression:</b> ${startFor(v,U.damp)}`);
- if(v.ramp)L.push("<b>Ramp-up chamber:</b> a second air chamber that sets how hard the fork resists the end of its travel, in place of tokens. Pump it through the valve at the bottom of the right leg, before the main chamber.");
+ if(v.ramp&&v.rampLine)L.push(v.rampLine);else if(v.ramp)L.push("<b>Ramp-up chamber:</b> a second air chamber that sets how hard the fork resists the end of its travel, in place of tokens. Pump it through the valve at the bottom of the right leg, before the main chamber.");
  if(v.ottPsi&&p.psi!=null){const r=v.ottPsi.find(x=>p.psi>=x[0]&&p.psi<x[1])||v.ottPsi[p.psi<50?0:v.ottPsi.length-1];L.push(`<b>OTT:</b> on forks that have it, ${r[2]} full turns clockwise from fully open (5 mm Allen, bottom of the left leg), from DVO's chart for ${r[0]}–${Math.min(r[1],100)} psi. Let the air out before turning it. Heavier or faster riders use more.`)}
  if(v.dvo)L.push(`<b>OTT:</b> ${v.dvo.ott[dvoBand(w)]} full turns clockwise from fully open. OTT preloads a small coil that sets how easily the fork moves off the top. Let the air out before turning it.`);
  if(v.abo)L.push("<b>Adjustable Bottom Out:</b> on Ultimate forks, a dial at the bottom of the air leg changes end-of-travel support. Turn it fully clockwise, then 4 clicks counterclockwise (of 8).");
  v.notes.forEach(n=>L.push(n));
  setLines(L);
- warn.push(...v.warns);if(dm.warn)warn.push(dm.warn);if(!tk&&!v.ramp&&!cs&&U.brand!=="dvo"&&U.brand!=="ext")warn.push("Token or spacer counts for this travel aren't confirmed yet.");
+ warn.push(...v.warns);if(dm.warn)warn.push(dm.warn);if(!tk&&!v.ramp&&!cs&&!v.tokText&&U.brand!=="dvo"&&U.brand!=="ext")warn.push("Token or spacer counts for this travel aren't confirmed yet.");
  $("r-warn").innerHTML=warn.map(x=>`<li>${x}</li>`).join("");
  renderHowto("air");applyFork(p.psi,rb.r,rb.hr);applyProfile(p.psi)}
 const STROKES=[37.5,40,42.5,45,47.5,50,52.5,55,57.5,60,62.5,65,67.5,70,72.5,75];
@@ -1167,7 +1334,7 @@ function renderShock(){
  const L=[],warn=[...(sh.warns||[])];let psi=null;
  if(sh.kind==="air"){
   $("r-l1").textContent="Starting pressure";
-  if(sh.start==="weight"){psi=Math.round(w*(sh.startMul||1));if(sh.startMul)L.push(`<b>Starting pressure:</b> your weight plus ${Math.round((sh.startMul-1)*100)}% for the MegNeg can, then set it by sag.`);const mx=maxP(sh);if(mx&&psi>mx){warn.push(`Your weight in psi is above the ${mx} psi maximum, so it's capped. Don't exceed it.`);psi=mx}
+  if(sh.start==="weight"){psi=Math.round(w*(sh.startMul||1));if(sh.startMul)L.push(`<b>Starting pressure:</b> your weight plus ${Math.round((sh.startMul-1)*100)}% ${sh.startWhy||"for the MegNeg can"}, then set it by sag.`);const mx=maxP(sh);if(mx&&psi>mx){warn.push(`Your weight in psi is above the ${mx} psi maximum, so it's capped. Don't exceed it.`);psi=mx}
    $("r-psi").textContent=psi+" psi";L.push(U.sb==="fox"||sh.rule?`<b>Pressure source:</b> start at your body weight in pounds (${sh.rule||"Fox's rule"}), then set it by sag.`:U.sb!=="rs"?"<b>Pressure source:</b> start at your body weight in pounds, the usual shop rule, then set it by sag. Your frame maker's chart can fine-tune it.":"<b>Pressure source:</b> start at your body weight in pounds, the same shop rule that works on Fox, then set it by sag. RockShox's TrailHead app or your frame maker's chart can fine-tune it for your bike.")}
   else{$("r-psi").textContent="TrailHead";L.push("<b>Starting pressure:</b> RockShox gives a number for your exact bike in the TrailHead app (scan the QR code or enter the serial number). Your frame maker's setup chart works too. Rear shock pressure depends on the frame, so there's no single chart.")}
   $("r-tok").textContent=maxP(sh)?maxP(sh)+" psi":"—"}
@@ -1175,7 +1342,7 @@ function renderShock(){
   L.push("<b>Spring rate:</b> the right spring depends on your frame's leverage, so use your frame maker's chart or the shock maker's spring calculator, then confirm with sag.");
   L.push(U.sb==="fox"?"<b>Preload:</b> thread the collar on until the spring stops moving, then no more than two full turns (Fox's limit).":sh.preload?`<b>Preload:</b> thread the collar on until the spring stops moving, then no more than ${sh.preload.replace("2","two")} (the maker's limit).`:"<b>Preload:</b> thread the collar on until the spring stops moving, then add only as much as you need, within the limit in your shock's manual.")}
  $("r-sag").innerHTML=sagText([30,30],U.stroke);
- if(sh.sag[0]!==30||sh.sag[1]!==30)L.push(`<b>Sag:</b> the app targets 30%, the usual baseline.${U.sb==="fox"?` Fox's manual gives ${sh.sag[0]}–${sh.sag[1]}%.`:""} If your frame maker recommends a different sag for your bike, use theirs.`);
+ if(sh.sag[0]!==30||sh.sag[1]!==30)L.push(`<b>Sag:</b> the app targets 30%, the usual baseline.${U.sb==="fox"?` Fox's manual gives ${sh.sag[0]}–${sh.sag[1]}%.`:sh.sagBy?` ${sh.sagBy} gives ${sh.sag[0]}–${sh.sag[1]}%.`:""} If your frame maker recommends a different sag for your bike, use theirs.`);
  if(sh.dvoAir&&psi!=null){const r=sh.dvoAir.find(x=>w>=x[0]&&w<x[1]);if(r)L.push(`<b>DVO's chart:</b> ${r[2]}–${r[3]} psi for your weight (plush to firm). The app starts at your body weight; if sag is off, use DVO's range.`)}
  if(sh.rebRows&&psi!=null){const r=sh.rebRows.find(x=>psi>=x[0]&&psi<x[1]);if(r)L.push(`<b>Rebound:</b> ${r[2]}–${r[3]} ${CWO} (of 9), from DVO's chart for your pressure. Adjust in two-click steps.`)}
  if(sh.rebPsi&&psi!=null){const B2=[100,120,140,160,180,200,220,240,260,280];let i=0;while(i<B2.length&&psi>=B2[i])i++;i=Math.min(i,sh.rebPsi.length-1);
@@ -1200,7 +1367,8 @@ function renderShock(){
   L.push(`<b>Compression:</b> low-speed ${fo(DH2T.LSC[i],16)} and high-speed ${fo(DH2T.HSC[i],8)} ${CWO} (of 16 and 8). Compression dials are on Factory and Performance Elite only.`)}
  if(sh.reboundClicks)L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed, so turn the dial fully clockwise, then counterclockwise the number of clicks TrailHead shows (${sh.reboundClicks} clicks total).`);
  else if(U.sb==="rs"&&sh.kind==="air"){L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed: turn the dial fully clockwise, then counterclockwise the number of clicks it shows.`)}
- if(U.sb==="rs"&&sh.kind==="air")L.push(U.sk==="dlx"||U.sk==="dlxo"||U.sk==="dlxom"?`<b>Compression:</b> threshold lever in Open for descending.`:U.sk==="sdo"||U.sk==="sdom"?`<b>Compression:</b> threshold lever in Open for descending. If your shock has a low-speed compression dial, start it fully counterclockwise (open) and add clicks to taste.`:`<b>Compression:</b> start each compression dial at its middle (0) setting, RockShox's starting point${U.sk==="vac"?` (position 3 of 5, so turn fully clockwise, then 2 clicks counterclockwise)`:""}. Use TrailHead's suggestion for your bike if it gives a different one.`);
+ if(U.sb==="rs"&&sh.kind==="air")L.push(U.sk==="dlx"||U.sk==="dlxo"||U.sk==="dlxom"?`<b>Compression:</b> threshold lever in Open for descending.`:U.sk==="sdo"||U.sk==="sdom"?`<b>Compression:</b> threshold lever in Open for descending. If your shock has a low-speed compression dial, start it fully counterclockwise (open) and add clicks to taste.`:`<b>Compression:</b> start each compression dial at its middle (0) setting, RockShox's starting point${["vac","vad","sdc","sdd"].includes(U.sk)?` (position 3 of 5, so turn fully clockwise, then 2 clicks counterclockwise)`:""}. Use TrailHead's suggestion for your bike if it gives a different one.`);
+ if(sh.rebLine)L.push(`<b>Rebound:</b> ${sh.rebLine}`);if(sh.compLine)L.push(`<b>Compression:</b> ${sh.compLine}`);
  if(sh.bladder)L.push(`<b>Reservoir bladder:</b> set it to ${sh.bladder} through the valve under the reservoir cap: lighter riders at the low end, heavier riders at the high end.`);
  if(sh.lever)L.push(`<b>Lever:</b> ${sh.lever}`);
  if(sh.spacers)L.push(`<b>Volume:</b> ${sh.spacers}`);
@@ -1263,25 +1431,32 @@ const SDMP={
  fdpx2:{name:"FLOAT DPX2",r:12,rGuess:true,l:2,lever:["Open","Medium","Firm"],h:0,hFix:.45,init:{l:0}},
  x2tt:{name:"FLOAT X2 (twin-tube)",r:16,hr:8,l:16,h:8,init:{l:5,h:3},tbl:"x2tt"},
  dhx2tt:{name:"DHX2 (twin-tube)",r:16,hr:8,l:16,h:8,init:{l:5,h:3},tbl:"dhx2tt"},
- fx:{name:"FLOAT X",r:12,rGuess:true,l:1,lever:["Open","Firm"],h:0,hFix:.45,init:{l:0}},
+ fx:{name:"FLOAT X",r:16,l:1,lever:["Open","Firm"],h:0,hFix:.45,init:{l:0}},
  fsl:{name:"FLOAT SL",r:12,rGuess:true,l:2,lever:["Open","Medium","Firm"],h:0,hFix:.45,init:{l:0}},
  ffl:{name:"FLOAT",r:12,rGuess:true,l:1,lever:["Open","Firm"],h:0,hFix:.45,init:{l:0}},
- dhx:{name:"DHX",r:12,rGuess:true,l:10,lGuess:true,h:0,hFix:.45,init:{l:5}},
+ dhx:{name:"DHX",r:16,l:10,h:0,hFix:.45,init:{l:5}},
  sdom:{name:"Super Deluxe + MegNeg",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.45,init:{l:0}},
  dlxo:{name:"Deluxe (2018–2022)",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.45,init:{l:0}},
  dlxom:{name:"Deluxe + MegNeg",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.45,init:{l:0}},
  sdo:{name:"Super Deluxe (2018–2022)",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.45,init:{l:0}},
- sdc:{name:"Super Deluxe",r:15,l:10,lGuess:true,h:0,hFix:.45,init:{l:5}},
- sdd:{name:"Super Deluxe (2027)",r:15,l:10,lGuess:true,h:5,hGuess:true,init:{l:5,h:2}},
+ sdc:{name:"Super Deluxe",r:15,l:4,h:4,init:{l:2,h:2}},
+ sdd:{name:"Super Deluxe (2027)",r:15,l:4,h:4,init:{l:2,h:2}},
  vac:{name:"Vivid Air",r:20,l:4,h:4,init:{l:2,h:2}},
- vad:{name:"Vivid Air (2027)",r:20,l:10,lGuess:true,h:5,hGuess:true,init:{l:5,h:2}},
- rcoil:{name:"RockShox coil",r:15,rGuess:true,l:10,lGuess:true,h:0,hFix:.45,init:{l:5}},
+ vad:{name:"Vivid Air (2027)",r:20,l:4,h:4,init:{l:2,h:2}},
+ rcoil:{name:"RockShox coil",r:20,l:4,h:4,init:{l:2,h:2}},
  ttx1:{name:"TTX1Air",r:12,l:10,h:3,init:{l:5,h:1}},
  mzair:{name:"Bomber Air",r:12,rGuess:true,l:10,lGuess:true,h:0,hFix:.45,init:{l:0},tbl:"mz"},
  mzcr:{name:"Bomber CR",r:15,l:16,h:0,hFix:.45,init:{l:0}},
  ttx2:{name:"TTX2Air",r:12,rGuess:true,l:10,lGuess:true,h:3,hGuess:true,init:{l:5,h:1}},
  ttx22:{name:"TTX22m.2",r:12,rGuess:true,l:10,lGuess:true,h:2,init:{l:5,h:1}},
  tpp:{name:"Topaz Prime",r:9,l:5,h:10,init:{l:2,h:7}},
+ kair:{name:"Kitsuma Air",r:11,hr:13,l:11,h:13,init:{l:5,h:6}},
+ kcoil:{name:"Kitsuma Coil",r:11,hr:13,l:11,h:13,init:{l:5,h:6}},
+ tigon:{name:"Tigon",r:15,l:12,h:0,hFix:.45,init:{l:6}},
+ ail:{name:"Air IL",r:25,l:25,h:0,hFix:.45,init:{l:13}},
+ cil:{name:"Coil IL",r:25,l:25,h:0,hFix:.45,init:{l:13}},
+ marapro:{name:"Mara Pro",r:12,l:30,h:6,init:{l:18,h:2}},
+ marail:{name:"Mara Inline Pro",r:17,l:3,lever:["Aggressive Descend","Trail Control","Technical Climb","Aggressive Climb"],h:0,hFix:.45,init:{l:0}},
  jadep:{name:"Jade X Prime",r:18,rGuess:true,l:5,h:10,init:{l:0,h:0}},
  e116:{name:"PUSH ElevenSix",r:15,rGuess:true,l:20,lGuess:true,h:15,hGuess:true,init:{l:10,h:7}},
  storia:{name:"EXT Storia V3",r:20,rGuess:true,l:12,lGuess:true,h:10,hGuess:true,init:{l:6,h:5}},
@@ -1445,7 +1620,7 @@ function applyFork(realPsi,rebR,rebH){LEV=null;
  let l=dm.init.l||0,hh=dm.init.h||0;if(U.damp==="gx"&&v.start&&v.start.gx){l=dm.l-v.start.gx[1];hh=dm.h-v.start.gx[0]}if(U.damp==="gx2"&&v.start&&v.start.gx2){l=dm.l-v.start.gx2[1];hh=dm.h-v.start.gx2[0]}
  const base={prof:v.shape,damp:"x",t:v.ramp?0:Math.min(tk?tk[0]:1,TMAX),n:0,r,l,h:hh,hr:dm.hr?Math.min(dm.hr,rebH??Math.round(dm.hr/2)):0};
  SAGT=.2;PS=1;
- if(v.ramp){const rr=interp(v.ramp.W,v.ramp.P,lb()).psi;
+ if(v.ramp){const rr=interp(rampOf(v).W,rampOf(v).P,lb()).psi;
   // scale so main and ramp-up keep the chart's ratio; iterate because the sag pressure depends on the ramp pressure
   base.rp=rr;PS=realPsi?realPsi/90:1;for(let i=0;i<6;i++){base.p=pAt(base,.2);PS=realPsi?realPsi/base.p:1}
   $("rp").min=Math.max(5,Math.round(rr*.7/5)*5);$("rp").max=Math.round(rr*1.3/5)*5;$("rp").value=rr}
@@ -1792,6 +1967,9 @@ function svcPlan(p){
  if(p.brand==="oh"&&p.sk==="ttx22")return[{k:"damper",n:"Damper service",h:50,yr:true,why:"Öhlins' TTX22M manuals give 50 hours or once a year in one edition and 100 hours in another, so this uses the shorter interval. Damper oil and seals wear with use, so damping fades over time."}];
  if(p.brand==="oh")return[{k:"air",n:"Air sleeve service",h:100,why:"Öhlins' workshop manual sets the TTX Air air sleeve service at 100 hours. Fresh seals and grease keep it supple and holding pressure."}];
  if(p.brand==="dvo"&&p.kind==="fork")return[{k:"full",n:"Full service",h:100,why:"DVO's Diamond 36 service guide calls for a full service every 100 hours of ride time."}];
+ if(p.brand==="cc"&&p.kind==="fork")return[{k:"lower",n:"Lower leg service",h:50,why:SVC_WHY.lower},{k:"full",n:"Full air spring and damper rebuild",h:100,resets:["lower"],why:"Cane Creek recommends a lower leg service every 50 hours and a full air spring and damper rebuild at an authorized service center every 100 hours."}];
+ if(p.brand==="cc")return[{k:"full",n:"Damper and air spring service",h:100,yr:true,why:"Cane Creek's shock manuals call for a damper and air spring service at an authorized service center every 100 hours or once a year. Downhill racing and e-bike use can shorten that."}];
+ if(p.brand==="man")return[{k:"lower",n:"50-hour service",h:50,why:"Manitou's maintenance schedule, every 50 hours: on forks, fresh semi-bath oil, lubricated seals, and cleaned bushings and air pistons; on shocks, an air can service."},{k:"full",n:"Full service",h:200,yr:true,resets:["lower"],why:"Manitou calls for a full service every 200 hours or once a year: new leg seals and foam rings, fresh damper oil and new air spring seals."}];
  if(p.brand==="ext")return[{k:"full",n:"Full service",h:100,yr:true,why:"EXT's manuals call for a full service every 100 hours or once a year (50 hours or six months if you race), with seals and bushings checked every 15 hours."}];
  if(p.brand==="fast")return[{k:"full",n:"Full service",h:100,yr:true,why:"FAST calls for a service every 100 hours or once a year, whichever comes first, done by FAST or an approved center: it needs vacuum filling."}];
  if(p.brand==="push")return[{k:"full",n:"Full service",h:100,yr:true,why:"PUSH asks for a yearly service at PUSH or an authorized center, which also renews the warranty. It doesn't publish an hour count, so the app also flags 100 hours, like other makers."}];
@@ -1898,6 +2076,9 @@ $("tn-ai").onclick=async()=>{const p=G.parts.find(x=>x.id===TN.part),text=$("tn-
   if(i>=0){TN.sym=i;TN.ai=true;msg.textContent="Matched. Check it below.";renderNotes()}else msg.textContent="No close match. Pick the nearest one below."}
  catch(e){msg.textContent="Couldn't match that just now. Pick one below."}
  btn.disabled=false};
+$("card-open").onclick=openCard;
+try{const b=JSON.parse(localStorage.getItem("bal-v1")||"{}");$("bal-f").value=b.f||"";$("bal-r").value=b.r||""}catch(e){}
+["bal-f","bal-r"].forEach(id=>$(id).oninput=()=>{try{localStorage.setItem("bal-v1",JSON.stringify({f:$("bal-f").value,r:$("bal-r").value}))}catch(e){}renderBal()});renderBal();
 $("ride-date").value=today();
 $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService()};
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
