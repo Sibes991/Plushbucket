@@ -420,7 +420,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 </div></details>
 </div>
 <div class="field"><label for="wt">Your weight, dressed to ride</label>
-<div class="rider"><input id="wt" type="number" inputmode="decimal" min="60" max="400" value="175"><div class="chips" id="c-unit"></div><label class="sw" id="eb-row"><input type="checkbox" id="eb"> E-bike</label></div>
+<div class="rider"><input id="wt" type="number" inputmode="decimal" min="60" max="400" value="175"><div class="chips" id="c-unit"></div><label class="sw" id="eb-row"><input type="checkbox" id="eb"> E-bike</label><label class="sw" id="runt-row" hidden><input type="checkbox" id="runt"> DSD Runt fitted</label><label class="sw" id="lrunt-row" hidden><input type="checkbox" id="lrunt"> DSD Lower Runt fitted</label></div>
 </div>
 </section>
 
@@ -511,7 +511,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <div class="ctl"><div class="row">Spring</div><p id="sp-name"></p></div>
 <div class="ctl"><div class="row"><label for="p">Air pressure</label><span id="pv"></span></div><input id="p" type="range" min="50" max="130" step="1" value="85"><p>Sets overall firmness, and with it your sag.</p></div>
 <div class="ctl"><div class="row"><label for="t">Tokens (volume spacers)</label><span id="tv"></span></div><input id="t" type="range" min="0" max="6" step="1" value="2"><p>More ramp-up at the end of the travel.</p></div>
-<div class="ctl" id="rp-ctl" hidden><div class="row"><label for="rp">Ramp-up chamber</label><span id="rpv"></span></div><input id="rp" type="range" min="100" max="300" step="5" value="190"><p>More pressure gives more support at the end of the travel. Öhlins uses this chamber in place of tokens.</p></div>
+<div class="ctl" id="rp-ctl" hidden><div class="row"><label for="rp">Ramp-up chamber</label><span id="rpv"></span></div><input id="rp" type="range" min="100" max="300" step="5" value="190"><p>More pressure gives more support at the end of the travel. Öhlins forks, Manitou's IRT and the DSD Runt use a chamber like this in place of tokens.</p></div>
 <div class="ctl"><div class="row"><label for="n">Negative volume spacers</label><span id="nv"></span></div><input id="n" type="range" min="0" max="1" step="1" value="0"><p id="n-help">A firmer, more supportive start of the travel.</p></div>
 </section>
 <div class="minor" id="smin"></div>
@@ -862,7 +862,32 @@ let COILF=null;
 let U={bike:"",levA:0,levB:0,prof:"trail",mode:"fork",brand:"rs",fork:"zeb",year:"2027",ver:0,travel:170,damp:"c32",w:175,unit:"lb",eb:false,sb:"fox",sk:"x2",stroke:60,rate:450,wtrav:150,csag:30,cbias:65};
 const forkOf=()=>CAT[U.brand].forks[U.fork];
 const yearOf=()=>forkOf().years.find(y=>y.label===U.year);
-const verOf=()=>yearOf().versions[U.ver];
+const verRaw=()=>yearOf().versions[U.ver];
+// DSD Runt: an aftermarket dual-chamber air spring that replaces the tokens. Fit (forks, years, travel) is from DSD's shop pages;
+// setup is DSD's one rule (its tuning guide): LOW chamber at your usual pressure, 5–10 psi lower if you ran up to 2–3 tokens, HIGH at twice that.
+// Left out: BoXXer (DSD sells one, but the fork's pressures put twice-LOW far past the 200 psi DSD says it has tested), 2027 RockShox forks
+// (not on DSD's list), Dual Position Air, and E-Optimized / E-Bike+ Fox 38s from 2025 (DSD: not compatible).
+const T10=(a,b)=>{const o=[];for(let t=a;t<=b;t+=10)o.push(t);return o};
+const RUNTF={fox:{f32:{v:/^34/,t:T10(100,160)},f36:{t:T10(130,170)},f36sl:{t:T10(130,170)},f38:{t:[160,170,180],no:(y,n)=>/202[5-9]/.test(y)&&/^E-Bike\+$|E-Optimized/.test(n)},f40:{noYears:true},fpod:{t:[160,170]}},
+ rs:{sid:{t:[120]},pike:{t:T10(120,160)},lyrik:{t:T10(140,180),y:/^(2021–2022|2023–2026)$/},zeb:{t:T10(160,190),y:/^(2021–2022|2023–2026)$/}},
+ mz:{z1:{t:[150,160,170]},z2:{t:T10(120,160)}}};
+const runtOK=v=>{const r=(RUNTF[U.brand]||{})[U.fork];return!!r&&!!v&&!v.coilBands&&!v.ramp&&v.chart.kind!=="none"&&!/Linear XL|Dual Position/.test(v.name)&&(!r.v||r.v.test(v.name))&&(!r.y||r.y.test(U.year))&&(!r.t||r.t.includes(+U.travel))&&!(r.no&&r.no(U.year,v.name))};
+// DSD Lower Runt: replaces the lower half of the ZEB's air spring (DSD: ZEB only, the gold ButterCup air spring). DSD gives preload-shim and
+// negative-spacer guidance in words, not by weight, and no pressures.
+const lruntOK=v=>U.brand==="rs"&&U.fork==="zeb"&&U.year==="2023–2026"&&!!v&&/^DebonAir\+/.test(v.name);
+const RUNTC=new WeakMap();
+function runtV(v,up,low){const k=(up?"u":"")+(low?"l":"");if(!RUNTC.has(v))RUNTC.set(v,{});const C=RUNTC.get(v);if(C[k])return C[k];
+ const r=(RUNTF[U.brand]||{})[U.fork]||{};let o={...v,notes:[...(v.notes||[])],warns:[...(v.warns||[])]};
+ if(up){o={...o,runtOn:true,spring:"DSD Runt",ramp:{W:[0],P:[0]},mainName:"LOW chamber",rampName:"HIGH chamber",
+  rampLine:"<b>HIGH chamber:</b> the Runt's second, smaller chamber, which takes the place of tokens. DSD's rule: twice the LOW chamber pressure. Fill HIGH first, then LOW. More HIGH pressure adds support from the middle of the travel to the end without changing the first part.",
+  notes:["<b>DSD Runt:</b> DSD publishes no chart by rider weight. Its guide says to run the LOW chamber at the pressure you normally use, 5–10 psi lower if you had up to 2–3 tokens fitted, and the HIGH chamber at twice that. The app takes 8 psi off this fork's starting pressure for LOW.","Adjust in 2.5–5 psi steps and keep HIGH at twice LOW (DSD). A small change in LOW makes a big difference through the travel. Attaching the pump can drop the reading by 10–15 psi, which DSD says is normal.","DSD says it has tested the Runt to 200 psi in the HIGH chamber. Once a year, DSD says to replace the piston O-ring and add fluid.",...o.notes.filter(n=>!/token|spacer/i.test(n))],
+  warns:[...o.warns,r.noYears?"Each Runt is built for one fork and one travel. DSD's page for this fork doesn't list model years, so check with DSD that it fits yours.":"Each Runt is built for one fork and one travel. DSD's shop lists this fork, year range and travel: make sure the one fitted matches."]}}
+ if(low){o={...o,lruntOn:true,notes:["<b>Lower Runt preload shims:</b> DSD's guide: 1 shim for lighter riders, 2 for average to heavy riders, 3 for heavy riders, heavy bikes or longer bikes, 4 for heavy riders or bikes of 44 lb and up. Add a shim for a heavier front wheel or a longer bike. DSD gives no weight numbers, so start from its description and test.",
+  "<b>Lower Runt negative spacers:</b> DSD's guide: 2 for most average to heavy riders, 1 for most average to light riders, 3 (the least negative air) for heavy riders or bikes, 0 for very light riders, which DSD warns may add piston noise.",
+  `<b>Lower Runt pressure:</b> DSD publishes no pressures for it, so start from the ${up?"Runt":"fork's"} numbers above and set it by sag. DSD says it works best together with the upper Runt.`,...o.notes],
+  warns:[...o.warns,"The Lower Runt replaces the ZEB's ButterCup assembly and the stock gold piston and tower (DSD). The spring picture on the next step still shows the stock lower air spring."]}}
+ return C[k]=o}
+const verOf=()=>{const v=verRaw();if(U.mode!=="fork")return v;const up=!!U.runt&&runtOK(v),low=!!U.lrunt&&lruntOK(v);return up||low?runtV(v,up,low):v};
 function fixU(){const fs=CAT[U.brand].forks;if(!fs[U.fork])U.fork=Object.keys(fs)[0];
  const ys=fs[U.fork].years;if(!ys.find(y=>y.label===U.year)){const yr=s=>(String(s).match(/\d{4}/g)||[]).map(Number),w=yr(U.year),hit=w.length&&ys.find(y=>{const r=yr(y.label);return r.length&&w[0]>=r[0]&&w[w.length-1]<=r[r.length-1]});U.year=(hit||ys[ys.length-1]).label}
  const vs=yearOf().versions;if(U.ver>=vs.length)U.ver=0;
@@ -889,7 +914,9 @@ function interp(W,P,w){const o={flags:[]};let i=0;
  o.psi=Math.round(o.psi);return o}
 // with the e-bike switch on, use the maker's e-bike version for rebound and tokens too
 const ebV=v=>{if(U.eb&&v.ebikeOf){const e=yearOf().versions.find(x=>x.name===v.ebikeOf);if(e)return e}return v};
-function forkPsi(v,w,trav,eb){
+function forkPsi(v,w,trav,eb){const o=forkPsi0(v,w,trav,eb);if(v.runtOn&&o.psi!=null){o.psi=Math.max(20,o.psi-8);o.src+=", minus 8 psi for the Runt (DSD's guide)"}return o}
+const rampPsi=(v,w)=>v.runtOn?Math.min(200,2*(forkPsi(v,w,U.travel,U.eb).psi||0)):interp(rampOf(v).W,rampOf(v).P,w).psi;
+function forkPsi0(v,w,trav,eb){
  const c=v.chart,o={psi:null,src:"",flags:[]};
  if(c.kind==="fox10"){let src=v,used=v.name;
   if(eb&&v.ebikeOf){const e=yearOf().versions.find(x=>x.name===v.ebikeOf);if(e){src=e;used=e.name;o.flags.push(`${CAT[U.brand].name}'s e-bike numbers are for its ${e.name} fork. If yours is a standard ${v.name}, treat this as a guide and set it by sag.`)}}
@@ -1003,6 +1030,11 @@ const PUMP={
   `With the shock unweighted, thread on a shock pump and add air about 75 psi at a time. After each step, with the pump still attached, cycle the shock a few times past the sag point to balance the positive and negative chambers.`,
   `The first few cycles can feel firm or top out. That's normal until the negative chamber fills.`,
   `At your starting pressure, cycle the shock and recheck the pressure, never above 350 psi. Then measure sag: push the O-ring against the seal, sit on the bike in your riding position, get off without bouncing, and measure.`],
+ runt:[`Turn compression fully counterclockwise (open). Turn rebound fully clockwise (closed), then count counterclockwise to its starting clicks.`,
+  `Pump the Runt's HIGH chamber first, to the HIGH pressure above (twice the LOW pressure).`,
+  `Then pump the LOW chamber to the LOW pressure above. Attaching the pump can drop the reading by 10–15 psi, which DSD says is normal, so read the gauge as you pump.`,
+  `Measure sag: push the O-ring against the wiper seal, get on dressed to ride in your riding position, step off without bouncing, and measure.`,
+  `Adjust the LOW chamber in 2.5–5 psi steps until sag is on target, and reset HIGH to twice LOW each time (DSD's rule). Write both numbers down.`],
  dvoShock:[`Turn each dial fully clockwise (closed), then count counterclockwise to the starting clicks above.`,
   `Set the reservoir bladder pressure through the valve under the reservoir cap, using the range above.`,
   `Thread a shock pump onto the main air valve and set the pressure to your body weight in pounds, never above the maximum. Cycle the shock slowly through about 25% of its travel a few times and top up.`,
@@ -1037,7 +1069,7 @@ const PUMP={
   `Measure sag: the difference in exposed spring length (top coil to bottom coil) with and without you on the bike. Or use the O-ring as on an air shock if you can reach it. The coil spring guide on the Setup step has the steps and your target in mm.`,
   `If sag is too deep even with as much preload as your shock allows, you need a firmer spring. If it's too shallow with almost no preload, you need a softer one.`]};
 ["foxShock","rsShock","ohShock","dvoShock","mzShock","coil","ccShock","manShock"].forEach(k=>PUMP[k].push(`Changed the shock a lot? Recheck fork sag too. A firmer shock shifts more of your weight onto the fork, so go back and forth until both are on target.`));
-["rs","fox","mz","oh","dvo","cc","ccCoil","man","manR8"].forEach(k=>PUMP[k].push(`Setting up the shock too? Recheck fork sag after you've set it: big shock changes shift your weight and change the fork's sag.`));
+["rs","fox","mz","oh","dvo","cc","ccCoil","man","manR8","runt"].forEach(k=>PUMP[k].push(`Setting up the shock too? Recheck fork sag after you've set it: big shock changes shift your weight and change the fork's sag.`));
 const FIXES=[
  {s:"It feels harsh, or rides low in its travel",b:"any",t:"Check sag first. Then, before opening compression, try adding a click or two of low-speed compression. Opening it lets the fork sink past the soft early part of its travel and ride in the firmer middle (packing down), which feels harsher, not softer. A little more support keeps it riding up where it's supple. Only harsh on sharp, square-edged hits? Try a couple of clicks more high-speed compression first: opened too far, the fork blows past its early travel into the firmer middle. If firmer just feels harsher, go back and open it a click. Also check rebound isn't so slow that it can't recover between bumps."},
  {s:"It bucks or kicks back after a big landing or G-out",b:"any",t:"Rebound is too fast for big hits. If you have a high-speed rebound dial, slow it a click or two: it controls the return from deep in the travel. Otherwise slow rebound a click. It should come back up under control instead of throwing the bike at you."},
@@ -1051,7 +1083,7 @@ const FIXES=[
  {s:"The pressure drops overnight",b:"air",t:"A few psi between rides is normal with temperature swings. If it keeps losing air, check that the valve core is tight and the cap is on. A steady leak means a seal needs service."},
  {s:"I can't reach sag with the spring I have",b:"coil",t:"Preload is only for fine-tuning; stay within your shock's limit (two turns after the spring stops moving on Fox shocks). Go up a spring rate if sag is too deep, down one if it's too shallow. Springs usually come in 25 or 50 lb/in steps, though some brands only offer 50."}];
 function renderHowto(kind){
- const key=U.mode==="fork"?(verOf().pump||U.brand):kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock",ext:"extShock",cc:"ccShock",man:"manShock"}[U.sb];
+ const key=U.mode==="fork"?(verOf().runtOn?"runt":verOf().pump||U.brand):kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock",ext:"extShock",cc:"ccShock",man:"manShock"}[U.sb];
  $("pump-steps").innerHTML=PUMP[key].map(x=>`<li>${x}</li>`).join("");
  $("sag-tips").innerHTML=`<b>For a reading you can trust:</b> once you're on the bike, bounce gently a couple of times to free up the seals before the final reading. Measure in the same position every time: standing and centered over the bike for trail and enduro riding, or seated if you mostly ride seated, like cross-country. A wall or door frame to lean an elbow on helps. Ride with a pack? Wear it.`;
  const ok=f=>f.b==="any"||(f.b==="fork"&&U.mode==="fork")||(kind==="coil"?f.b==="coil":(f.b==="air"||(f.b==="foxfork"?(U.mode==="fork"&&U.brand==="fox"):f.b==="other"?!(U.mode==="fork"&&U.brand==="fox"):false)));
@@ -1062,7 +1094,7 @@ function renderHowto(kind){
 const sagText=(sg,len)=>{const mm=x=>Math.round(len*x/10)/10;return sg[0]===sg[1]?`${mm(sg[0])} mm<em> ${sg[0]}% of travel</em>`:`${mm(sg[0])}–${mm(sg[1])} mm<em> ${sg[0]}–${sg[1]}% of travel</em>`};
 const capf=s=>s.charAt(0).toUpperCase()+s.slice(1);
 function setLines(L){if(L.some(x=>/counterclockwise from fully closed/.test(x)))L.push("Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. \"Of\" is the dial's total. Where a maker counts from fully open, the app has converted it.");NEEDCOUNT=false;const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});const one=h=>h.replace(/(^|[^\d–-])1 clicks\b/g,"$11 click");$("r-lines").innerHTML=one(P.join(""));$("r-notes").innerHTML=one(N.join(""))}
-const SNAPK={fork:["brand","fork","year","ver","travel","damp","w","unit","eb"],shock:["sb","sk","stroke","rate","w","unit","eb","wtrav","csag","cbias","bike","levA","levB"]};
+const SNAPK={fork:["brand","fork","year","ver","travel","damp","w","unit","eb","runt","lrunt"],shock:["sb","sk","stroke","rate","w","unit","eb","wtrav","csag","cbias","bike","levA","levB"]};
 const snapOf=m=>Object.fromEntries(SNAPK[m].map(k=>[k,U[k]]));
 
 // ---------- garage: identity, labels, "add it?" prompt ----------
@@ -1167,7 +1199,7 @@ function renderGarage(){let saved;try{saved=G.saved||(G.saved=[])}catch(e){retur
  const el=$("garage");
  if(!mine.length){el.innerHTML=`<h2>Your garage</h2><div class="gl"><button class="gadd" id="g-addbike">+ Add a bike</button></div>`;$("g-addbike").onclick=()=>openLanding();return}
  el.innerHTML=`<h2>Your garage</h2><div class="gl">`+mine.map(x=>`<div class="gi${JSON.stringify(x.snap)===cur?" on":""}"><button data-gload="${x.id}">${esc(x.name||x.label)}<small>${esc(x.name?x.label:(x.snap.unit==="kg"?x.snap.w+" kg":x.snap.w+" lb"))}</small></button><button class="x" data-gdel="${x.id}" aria-label="Remove ${esc(x.name||x.label)}">×</button></div>`).join("")+`<button class="gadd" id="g-addbike">+ Add a bike</button></div>`;$("g-addbike").onclick=()=>openLanding();
- el.querySelectorAll("[data-gload]").forEach(b=>b.onclick=()=>{const x=saved.find(y=>y.id===b.dataset.gload);Object.assign(U,x.snap);U.mode=x.kind;$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;renderSetup()});
+ el.querySelectorAll("[data-gload]").forEach(b=>b.onclick=()=>{const x=saved.find(y=>y.id===b.dataset.gload);if(x.kind==="fork"){U.runt=false;U.lrunt=false}Object.assign(U,x.snap);U.mode=x.kind;$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;renderSetup()});
  el.querySelectorAll("[data-gdel]").forEach(b=>b.onclick=()=>{G.saved=saved.filter(y=>y.id!==b.dataset.gdel);svcSave();renderGarage()})}
 // Riding profiles: changes from the maker's starting point. Sag and offsets follow what tuners and riders commonly run
 // (EMTB Forums park guide, Howler Bike Park, Cam Cole, ENDURO, Blister, Competitive Cyclist, Vital/MTBR threads). They are the app's suggestions, not maker settings.
@@ -1220,7 +1252,7 @@ function renderSetup(){
  fixU();
  chips("c-mode",[["fork","Fork"],["shock","Rear shock"]],U.mode,v=>{U.mode=v;renderSetup()});
  chips("c-unit",[["lb","lb"],["kg","kg"]],U.unit,v=>{if(v!==U.unit){U.w=Math.round(v==="kg"?U.w/2.20462:U.w*2.20462);U.unit=v;$("wt").value=U.w}renderSetup()});
- $("st-u-l").textContent=U.mode==="shock"?"Shock":"Fork";$("fork-ui").hidden=U.mode!=="fork";$("shock-ui").hidden=U.mode!=="shock";$("eb-row").hidden=false;
+ $("st-u-l").textContent=U.mode==="shock"?"Shock":"Fork";$("fork-ui").hidden=U.mode!=="fork";$("shock-ui").hidden=U.mode!=="shock";$("eb-row").hidden=false;if(U.mode!=="fork"){$("runt-row").hidden=true;$("lrunt-row").hidden=true}
  $("cta").hidden=false;$("shock-learn").hidden=true;
  chips("c-prof",PROFILES.map(p=>[p.id,p.name]),profOf().id,v=>{U.prof=v;renderSetup()});{const r=$("c-prof"),b=r.querySelector('[aria-pressed="true"]');if(b&&(b.offsetLeft<r.scrollLeft||b.offsetLeft+b.offsetWidth>r.scrollLeft+r.clientWidth))r.scrollLeft=b.offsetLeft-r.offsetLeft-8}
  const tk0=tuneKey(),keepS=s&&{...s},keepR=R&&{...R};
@@ -1269,7 +1301,7 @@ function openCard(){const m=U.mode,key=idOf(m,U),sv=G.saved||[],hit=sv.find(x=>x
 let TUNEK=null,TUNES=null;const TUNESK="tune-state-v2";
 // slider settings are kept per part (fork and shock separately), so switching between them doesn't lose either
 function tuneLoad(){if(!TUNES){try{TUNES=JSON.parse(localStorage.getItem(TUNESK)||"{}")||{}}catch(e){TUNES={}}}return TUNES}
-const tuneKey=()=>JSON.stringify([U.mode,U.mode==="fork"?[U.brand,U.fork,U.year,U.ver,U.travel,U.damp]:[U.sb,U.sk,U.stroke,U.rate,U.levA||0,U.levB||0,U.wtrav],U.w,U.unit,U.eb,U.prof]);
+const tuneKey=()=>JSON.stringify([U.mode,U.mode==="fork"?[U.brand,U.fork,U.year,U.ver,U.travel,U.damp].concat(U.runt?["runt"]:[],U.lrunt?["lrunt"]:[]):[U.sb,U.sk,U.stroke,U.rate,U.levA||0,U.levB||0,U.wtrav],U.w,U.unit,U.eb,U.prof]);
 function saveTune(){if(!TUNEK||!s)return;const T=tuneLoad();delete T[TUNEK];T[TUNEK]={s:{...s},R:{...R},t:Date.now()};const ks=Object.keys(T);if(ks.length>40)ks.sort((a,b)=>T[a].t-T[b].t).slice(0,ks.length-40).forEach(x=>delete T[x]);try{localStorage.setItem(TUNESK,JSON.stringify(T))}catch(e){}}
 function renderFork(){
  const B=CAT[U.brand],fk=forkOf(),y=yearOf(),v=verOf(),dm=DMP[U.damp],w=lb();
@@ -1280,9 +1312,10 @@ function renderFork(){
  chips("c-ver",y.versions.map((x,i)=>[i,x.name]),U.ver,x=>{U.ver=+x;renderSetup()});
  chips("c-travel",v.travel.map(t=>[t,t+" mm"]),U.travel,x=>{U.travel=+x;renderSetup()});
  chips("c-damp",v.dampers.map(k=>[k,DMP[k].name]),U.damp,x=>{U.damp=x;renderSetup()});
- $("r-title").textContent=`${B.name} ${fk.name} ${U.year}${y.versions.length>1?" · "+v.name:""} · ${U.travel} mm · ${dm.name}${U.eb?" · e-bike":""}`;
- $("r-l1").textContent=v.ramp?"Main chamber":"Starting pressure";$("r-l3").textContent=v.ramp?(v.rampName||"Ramp-up chamber"):v.tokLabel||(U.brand==="fox"?"Volume spacers":"Tokens");
+ $("r-title").textContent=`${B.name} ${fk.name} ${U.year}${y.versions.length>1?" · "+v.name:""} · ${U.travel} mm · ${dm.name}${v.runtOn?" · DSD Runt":""}${v.lruntOn?" · Lower Runt":""}${U.eb?" · e-bike":""}`;
+ $("r-l1").textContent=v.ramp?(v.mainName||"Main chamber"):"Starting pressure";{const ok=runtOK(verRaw()),lo=lruntOK(verRaw());$("runt-row").hidden=!ok;$("runt").checked=!!(U.runt&&ok);$("lrunt-row").hidden=!lo;$("lrunt").checked=!!(U.lrunt&&lo)}$("r-l3").textContent=v.ramp?(v.rampName||"Ramp-up chamber"):v.tokLabel||(U.brand==="fox"?"Volume spacers":"Tokens");
  const p=forkPsi(v,w,U.travel,U.eb),warn=[...p.flags];let cs=null;
+ if(v.runtOn&&p.psi!=null&&p.psi*2>200)warn.push("Twice your LOW pressure is over 200 psi, the most DSD says it has tested in the HIGH chamber, so HIGH is capped at 200. Ask DSD before going higher.");
  if(v.coilBands){const B=v.coilBands[String(U.travel)]||v.coilBands.all||[],inn=B.filter(b=>w>=b[2]&&w<=b[3]),mid=b=>Math.abs(w-(b[2]+b[3])/2);
   cs=(inn.length?inn:B).slice().sort((a,b)=>mid(a)-mid(b))[0];if(!inn.length)warn.push(`Your weight is outside ${CAT[U.brand].name}'s chart${v.coilBands.all?"":` for ${U.travel} mm`}, so this is the nearest spring. Check sag and ask ${CAT[U.brand].name} if it's off.`);
   COILF={rate:cs[1],alt:inn.filter(b=>b!==cs)}}else COILF=null;
@@ -1290,7 +1323,7 @@ function renderFork(){
  $("r-psi").textContent=p.psi!=null?p.psi+" psi":"—";
  if(cs){$("r-l1").textContent="Spring";$("r-psi").textContent=`${cs[1]} lb/in`;$("r-l3").textContent=v.coilL3?v.coilL3[0]:"Bottom-out air"}
  $("r-sag").innerHTML=sagText([20,20],U.travel);
- const tk=ebV(v).tokens[String(U.travel)];$("r-tok").textContent=v.ramp?interp(rampOf(v).W,rampOf(v).P,w).psi+" psi":tk?`${tk[0]} stock · ${tk[1]} max`:"—";
+ const tk=ebV(v).tokens[String(U.travel)];$("r-tok").textContent=v.ramp?rampPsi(v,w)+" psi":tk?`${tk[0]} stock · ${tk[1]} max`:"—";
  if(cs)$("r-tok").textContent=v.coilL3?v.coilL3[1]:"5–50 psi";
  if(v.tokText)$("r-tok").textContent=typeof v.tokText==="string"?v.tokText:v.tokText[String(U.travel)]||"—";
  const L=[];if(cs)L.push(`<b>Spring:</b> ${cs[0]}, ${cs[1]} lb/in, for ${Math.round(w)} lb${v.coilBands.all?"":` at ${U.travel} mm`} on ${CAT[U.brand].name}'s chart (${cs[2]}–${cs[3]} lb).${COILF.alt.length?` ${COILF.alt.map(b=>`${b[0]} (${b[1]} lb/in)`).join(" and ")} also cover${COILF.alt.length>1?"":"s"} your weight.`:""}`);
@@ -1620,7 +1653,7 @@ function applyFork(realPsi,rebR,rebH){LEV=null;
  let l=dm.init.l||0,hh=dm.init.h||0;if(U.damp==="gx"&&v.start&&v.start.gx){l=dm.l-v.start.gx[1];hh=dm.h-v.start.gx[0]}if(U.damp==="gx2"&&v.start&&v.start.gx2){l=dm.l-v.start.gx2[1];hh=dm.h-v.start.gx2[0]}
  const base={prof:v.shape,damp:"x",t:v.ramp?0:Math.min(tk?tk[0]:1,TMAX),n:0,r,l,h:hh,hr:dm.hr?Math.min(dm.hr,rebH??Math.round(dm.hr/2)):0};
  SAGT=.2;PS=1;
- if(v.ramp){const rr=interp(rampOf(v).W,rampOf(v).P,lb()).psi;
+ if(v.ramp){const rr=rampPsi(v,lb());
   // scale so main and ramp-up keep the chart's ratio; iterate because the sag pressure depends on the ramp pressure
   base.rp=rr;PS=realPsi?realPsi/90:1;for(let i=0;i<6;i++){base.p=pAt(base,.2);PS=realPsi?realPsi/base.p:1}
   $("rp").min=Math.max(5,Math.round(rr*.7/5)*5);$("rp").max=Math.round(rr*1.3/5)*5;$("rp").value=rr}
@@ -1935,6 +1968,8 @@ $("rate").addEventListener("input",e=>{const v=parseFloat(e.target.value);if(v>0
 [["lev-a","levA"],["lev-b","levB"],["lev-t","wtrav"]].forEach(([i,k])=>$(i).addEventListener("change",e=>{const v=parseFloat(e.target.value);if(v>0){U[k]=v;U.bike=U.bike&&U.bike!=="custom"&&k!=="wtrav"?"custom":U.bike||"custom";renderSetup()}}));
 [["cg-trav","wtrav"],["cg-sag","csag"],["cg-bias","cbias"]].forEach(([i,k])=>$(i).addEventListener(i==="cg-sag"?"change":"input",e=>{const v=parseFloat(e.target.value);if(v>0){U[k]=v;renderCoil(SHK[U.sb].shocks[U.sk]);rememberLast();renderGarage()}}));
 $("eb").addEventListener("change",e=>{U.eb=e.target.checked;renderSetup()});
+$("runt").addEventListener("change",e=>{U.runt=e.target.checked;USERPICK=true;renderSetup()});
+$("lrunt").addEventListener("change",e=>{U.lrunt=e.target.checked;USERPICK=true;renderSetup()});
 function setTab(x){tab=x;const learn=x==="s"||x==="d",setup=learn||x==="u";
  $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));
  $("st-u").setAttribute("aria-selected",String(x==="u"));$("tb-s").setAttribute("aria-selected",String(x==="s"));$("tb-d").setAttribute("aria-selected",String(x==="d"));
