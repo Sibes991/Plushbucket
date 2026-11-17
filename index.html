@@ -87,7 +87,7 @@ main>div>.card:first-child,main>.card:first-child{margin-top:18px}
 .field{display:grid;gap:6px;min-width:0}
 .field>label,.lab{font-size:.9rem;font-weight:600;color:var(--muted)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px 14px}
-select,input[type=number],input[type=date]{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;min-height:44px;padding:8px 12px;width:100%;min-width:0}
+select,input[type=number],input[type=date],input[type=text],input[type=url]{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;min-height:44px;padding:8px 12px;width:100%;min-width:0}
 .wide{grid-column:1/-1}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .tiles button{border-radius:10px;min-height:58px;text-align:left;padding:8px 12px;font:italic 700 condensed 1.4rem/1.05 var(--display);background:var(--sunk)}
@@ -353,8 +353,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .brk-list{list-style:none;margin:12px 0 0;padding:0}.brk-list li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.92rem}
 .shop-part{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px}.shop-part h3{margin:0 0 6px;font-size:.98rem}
 .shop-part .grid2{gap:8px}.shop-part .field{margin:0}.shop-out{margin-top:14px;text-align:center}.shop-qr{background:#fff;border-radius:12px;padding:10px;display:inline-block;width:min(300px,100%)}.shop-qr img{display:block;width:100%;height:auto;image-rendering:pixelated}
-.shop-out input{width:100%;margin-top:10px;font-size:.85rem}.shop-out .brk-btns{justify-content:center;margin-top:8px}
+.shop-out input{width:100%;margin-top:10px}.shop-out .brk-btns{justify-content:center;margin-top:8px}
 .scard table{width:100%;border-collapse:collapse;margin-top:4px}.scard td{padding:4px 0;border-bottom:1px solid #e3e7df;vertical-align:top}.scard td:first-child{color:#4b5c53;width:38%}
+/* iPhone zooms into any text box under 16px and won't zoom back out, so keep every box at 16px or more */
+:is(input,select,textarea):not([type=range]):not([type=checkbox]):not([type=radio]){font-size:max(16px,1em)}
 /* trail notes */
 textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:64px;resize:vertical}
 .tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
