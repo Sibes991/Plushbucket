@@ -5,6 +5,10 @@ name: Apple Watch screenshots
 
 on:
   workflow_dispatch:
+  # also runs on pushes to the watch branch while the watch app is being built
+  push:
+    branches: [watch]
+    paths: ["native/watch/**", ".github/workflows/watch-screenshots.yml"]
 
 jobs:
   shots:
