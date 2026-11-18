@@ -47,7 +47,9 @@ jobs:
         run: test -d ios || npx cap add ios
       - run: npm run icons -- --ios
       - run: npx cap sync ios
-      - name: Build for the iOS Simulator (no signing)
+      - name: Add the Apple Watch app
+        run: bash watch/add-to-ios.sh
+      - name: Build for the iOS Simulator (no signing; builds the watch app too)
         working-directory: native/ios/App
         run: |
           xcodebuild -project App.xcodeproj -scheme App -configuration Debug \

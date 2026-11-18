@@ -1,6 +1,7 @@
 # Builds the iPhone app, signs it with Apple, and uploads it to TestFlight.
 # Run it from GitHub: Actions → "iPhone to TestFlight" → Run workflow.
 # Needs these repository secrets: ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8, APPLE_TEAM_ID.
+# The Apple Watch app (native/watch) is added to the project and ships inside the iPhone app.
 name: iPhone to TestFlight
 
 on:
@@ -29,6 +30,13 @@ jobs:
         with: { xcode-version: latest-stable }
       - run: xcodebuild -version
         working-directory: .
+      - name: Check the iOS SDK (27.1 or newer lets the app fill the iPhone Duo's inner screen)
+        working-directory: .
+        run: |
+          v=$(xcrun --sdk iphoneos --show-sdk-version); echo "iOS SDK $v"
+          if [ "$(printf '%s\n' 27.1 "$v" | sort -V | head -1)" != "27.1" ]; then
+            echo "::warning::iOS SDK $v is older than 27.1, so on iPhone Duo the app shows at phone size in the middle of the inner screen."
+          fi
       - uses: actions/setup-node@v5
         with: { node-version: 22 }
 
@@ -45,11 +53,20 @@ jobs:
         run: test -d ios || npx cap add ios
       - run: npm run icons -- --ios
       - run: npx cap sync ios
+      - name: Add the Apple Watch app
+        run: bash watch/add-to-ios.sh
 
       - name: Save the App Store Connect key
         run: |
           mkdir -p "$RUNNER_TEMP/keys"
           printf '%s\n' "${{ secrets.ASC_KEY_P8 }}" > "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
+
+      # Every run is a fresh Mac, so Xcode makes a new development certificate each time and Apple caps how
+      # many an account can have. This revokes the leftovers from earlier runs (only ones GitHub builds made).
+      - name: Free up signing certificates from earlier GitHub builds
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv" && "$RUNNER_TEMP/venv/bin/pip" install -q pyjwt cryptography
+          KEY_P8="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" "$RUNNER_TEMP/venv/bin/python" scripts/asc-certs.py cleanup
 
       - name: Mark the app as using only standard encryption (skips a TestFlight question)
         working-directory: native/ios/App/App
@@ -64,7 +81,6 @@ jobs:
             -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
-            PRODUCT_BUNDLE_IDENTIFIER=com.plushbucket.app \
             MARKETING_VERSION="${{ inputs.version || '1.0' }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
       - name: Upload to TestFlight
@@ -85,6 +101,11 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID"
+
+      - name: Revoke this run's development certificate
+        if: always()
+        continue-on-error: true
+        run: KEY_P8="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" "$RUNNER_TEMP/venv/bin/python" scripts/asc-certs.py cleanup
 
       - name: Remove the key
         if: always()

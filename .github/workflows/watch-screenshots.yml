@@ -1,0 +1,38 @@
+# Builds the Apple Watch app for the watchOS Simulator and takes the App Store screenshots with sample bikes.
+# Run it from GitHub: Actions → "Apple Watch screenshots" → Run workflow, then download
+# "plushbucket-watch-screenshots" from the run's Artifacts and upload them under Apple Watch in App Store Connect.
+name: Apple Watch screenshots
+
+on:
+  workflow_dispatch:
+
+jobs:
+  shots:
+    runs-on: macos-latest
+    defaults: { run: { working-directory: native } }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: maxim-lobanov/setup-xcode@v1
+        with: { xcode-version: latest-stable }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - run: npm install
+      - run: npm run build:web
+      - name: Create the iOS project if it isn't committed yet
+        run: test -d ios || npx cap add ios
+      - run: npx cap sync ios
+      - name: Add the Apple Watch app
+        run: bash watch/add-to-ios.sh
+      - name: Build the watch app for the Simulator (no signing)
+        working-directory: native/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -target PlushbucketWatch -sdk watchsimulator -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO SYMROOT="$RUNNER_TEMP/wbuild" \
+            INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp=YES build
+      - name: Take the screenshots
+        run: bash watch/screenshots.sh "$RUNNER_TEMP/wbuild/Debug-watchsimulator/PlushbucketWatch.app" "$GITHUB_WORKSPACE/watch-shots"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: plushbucket-watch-screenshots
+          path: watch-shots/*.png
+          retention-days: 7
