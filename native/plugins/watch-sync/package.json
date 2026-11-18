@@ -1,0 +1,10 @@
+{
+  "name": "plushbucket-watch-sync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plushbucket on Apple Watch, phone side: sends garage settings to the watch and takes back rides timed on it.",
+  "files": ["ios/Sources", "Package.swift"],
+  "capacitor": {
+    "ios": { "src": "ios" }
+  }
+}

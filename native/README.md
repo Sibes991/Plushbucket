@@ -34,6 +34,15 @@ After creating `android/` and `ios/` the first time, commit them. Health permiss
 - The service log note says data is saved on the phone and erased if the app is deleted
 - Safe-area padding at the top for the notch and status bar
 
+## Apple Watch
+
+`watch/PlushbucketWatch/` is a small SwiftUI watch app that ships inside the iPhone app. It shows each garage bike's pressure, sag and clicks, and has a ride timer whose hours go into the phone's service log.
+
+- The iPhone project is generated on every build, so `watch/add-to-ios.sh` adds the watch target to it after `npx cap sync ios` (it runs `watch/add-watch-target.rb`, which uses the `xcodeproj` Ruby gem).
+- The phone side is the `plugins/watch-sync` Capacitor plugin. `index.html` sends the garage to it (`WatchSync.sendBikes`) and takes back rides timed on the watch (`WatchSync.takeRides`).
+- Bundle ID `com.plushbucket.app.watchkitapp`, watchOS 10 or newer. Xcode's automatic signing registers it on the first TestFlight build.
+- App Store screenshots: Actions → **Apple Watch screenshots** runs the app in the watchOS Simulator with sample bikes (`-PBDemo -PBShot list|fork|shock|ride|save`).
+
 ## Store details
 
 - App ID: `com.plushbucket.app`. Changing it is easy now, but it's permanent once an app is published.

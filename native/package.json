@@ -19,7 +19,8 @@
     "@capacitor/filesystem": "^8.0.0",
     "@capacitor/ios": "^8.0.0",
     "@capacitor/share": "^8.0.0",
-    "plushbucket-trail-notes": "file:plugins/trail-notes"
+    "plushbucket-trail-notes": "file:plugins/trail-notes",
+    "plushbucket-watch-sync": "file:plugins/watch-sync"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

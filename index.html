@@ -47,7 +47,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);ov
 .legal{margin:10px auto 4px;max-width:520px;text-align:left}.legal summary{cursor:pointer;text-align:center;font-weight:600;padding:8px 0;list-style-position:inside}.legal p{margin:4px 0 8px}
 .copy{margin:32px 4px 0;padding-top:14px;border-top:1px solid rgba(26,51,40,.12);text-align:center;font-size:.8rem;line-height:1.5;opacity:.7}.copy a{color:inherit;display:inline-block;padding:8px 2px;margin:-8px 0}
 main{max-width:640px;margin:0 auto;padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.hero{position:relative;margin:0 calc(50% - 50vw);background:var(--pine);color:var(--on-pine);padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) 58px;clip-path:polygon(0 0,100% 0,100% calc(100% - 22px),0 100%);overflow:hidden}
+.hero{position:relative;margin:0 calc(50% - 50vw + (max(16px,env(safe-area-inset-left,0px)) - max(16px,env(safe-area-inset-right,0px))) / 2) 0 calc(50% - 50vw + (max(16px,env(safe-area-inset-right,0px)) - max(16px,env(safe-area-inset-left,0px))) / 2);background:var(--pine);color:var(--on-pine);padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 58px max(16px,env(safe-area-inset-left,0px));clip-path:polygon(0 0,100% 0,100% calc(100% - 22px),0 100%);overflow:hidden}
 .topo{position:absolute;inset:0;width:100%;height:100%}
 .topo .ct path{fill:none;stroke:var(--on-pine);stroke-opacity:.10;stroke-width:1}
 .topo .trail{fill:none;stroke:var(--accent);stroke-width:3.5;stroke-dasharray:10 7;stroke-linecap:round;opacity:.95}
@@ -332,7 +332,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 #ride-parts{display:grid;gap:2px}
 /* setup card and balance check */
 .cardrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}.cardrow .fk{margin:0;flex:1;min-width:150px}
-#card-ov{position:fixed;inset:0;z-index:60;background:rgba(12,23,18,.72);overflow:auto;padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px))}
+#card-ov{position:fixed;inset:0;z-index:60;background:rgba(12,23,18,.72);overflow:auto;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 .scard{max-width:460px;margin:0 auto;background:#fff;color:#13221b;border-radius:16px;padding:16px 16px 12px;font-size:.86rem;line-height:1.35}
 .scard .sc-h{display:flex;justify-content:space-between;align-items:baseline;font:italic 800 .8rem var(--display);letter-spacing:.14em;color:#b4480f}.scard .sc-h span{font:500 .78rem var(--body,inherit);letter-spacing:0;color:#4b5c53}
 .scard h2{margin:4px 0 0;font:italic 800 semi-condensed 1.5rem/1.1 var(--display);color:#13221b}.scard .sc-sub{margin:2px 0 0;color:#4b5c53}
@@ -357,6 +357,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .scard table{width:100%;border-collapse:collapse;margin-top:4px}.scard td{padding:4px 0;border-bottom:1px solid #e3e7df;vertical-align:top}.scard td:first-child{color:#4b5c53;width:38%}
 /* iPhone zooms into any text box under 16px and won't zoom back out, so keep every box at 16px or more */
 :is(input,select,textarea):not([type=range]):not([type=checkbox]):not([type=radio]){font-size:max(16px,1em)}
+/* the phone apps can't link to tips outside Apple's and Google's own payment systems, so the Ko-fi line is website-only */
+.native .kofi{display:none}
 /* trail notes */
 textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:64px;resize:vertical}
 .tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
@@ -633,11 +635,13 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <p class="fk" id="bk-msg" role="status"></p>
 </section>
 </div>
-<footer class="copy"><i>Measured in the lab, tested on the trail.</i><br>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.
+<footer class="copy"><i>Measured in the lab, tested on the trail.</i><br><span class="kofi">Plushbucket is free. If it helped you, <a href="https://ko-fi.com/sibes991" target="_blank" rel="noopener">buy me a coffee on Ko-fi</a>.<br></span>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.
 <details class="legal"><summary>Disclaimer</summary><p>Plushbucket gives starting points for suspension setup, based on manufacturers' published setup guides and, where those don't exist, rider and tuner sources (labelled in the app). It isn't a substitute for your fork or shock's manual or a qualified mechanic, and makers can change their specs. Always follow the manufacturer's instructions, never exceed the maximum pressure printed on your fork or shock, and check your bike is safe before you ride. Mountain biking is dangerous and you ride at your own risk. Plushbucket is provided as is, without warranty. It isn't affiliated with or endorsed by any suspension brand; brand and product names belong to their owners.</p></details>
 <a href="https://plushbucket.com/terms">Terms &amp; disclaimer</a> · <a href="https://plushbucket.com/privacy">Privacy</a></footer>
 </main>
 <script>
+try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())document.documentElement.classList.add('native')}catch(e){}
+
 // true inside the iPhone and Android apps (Capacitor shell), false on the website
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 /* Plushbucket · © 2026 Plushbucket. All rights reserved. */
@@ -2063,7 +2067,7 @@ async function svcInit(){
  try{const raw=localStorage.getItem(SK);if(raw)G=JSON.parse(raw)}catch(e){}
  maybeLanding();
  if(tab==="v")renderService();renderGarage();maybeLanding()}
-async function svcSave(){try{localStorage.setItem(SK,JSON.stringify(G))}catch(e){}
+async function svcSave(){try{localStorage.setItem(SK,JSON.stringify(G))}catch(e){}watchSoon();
  if(svcRef){try{await svcRef.set(JSON.parse(JSON.stringify(G)))}catch(e){svcMode="device";svcRef=null;$("svc-where").textContent="Couldn't save to your account just now, so this is saved on this device only."}}}
 function effHours(p){let h=p.base||0;G.rides.forEach(r=>{if(r.parts.includes(p.id))h+=r.h*(r.wet?1.5:1)*(p.ebike?1.25:1)});return h}
 function partFromSetup(){
@@ -3867,6 +3871,33 @@ $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService(
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
  if(!(hrs>0)||!ids.length)return;G.rides.push({id:uidGen(),date:$("ride-date").value||today(),h:hrs,wet:!!SV.wet,parts:ids});svcSave();renderService()};
 svcInit();
+// ---------- Apple Watch (iPhone app only): send each garage bike's settings to the watch, take back rides timed on it ----------
+var WSP,WLAST="",WT=null;
+function watchPlugin(){if(WSP===undefined){WSP=null;try{if(NATIVE&&Capacitor.isPluginAvailable&&Capacitor.isPluginAvailable("WatchSync"))WSP=Capacitor.registerPlugin?Capacitor.registerPlugin("WatchSync"):Capacitor.Plugins.WatchSync}catch(e){}}return WSP}
+// renders each saved fork and shock the same way the setup card does, then puts Setup back how it was
+function withSnap(x,fn){const keep={...U};let r=null;GRAB++;try{Object.assign(U,x.snap);U.mode=x.kind;renderSetup();r=fn()}catch(e){}
+ Object.keys(U).forEach(k=>delete U[k]);Object.assign(U,keep);renderSetup();GRAB--;return r}
+function watchBikes(){const sv=G.saved||[],P=profOf(),out=t=>t.replace(/ clicks? counterclockwise from fully closed/g," out");
+ return[...new Set(sv.map(x=>x.bike||x.id))].map(b=>{const ps=sv.filter(x=>(x.bike||x.id)===b).sort((a,c)=>a.kind===c.kind?0:a.kind==="fork"?-1:1),s0=ps[0].snap||{};
+  const parts=ps.map(x=>withSnap(x,()=>{const g=cardGrab();return{id:x.id,kind:x.kind,svc:partFromSetup().label,title:g.title,l1:g.l1,psi:g.psi,sag:g.sag.replace(/^([\d.,–]+ mm) /,"$1 · "),l3:g.l3,tok:g.tok,
+   lines:g.lines.map(([h,t])=>({h,t:out(t)})).concat(g.prof.map(t=>({h:P.name,t:out(t)})))}})).filter(Boolean);
+  return{id:b,name:ps[0].name||ps[0].label,rider:`${s0.w} ${s0.unit} rider${s0.eb?" · e-bike":""}`,profile:P.name,parts}}).filter(b=>b.parts.length)}
+async function watchPush(){const W=watchPlugin();if(!W||LD||GRAB)return;
+ const a=document.activeElement;if(!document.hidden&&a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){watchSoon();return}
+ try{const st=await W.status();if(!st||!st.installed)return}catch(e){return}
+ const j=JSON.stringify(watchBikes());if(j===WLAST)return;
+ try{const r=await W.sendBikes({json:j});if(r&&r.sent)WLAST=j}catch(e){}}
+function watchSoon(){if(!watchPlugin()||GRAB)return;clearTimeout(WT);WT=setTimeout(watchPush,2000)}
+// a ride timed on the watch counts toward service for that bike's fork and shock, the same as one logged here
+async function watchTake(){const W=watchPlugin();if(!W)return;let r;try{r=await W.takeRides()}catch(e){return}
+ let n=0;((r&&r.rides)||[]).forEach(s=>{let o;try{o=JSON.parse(s)}catch(e){return}if(!o||!(o.h>0)||G.rides.some(x=>x.id===o.id))return;
+  const ids=(o.parts||[]).map(pid=>{const x=(G.saved||[]).find(y=>y.id===pid);if(!x)return null;
+   return withSnap(x,()=>{const p=partFromSetup(),ex=G.parts.find(q=>q.label===p.label);if(ex)return ex.id;G.parts.push(p);return p.id})}).filter(Boolean);
+  if(!ids.length)return;G.rides.push({id:o.id,date:/^\d{4}-\d\d-\d\d$/.test(o.date)?o.date:today(),h:Math.round(o.h*100)/100,wet:!!o.wet,parts:ids});n++});
+ if(n){svcSave();if(tab==="v")renderService()}}
+if(watchPlugin()){try{watchPlugin().addListener("ride",()=>watchTake())}catch(e){}
+ setTimeout(()=>{watchTake();watchPush()},1500);
+ document.addEventListener("visibilitychange",()=>{if(document.hidden)watchPush();else watchTake()})}
 // ---------- backup and restore (all data lives in this browser) ----------
 const BKEYS=()=>[SK,TUNESK,LASTK,LDK];
 $("bk-exp").onclick=async()=>{const data={app:"Plushbucket",version:1,saved:new Date().toISOString(),store:{}};
@@ -3897,9 +3928,15 @@ $("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f
  // the phone apps already are installed and ship their files offline: no service worker, no install prompt
  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())return;
  if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
- const TF="https://testflight.apple.com/join/d4QJ23x4";
+ const TF="https://testflight.apple.com/join/d4QJ23x4",AS="";
  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
  // iPhone/iPad with the TestFlight link set: offer the native beta (also to people using the home-screen app)
+ if(ios&&AS){const bar=document.getElementById("inst"),go=document.getElementById("inst-go");
+  let seen=false;try{seen=!!localStorage.getItem("store-dismissed")}catch(e){}
+  if(!seen){bar.querySelector("b").textContent="Plushbucket for iPhone";document.getElementById("inst-t").textContent="Free on the App Store. Works offline on the trail.";
+   go.textContent="Get";bar.hidden=false;go.onclick=()=>{location.href=AS};
+   document.getElementById("inst-x").onclick=()=>{bar.hidden=true;try{localStorage.setItem("store-dismissed","1")}catch(e){}}}
+  return}
  if(ios&&TF){const bar=document.getElementById("inst"),go=document.getElementById("inst-go"),sh=document.getElementById("beta-sheet");
   let seen=false;try{seen=!!localStorage.getItem("beta-dismissed")}catch(e){}
   if(!seen){document.getElementById("beta-join").href=TF;bar.querySelector("b").textContent="Plushbucket for iPhone";document.getElementById("inst-t").textContent="Help test the app before it's in the App Store.";
