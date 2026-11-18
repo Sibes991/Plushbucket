@@ -35,6 +35,10 @@ jobs:
             INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp=YES build
       - name: Take the screenshots
         run: bash watch/screenshots.sh "$RUNNER_TEMP/wbuild/Debug-watchsimulator/PlushbucketWatch.app" "$GITHUB_WORKSPACE/watch-shots"
+      - name: Print the screenshots into the log (watch branch only, so they can be checked without downloading)
+        if: github.ref == 'refs/heads/watch'
+        working-directory: .
+        run: for f in watch-shots/*.png; do echo "PNG $f"; base64 -i "$f" | tr -d '\n'; echo; done
       - uses: actions/upload-artifact@v6
         with:
           name: plushbucket-watch-screenshots
