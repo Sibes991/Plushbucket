@@ -61,6 +61,13 @@ jobs:
           mkdir -p "$RUNNER_TEMP/keys"
           printf '%s\n' "${{ secrets.ASC_KEY_P8 }}" > "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
 
+      # Every run is a fresh Mac, so Xcode makes a new development certificate each time and Apple caps how
+      # many an account can have. This revokes the leftovers from earlier runs (only ones GitHub builds made).
+      - name: Free up signing certificates from earlier GitHub builds
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv" && "$RUNNER_TEMP/venv/bin/pip" install -q pyjwt cryptography
+          KEY_P8="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" "$RUNNER_TEMP/venv/bin/python" scripts/asc-certs.py cleanup
+
       - name: Mark the app as using only standard encryption (skips a TestFlight question)
         working-directory: native/ios/App/App
         run: /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" Info.plist || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" Info.plist
@@ -94,6 +101,11 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID"
+
+      - name: Revoke this run's development certificate
+        if: always()
+        continue-on-error: true
+        run: KEY_P8="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" "$RUNNER_TEMP/venv/bin/python" scripts/asc-certs.py cleanup
 
       - name: Remove the key
         if: always()

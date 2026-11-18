@@ -157,7 +157,7 @@ struct RideView: View {
                     Text(String(format: "%.1f h", hours)).font(Brand.big(44))
                     Toggle("Wet or muddy", isOn: $wet)
                     if workout.recording {
-                        Text("Saves the hours to your service log and the ride to Apple Fitness.")
+                        Text("Also saves the ride to Apple Fitness.")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -187,7 +187,7 @@ struct RideView: View {
                                 .foregroundStyle(Brand.orange)
                         }
                         .font(.headline.monospacedDigit())
-                        Text("Recording an Outdoor Cycle workout in Apple Fitness.")
+                        Text("Recording to Apple Fitness")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
