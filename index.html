@@ -359,6 +359,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 :is(input,select,textarea):not([type=range]):not([type=checkbox]):not([type=radio]){font-size:max(16px,1em)}
 /* the phone apps can't link to tips outside Apple's and Google's own payment systems, so the Ko-fi line is website-only */
 .native .kofi{display:none}
+/* count your dials */
+.dcount{margin-top:14px;border:1px dashed var(--line);border-radius:12px;padding:10px 12px}.dcount summary{cursor:pointer;font-weight:600}
+.dcount .grid2{margin-top:10px}.dcount .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 /* trail notes */
 textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:64px;resize:vertical}
 .tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
@@ -451,6 +454,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <ul class="lines" id="r-lines"></ul>
 <ul class="notes2" id="r-notes"></ul>
 <ul class="warn" id="r-warn"></ul>
+<details class="dcount" id="dcount" hidden><summary>Count your dials</summary><div id="dc-body"></div></details>
 <div class="cardrow"><button type="button" id="card-open">Setup card</button><span class="fk">Every number for this bike on one screen, to screenshot or print.</span></div>
 </section>
 <details class="sect coilg" id="coil-guide" open hidden><summary>Choose your coil spring</summary><div class="sect-body">
@@ -852,9 +856,12 @@ SHK.dvo={name:"DVO",shocks:{
  tpp:{name:"Topaz Prime",sub:"air · 2024 on",years:"2024–2027",kind:"air",tmax:2,neg:2,maxPsi:300,sag:[20,30],
   dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
   rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],start:"weight",bladder:"140–180 psi",spacers:"Up to two spacers in the positive chamber and two in the negative chamber.",
-  notes:["Dials: low-speed compression 5 clicks, high-speed 10, rebound 9."]},
- tp3:{name:"Topaz T3 Air",sub:"air · trail",years:"before Topaz Prime",kind:"air",neg:2,negGuess:true,maxPsi:300,sag:[30,30],start:"weight",bladder:"170–200 psi",lever:"3-position lever: open for descending.",spacers:"Clip-on spacers for the positive and negative chambers.",
-  notes:["DVO's T3 Air guide: 300 psi max, 20–30% sag, reservoir bladder 170–200 psi (max 200) by rider weight, rebound counted 1–9 from fully closed."]},
+  notes:["Dials: low-speed compression 5 clicks, high-speed 10, rebound 9.","Air pressure and rebound charts from DVO's Topaz Air set-up guide (version 2.1)."]},
+ tp3:{name:"Topaz T3 Air",sub:"air · trail",years:"before Topaz Prime",kind:"air",neg:2,negGuess:true,maxPsi:300,sag:[30,30],start:"weight",
+  dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
+  rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],
+  bladder:"170–200 psi",lever:"3-position lever: open for descending.",spacers:"Clip-on spacers for the positive and negative chambers.",
+  notes:["DVO's T3 Air guide: 300 psi max, 20–30% sag, reservoir bladder 170–200 psi (max 200) by rider weight, rebound counted 1–9 from fully closed.","Air pressure and rebound charts from DVO's Topaz Air set-up guide (version 2.1), which covers both the Prime and T3 dials; its rebound chart is for all Topaz models."]},
  jadep:{name:"Jade X Prime",sub:"coil · HSC and LSC dials",years:"2024–2027",kind:"coil",sag:[25,30],bladder:"140–180 psi",preload:"6 turns (6 mm)",
   notes:["DVO's Jade X set-up guide (v2.0): sag 25–30%; one turn of the collar is 1 mm of preload, never more than 6 mm. If you can't reach sag within that, change the spring.","Dials, counted from fully closed: rebound about 18 clicks, high-speed compression (green) 10, low-speed compression (black) 5. Start compression fully open and add support to taste.","Reservoir bladder 140–180 psi, never above 180: lighter riders toward 140, heavier toward 180."]},
  jade:{name:"Jade X",sub:"coil · T3 lever",years:"2023–2027",kind:"coil",sag:[30,30],bladder:"140–180 psi",preload:"6 turns (6 mm)",lever:"T3 three-position compression lever: Open for rough descents, Mid for support on smooth descents and technical climbs, Firm for smooth climbs.",
@@ -907,13 +914,15 @@ const yearOf=()=>forkOf().years.find(y=>y.label===U.year);
 const verRaw=()=>yearOf().versions[U.ver];
 // DSD Runt: an aftermarket dual-chamber air spring that replaces the tokens. Fit (forks, years, travel) is from DSD's shop pages;
 // setup is DSD's one rule (its tuning guide): LOW chamber at your usual pressure, 5–10 psi lower if you ran up to 2–3 tokens, HIGH at twice that.
-// Left out: BoXXer (DSD sells one, but the fork's pressures put twice-LOW far past the 200 psi DSD says it has tested), 2027 RockShox forks
-// (not on DSD's list), Dual Position Air, and E-Optimized / E-Bike+ Fox 38s from 2025 (DSD: not compatible).
+// BoXXer (DSD's shop, checked 2026-11-18): the BoXXer 35 Runt fits 2018–2023 forks at 200 mm, the BoXXer 38 Runt fits 2024–2026 (180 or 200 mm).
+// Most riders' BoXXer pressures put twice-LOW past the 200 psi DSD says it has tested; the app caps HIGH at 200 and says to ask DSD.
+// Revelation: DSD's Pike/Revelation Runt lists Revelation 2018 on, 120–160 mm. Left out: 2027 RockShox forks (not on DSD's list),
+// Dual Position Air, and E-Optimized / E-Bike+ Fox 38s from 2025 (DSD: not compatible).
 const T10=(a,b)=>{const o=[];for(let t=a;t<=b;t+=10)o.push(t);return o};
 const RUNTF={fox:{f32:{v:/^34/,t:T10(100,160)},f36:{t:T10(130,170)},f36sl:{t:T10(130,170)},f38:{t:[160,170,180],no:(y,n)=>/202[5-9]/.test(y)&&/^E-Bike\+$|E-Optimized/.test(n)},f40:{noYears:true},fpod:{t:[160,170]}},
- rs:{sid:{t:[120]},pike:{t:T10(120,160)},lyrik:{t:T10(140,180),y:/^(2021–2022|2023–2026)$/},zeb:{t:T10(160,190),y:/^(2021–2022|2023–2026)$/}},
+ rs:{sid:{t:[120]},pike:{t:T10(120,160)},revelation:{t:T10(120,160)},boxxer:{ty:{"2023 (35 mm)":[200],"2024–2026":[180,200]}},lyrik:{t:T10(140,180),y:/^(2021–2022|2023–2026)$/},zeb:{t:T10(160,190),y:/^(2021–2022|2023–2026)$/}},
  mz:{z1:{t:[150,160,170]},z2:{t:T10(120,160)}}};
-const runtOK=v=>{const r=(RUNTF[U.brand]||{})[U.fork];return!!r&&!!v&&!v.coilBands&&!v.ramp&&v.chart.kind!=="none"&&!/Linear XL|Dual Position/.test(v.name)&&(!r.v||r.v.test(v.name))&&(!r.y||r.y.test(U.year))&&(!r.t||r.t.includes(+U.travel))&&!(r.no&&r.no(U.year,v.name))};
+const runtOK=v=>{const r=(RUNTF[U.brand]||{})[U.fork];return!!r&&!!v&&!v.coilBands&&!v.ramp&&v.chart.kind!=="none"&&!/Linear XL|Dual Position/.test(v.name)&&(!r.v||r.v.test(v.name))&&(!r.y||r.y.test(U.year))&&(!r.t||r.t.includes(+U.travel))&&(!r.ty||(r.ty[U.year]||[]).includes(+U.travel))&&!(r.no&&r.no(U.year,v.name))};
 // DSD Lower Runt: replaces the lower half of the ZEB's air spring (DSD: ZEB only, the gold ButterCup air spring). DSD gives preload-shim and
 // negative-spacer guidance in words, not by weight, and no pressures.
 const lruntOK=v=>U.brand==="rs"&&U.fork==="zeb"&&U.year==="2023–2026"&&!!v&&/^DebonAir\+/.test(v.name);
@@ -1303,7 +1312,7 @@ function renderSetup(){
  {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else src=tuneLoad()[k]||null;
   if(src&&src.s&&src.s.prof===D.prof){s={...src.s};R={...(src.R||src.s)};cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
   TUNEK=k;saveTune()}
- rememberLast();renderGarage();renderAddPrompt();renderBal();if(!GRAB){if($("brk")&&$("brk").open)renderBrk(true);SHOP=null;if($("shop")&&$("shop").open)shopFill()}}
+ rememberLast();renderGarage();renderAddPrompt();renderBal();if(!GRAB){renderDcount();if($("brk")&&$("brk").open)renderBrk(true);SHOP=null;if($("shop")&&$("shop").open)shopFill()}}
 // ---------- balance check: measured sag at both ends against the profile's targets ----------
 function renderBal(){if(!$("bal-out"))return;const P=profOf(),tf=P.sag[0],tr=P.sag[1],T=U.travel,S=U.stroke,f=parseFloat($("bal-f").value),r=parseFloat($("bal-r").value),mm=x=>Math.round(x*10)/10;
  $("bal-fl").textContent=`Fork sag you measured (mm, of ${T} mm travel)`;$("bal-rl").textContent=`Shock sag you measured (mm, of ${S} mm stroke)`;
@@ -1410,8 +1419,8 @@ function renderShock(){
  const L=[],warn=[...(sh.warns||[])];let psi=null;
  if(sh.kind==="air"){
   $("r-l1").textContent="Starting pressure";
-  if(sh.start==="weight"){psi=Math.round(w*(sh.startMul||1));if(sh.startMul)L.push(`<b>Starting pressure:</b> your weight plus ${Math.round((sh.startMul-1)*100)}% ${sh.startWhy||"for the MegNeg can"}, then set it by sag.`);const mx=maxP(sh);if(mx&&psi>mx){warn.push(`Your weight in psi is above the ${mx} psi maximum, so it's capped. Don't exceed it.`);psi=mx}
-   $("r-psi").textContent=psi+" psi";L.push(U.sb==="fox"||sh.rule?`<b>Pressure source:</b> start at your body weight in pounds (${sh.rule||"Fox's rule"}), then set it by sag.`:U.sb!=="rs"?"<b>Pressure source:</b> start at your body weight in pounds, the usual shop rule, then set it by sag. Your frame maker's chart can fine-tune it.":"<b>Pressure source:</b> start at your body weight in pounds, the same shop rule that works on Fox, then set it by sag. RockShox's TrailHead app or your frame maker's chart can fine-tune it for your bike.")}
+  if(sh.start==="weight"){const dv=sh.dvoAir&&(sh.dvoAir.find(x=>w>=x[0]&&w<x[1])||sh.dvoAir[sh.dvoAir.length-1]);psi=dv?Math.round((dv[2]+dv[3])/10)*5:Math.round(w*(sh.startMul||1));if(sh.startMul)L.push(`<b>Starting pressure:</b> your weight plus ${Math.round((sh.startMul-1)*100)}% ${sh.startWhy||"for the MegNeg can"}, then set it by sag.`);const mx=maxP(sh);if(mx&&psi>mx){warn.push(`Your weight in psi is above the ${mx} psi maximum, so it's capped. Don't exceed it.`);psi=mx}
+   $("r-psi").textContent=psi+" psi";L.push(dv?`<b>Pressure source:</b> the middle of DVO's air chart for your weight (Topaz Air set-up guide, version 2.1), then set it by sag.`:U.sb==="fox"||sh.rule?`<b>Pressure source:</b> start at your body weight in pounds (${sh.rule||"Fox's rule"}), then set it by sag.`:U.sb!=="rs"?"<b>Pressure source:</b> start at your body weight in pounds, the usual shop rule, then set it by sag. Your frame maker's chart can fine-tune it.":"<b>Pressure source:</b> start at your body weight in pounds, the same shop rule that works on Fox, then set it by sag. RockShox's TrailHead app or your frame maker's chart can fine-tune it for your bike.")}
   else{$("r-psi").textContent="TrailHead";L.push("<b>Starting pressure:</b> RockShox gives a number for your exact bike in the TrailHead app (scan the QR code or enter the serial number). Your frame maker's setup chart works too. Rear shock pressure depends on the frame, so there's no single chart.")}
   $("r-tok").textContent=maxP(sh)?maxP(sh)+" psi":"—"}
  else{$("r-l1").textContent="Spring";$("r-psi").textContent=U.rate+" lb/in";$("r-l3").textContent="Max preload";$("r-tok").textContent=(U.sb==="fox")?"2 turns":sh.preload||(U.sk==="rcoil"?"5 turns (SD Coil)":"See manual");
@@ -1419,7 +1428,7 @@ function renderShock(){
   L.push(U.sb==="fox"?"<b>Preload:</b> thread the collar on until the spring stops moving, then no more than two full turns (Fox's limit).":sh.preload?`<b>Preload:</b> thread the collar on until the spring stops moving, then no more than ${sh.preload.replace("2","two")} (the maker's limit).`:"<b>Preload:</b> thread the collar on until the spring stops moving, then add only as much as you need, within the limit in your shock's manual.")}
  $("r-sag").innerHTML=sagText([30,30],U.stroke);
  if(sh.sag[0]!==30||sh.sag[1]!==30)L.push(`<b>Sag:</b> the app targets 30%, the usual baseline.${U.sb==="fox"?` Fox's manual gives ${sh.sag[0]}–${sh.sag[1]}%.`:sh.sagBy?` ${sh.sagBy} gives ${sh.sag[0]}–${sh.sag[1]}%.`:""} If your frame maker recommends a different sag for your bike, use theirs.`);
- if(sh.dvoAir&&psi!=null){const r=sh.dvoAir.find(x=>w>=x[0]&&w<x[1]);if(r)L.push(`<b>DVO's chart:</b> ${r[2]}–${r[3]} psi for your weight (plush to firm). The app starts at your body weight; if sag is off, use DVO's range.`)}
+ if(sh.dvoAir&&psi!=null){const r=sh.dvoAir.find(x=>w>=x[0]&&w<x[1]);if(r)L.push(`<b>DVO's chart:</b> ${r[2]}–${r[3]} psi for your weight, plush to firm. Go toward plush for more grip, toward firm for more support, and stay in this range.`)}
  if(sh.rebRows&&psi!=null){const r=sh.rebRows.find(x=>psi>=x[0]&&psi<x[1]);if(r)L.push(`<b>Rebound:</b> ${r[2]}–${r[3]} ${CWO} (of 9), from DVO's chart for your pressure. Adjust in two-click steps.`)}
  if(sh.rebPsi&&psi!=null){const B2=[100,120,140,160,180,200,220,240,260,280];let i=0;while(i<B2.length&&psi>=B2[i])i++;i=Math.min(i,sh.rebPsi.length-1);
   L.push(`<b>Rebound:</b> ${cwc(sh.rebPsi[i],0)}, from ${SHK[U.sb].name}'s chart for your pressure.`)}
@@ -3871,6 +3880,26 @@ $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService(
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
  if(!(hrs>0)||!ids.length)return;G.rides.push({id:uidGen(),date:$("ride-date").value||today(),h:hrs,wet:!!SV.wet,parts:ids});svcSave();renderService()};
 svcInit();
+// ---------- count your dials: when a maker doesn't publish a dial's total clicks, the rider counts it once ----------
+// Saved per damper in this browser; the app then treats that dial's total as known (no more "about").
+var DCO={};
+function dcDials(){return[["r","Rebound","rGuess"],["hr","High-speed rebound","hrGuess"],["l","Low-speed compression","lGuess"],["h","High-speed compression","hGuess"]]}
+function dcGet(){try{return JSON.parse(localStorage.getItem("dial-counts-v1")||"{}")||{}}catch(e){return{}}}
+function dcSet(C){try{localStorage.setItem("dial-counts-v1",JSON.stringify(C))}catch(e){}}
+function dcCur(){return U.mode==="fork"?["f:"+U.damp,DMP[U.damp]]:["s:"+U.sk,SDMP[U.sk]]}
+function dcObj(k){const[m,id]=k.split(":");return(m==="f"?DMP:SDMP)[id]}
+function dcApply(){const C=dcGet();Object.keys(C).forEach(k=>{const d=dcObj(k);if(!d)return;if(!DCO[k])DCO[k]=JSON.parse(JSON.stringify(d));const o=DCO[k];
+ dcDials().forEach(([f,,g])=>{d[f]=o[f];if(o[g])d[g]=true;else delete d[g]});if(o.rUnk)d.rUnk=true;else delete d.rUnk;d.init={...o.init};
+ dcDials().forEach(([f,,g])=>{const n=Math.round(+((C[k]||{})[f]));if(!(n>0&&n<=60)||!o[f]||(f==="l"&&o.lever))return;d[f]=n;delete d[g];if(f==="r")delete d.rUnk;if(o.init&&o.init[f]!=null)d.init[f]=Math.min(n,Math.round(o.init[f]*n/o[f]))})})}
+function renderDcount(){const el=$("dcount");if(!el||DCO===undefined)return;const[k,d]=dcCur(),o=(DCO||{})[k]||d,C=dcGet()[k]||{};
+ const list=d?dcDials().filter(([f,,g])=>o[f]&&!(f==="l"&&o.lever)&&(o[g]||(f==="r"&&o.rUnk)||C[f])):[];
+ el.hidden=!list.length;if(!list.length)return;
+ $("dc-body").innerHTML=`<p class="fk" style="margin-top:8px">The maker doesn't publish how many clicks ${list.length>1?"these dials have":"this dial has"} on the ${esc(o.name)}, so the app estimates. Count yours once and it uses your numbers: turn the dial fully clockwise until it stops, then count the clicks counterclockwise until it stops again.</p>
+ <div class="grid2">${list.map(([f,n])=>`<div class="field"><label for="dc-${f}">${n} clicks</label><input id="dc-${f}" type="number" inputmode="numeric" min="1" max="60" step="1" placeholder="about ${o[f]}" value="${C[f]||""}"></div>`).join("")}</div>
+ <div class="row"><button type="button" id="dc-save">Use my counts</button>${Object.keys(C).length?'<button type="button" id="dc-reset" class="ghost">Go back to the estimate</button>':""}</div>`;
+ $("dc-save").onclick=()=>{const A=dcGet(),c={};list.forEach(([f])=>{const n=Math.round(+$("dc-"+f).value);if(n>0&&n<=60)c[f]=n});if(Object.keys(c).length)A[k]=c;else delete A[k];dcSet(A);dcApply();renderSetup()};
+ if($("dc-reset"))$("dc-reset").onclick=()=>{const A=dcGet();delete A[k];dcSet(A);if(DCO[k]){const d0=dcObj(k);Object.keys(d0).forEach(x=>delete d0[x]);Object.assign(d0,JSON.parse(JSON.stringify(DCO[k])));delete DCO[k]}dcApply();renderSetup()}}
+if(Object.keys(dcGet()).length){dcApply();renderSetup()}
 // ---------- Apple Watch (iPhone app only): send each garage bike's settings to the watch, take back rides timed on it ----------
 var WSP,WLAST="",WT=null;
 function watchPlugin(){if(WSP===undefined){WSP=null;try{if(NATIVE&&Capacitor.isPluginAvailable&&Capacitor.isPluginAvailable("WatchSync"))WSP=Capacitor.registerPlugin?Capacitor.registerPlugin("WatchSync"):Capacitor.Plugins.WatchSync}catch(e){}}return WSP}
