@@ -46,6 +46,10 @@ watch.build_configurations.each do |c|
   s['MARKETING_VERSION'] ||= '1.0' # the build command sets the real version and build number for both apps
   s['CURRENT_PROJECT_VERSION'] ||= '1'
   s['LD_RUNPATH_SEARCH_PATHS'] = ['$(inherited)', '@executable_path/Frameworks']
+  # Info.plist holds the keys Xcode can't generate (workout background mode, Health permission text);
+  # Xcode merges it with the generated keys above. The entitlements turn on HealthKit for Apple Fitness.
+  s['INFOPLIST_FILE'] = "#{NAME}/Info.plist"
+  s['CODE_SIGN_ENTITLEMENTS'] = "#{NAME}/#{NAME}.entitlements"
 end
 
 # Source files and the asset catalog (copied next to App.xcodeproj by add-to-ios.sh)

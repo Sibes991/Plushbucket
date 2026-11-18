@@ -36,7 +36,7 @@ After creating `android/` and `ios/` the first time, commit them. Health permiss
 
 ## Apple Watch
 
-`watch/PlushbucketWatch/` is a small SwiftUI watch app that ships inside the iPhone app. It shows each garage bike's pressure, sag and clicks, and has a ride timer whose hours go into the phone's service log.
+`watch/PlushbucketWatch/` is a small SwiftUI watch app that ships inside the iPhone app. It shows each garage bike's pressure, sag and clicks, and has a ride timer whose hours go into the phone's service log. With the rider's permission, each timed ride is also recorded as an Outdoor Cycle workout in Apple Health, so it shows in the Fitness app (`Workout.swift`, HealthKit entitlement and workout background mode in `PlushbucketWatch.entitlements` and `Info.plist`).
 
 - The iPhone project is generated on every build, so `watch/add-to-ios.sh` adds the watch target to it after `npx cap sync ios` (it runs `watch/add-watch-target.rb`, which uses the `xcodeproj` Ruby gem).
 - The phone side is the `plugins/watch-sync` Capacitor plugin. `index.html` sends the garage to it (`WatchSync.sendBikes`) and takes back rides timed on the watch (`WatchSync.takeRides`).

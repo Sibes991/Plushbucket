@@ -1,7 +1,9 @@
 import SwiftUI
+import WatchKit
 
 @main
 struct PlushbucketWatchApp: App {
+    @WKApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var store = Store.shared
 
     var body: some Scene {
@@ -139,6 +141,7 @@ struct Stat: View {
 
 struct RideView: View {
     @EnvironmentObject var store: Store
+    @ObservedObject private var workout = Workout.shared
     @State private var stoppedAt: Date? = Demo.shot == "save" ? Date() : nil
     @State private var wet = false
 
@@ -153,6 +156,12 @@ struct RideView: View {
                     let hours = max(0.1, (end.timeIntervalSince(start) / 360).rounded() / 10)
                     Text(String(format: "%.1f h", hours)).font(Brand.big(44))
                     Toggle("Wet or muddy", isOn: $wet)
+                    if workout.recording {
+                        Text("Saves the hours to your service log and the ride to Apple Fitness.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
                     Button {
                         store.save(hours: hours, wet: wet)
                     } label: {
@@ -161,18 +170,36 @@ struct RideView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(Brand.orange)
                     .foregroundStyle(.black)
-                    Button("Keep riding") { stoppedAt = nil }
-                    Button("Discard", role: .destructive) { store.endRide() }
+                    Button("Keep riding") {
+                        stoppedAt = nil
+                        workout.resume()
+                    }
+                    Button("Discard", role: .destructive) { store.discard() }
                 } else {
                     Text(start, style: .timer)
                         .font(Brand.big(44))
                         .monospacedDigit()
-                    Text("Stop when you're done and the hours go into the service log on your iPhone.")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
+                    if workout.recording {
+                        HStack(spacing: 14) {
+                            Label(workout.heartRate.map { "\(Int($0.rounded()))" } ?? "--", systemImage: "heart.fill")
+                                .foregroundStyle(.red)
+                            Label(workout.calories.map { "\(Int($0.rounded())) cal" } ?? "-- cal", systemImage: "flame.fill")
+                                .foregroundStyle(Brand.orange)
+                        }
+                        .font(.headline.monospacedDigit())
+                        Text("Recording an Outdoor Cycle workout in Apple Fitness.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    } else {
+                        Text("Stop when you're done and the hours go into the service log on your iPhone.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
                     Button {
                         stoppedAt = Date()
+                        workout.pause()
                     } label: {
                         Label("Stop", systemImage: "stop.fill").frame(maxWidth: .infinity)
                     }

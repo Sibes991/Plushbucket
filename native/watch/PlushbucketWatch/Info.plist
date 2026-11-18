@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>WKApplication</key>
+	<true/>
+	<key>WKBackgroundModes</key>
+	<array>
+		<string>workout-processing</string>
+	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Plushbucket reads your heart rate and calories during a ride to show them on the ride timer.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Plushbucket saves your timed rides as Outdoor Cycle workouts, so they show in the Fitness app and count toward your Activity rings.</string>
+</dict>
+</plist>

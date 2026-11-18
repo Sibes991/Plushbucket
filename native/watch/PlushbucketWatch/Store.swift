@@ -25,6 +25,10 @@ final class Store: NSObject, ObservableObject, WCSessionDelegate {
             if Demo.shot == "ride" || Demo.shot == "save" {
                 rideStart = Date().addingTimeInterval(-(1 * 3600 + 23 * 60 + 17))
                 rideBike = bikes.first?.id
+                // sample workout readings for the screenshots
+                Workout.shared.recording = true
+                Workout.shared.heartRate = 148
+                Workout.shared.calories = 512
             }
             return
         }
@@ -79,6 +83,12 @@ final class Store: NSObject, ObservableObject, WCSessionDelegate {
         note = nil
         defaults.set(now.timeIntervalSince1970, forKey: Key.rideStart)
         defaults.set(bike.id, forKey: Key.rideBike)
+        Workout.shared.start(at: now)
+    }
+
+    func discard() {
+        Workout.shared.finish(save: false)
+        endRide()
     }
 
     func endRide() {
@@ -106,7 +116,9 @@ final class Store: NSObject, ObservableObject, WCSessionDelegate {
             defaults.set(box, forKey: Key.outbox)
             flushOutbox()
         }
-        note = String(format: "%.1f h added to %@. It shows in the service log on your iPhone.", ride.h, bike.name)
+        let fitness = Workout.shared.recording
+        Workout.shared.finish(save: true)
+        note = String(format: "%.1f h added to %@. It shows in the service log on your iPhone%@.", ride.h, bike.name, fitness ? ", and the ride is in Apple Fitness" : "")
         endRide()
     }
 
