@@ -3957,7 +3957,7 @@ $("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f
  // the phone apps already are installed and ship their files offline: no service worker, no install prompt
  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())return;
  if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
- const TF="https://testflight.apple.com/join/d4QJ23x4",AS="";
+ const TF="https://testflight.apple.com/join/d4QJ23x4",AS="https://apps.apple.com/us/app/plushbucket/id6829349030";
  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
  // iPhone/iPad with the TestFlight link set: offer the native beta (also to people using the home-screen app)
  if(ios&&AS){const bar=document.getElementById("inst"),go=document.getElementById("inst-go");
