@@ -43,6 +43,17 @@ After creating `android/` and `ios/` the first time, commit them. Health permiss
 - Bundle ID `com.plushbucket.app.watchkitapp`, watchOS 10 or newer. Xcode's automatic signing registers it on the first TestFlight build.
 - App Store screenshots: Actions → **Apple Watch screenshots** runs the app in the watchOS Simulator with sample bikes (`-PBDemo -PBShot list|fork|shock|ride|save`).
 
+## Building on your Mac (newer Xcode than GitHub has)
+
+GitHub's Macs can lag behind Apple's Xcode releases. To build with your own Xcode (for example Xcode 27.1, which makes the app fill the iPhone Duo's inner screen), on an Apple silicon Mac with that Xcode and Node.js installed and your developer account signed in under Xcode > Settings > Accounts:
+
+```sh
+git clone https://github.com/Sibes991/Plushbucket.git ~/Plushbucket   # first time only (later: cd ~/Plushbucket && git pull)
+cd ~/Plushbucket && bash native/scripts/build-on-mac.sh 1.2
+```
+
+It builds the iPhone and watch apps the same way the TestFlight workflow does, signs them with your Xcode account and uploads to TestFlight. The build number is the date and time (e.g. 20261117.2230), so it's always higher than GitHub's builds for the same version; build the next version on GitHub as usual.
+
 ## Store details
 
 - App ID: `com.plushbucket.app`. Changing it is easy now, but it's permanent once an app is published.
