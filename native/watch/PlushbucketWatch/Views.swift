@@ -93,7 +93,7 @@ struct BikeView: View {
                     .foregroundStyle(.secondary)
             }
             .onAppear {
-                if let focus = Demo.focus { proxy.scrollTo(focus, anchor: .top) }
+                if let focus = Demo.focus { proxy.scrollTo(focus, anchor: .center) }
             }
         }
         .navigationTitle(bike.name)
