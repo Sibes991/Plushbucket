@@ -43,7 +43,7 @@ Then it teaches you what those numbers do:
 | **RockShox** | SID, SID SL, Pike, Lyrik, ZEB, BoXXer | Super Deluxe, Vivid Air, Vivid / Super Deluxe Coil, Deluxe / SIDLuxe |
 | **Marzocchi** | Bomber Z1, Bomber Z2, Super Z, Bomber 58 | Bomber Air, Bomber CR |
 | **Öhlins** | RXF36, RXF38 | TTX1Air, TTX2Air, TTX22m.2 |
-| **DVO** | Diamond, Diamond 36, Onyx 38 | Topaz Prime, Topaz T3 Air, Jade X |
+| **DVO** | Diamond 36, Onyx 38 | Topaz Prime, Topaz T3 Air, Jade X |
 
 Coverage varies by model year. Where a manufacturer doesn't publish a number, the app says so instead of guessing.
 
