@@ -3885,7 +3885,7 @@ $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ri
  if(!(hrs>0)||!ids.length)return;G.rides.push({id:uidGen(),date:$("ride-date").value||today(),h:hrs,wet:!!SV.wet,parts:ids});svcSave();renderService()};
 svcInit();
 // ---------- tip jar (iPhone app only): optional tips through Apple's in-app purchases; they unlock nothing ----------
-var TIPS=["com.plushbucket.app.tip.small","com.plushbucket.app.tip.coffee","com.plushbucket.app.tip.big"];
+var TIPS=["com.plushbucket.app.tip.small","com.plushbucket.app.tip.coffee","com.plushbucket.app.tip.big2"]  // tip.big was created and deleted in App Store Connect, so it can never be reused;
 async function tipInit(){let T;try{if(!NATIVE||!Capacitor.isPluginAvailable||!Capacitor.isPluginAvailable("TipJar"))return;T=Capacitor.registerPlugin?Capacitor.registerPlugin("TipJar"):Capacitor.Plugins.TipJar}catch(e){return}
  let r;try{r=await T.products({ids:TIPS})}catch(e){return}const ps=(r&&r.products)||[];if(!ps.length)return;
  $("tip-btns").innerHTML=ps.map(p=>`<button type="button" data-tip="${esc(p.id)}"><b>${esc(p.price)}</b> · ${esc(p.name)}</button>`).join("");
