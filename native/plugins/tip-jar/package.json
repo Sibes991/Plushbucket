@@ -1,0 +1,10 @@
+{
+  "name": "plushbucket-tip-jar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plushbucket tip jar: optional tips through Apple's in-app purchases (StoreKit 2). Tips unlock nothing.",
+  "files": ["ios/Sources", "Package.swift"],
+  "capacitor": {
+    "ios": { "src": "ios" }
+  }
+}

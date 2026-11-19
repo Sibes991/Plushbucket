@@ -362,6 +362,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 /* count your dials */
 .dcount{margin-top:14px;border:1px dashed var(--line);border-radius:12px;padding:10px 12px}.dcount summary{cursor:pointer;font-weight:600}
 .dcount .grid2{margin-top:10px}.dcount .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+/* tip jar (iPhone app only) */
+.tipjar{max-width:640px;margin:24px auto 0;padding:18px 18px 8px;border:1px solid var(--line);border-radius:16px;background:var(--card,transparent)}
+.tipjar h3{margin:0 0 6px}.tipjar p{margin:0 0 12px}.tiprow{display:flex;flex-wrap:wrap;gap:10px}.tiprow button{flex:1 1 140px;min-height:48px}
 /* trail notes */
 textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:64px;resize:vertical}
 .tn-sy{display:grid;gap:6px}.tn-sy button{text-align:left;min-height:44px;padding:8px 12px;font-weight:500;border-radius:10px}
@@ -639,6 +642,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <p class="fk" id="bk-msg" role="status"></p>
 </section>
 </div>
+<section class="tipjar" id="tipjar" hidden aria-labelledby="tip-h"><h3 id="tip-h">Support Plushbucket</h3><p>Plushbucket is free, with no ads and no tracking. If it helped you dial in your bike, you can leave a tip. Tips don't unlock anything; they just keep the app going.</p><div class="tiprow" id="tip-btns"></div><p class="fk" id="tip-msg" role="status"></p></section>
 <footer class="copy"><i>Measured in the lab, tested on the trail.</i><br><span class="kofi">Plushbucket is free. If it helped you, <a href="https://ko-fi.com/sibes991" target="_blank" rel="noopener">buy me a coffee on Ko-fi</a>.<br></span>© 2026 Plushbucket · <a href="https://plushbucket.com">plushbucket.com</a><br>Settings are a starting point. Never exceed the maximum pressure printed on your fork or shock.
 <details class="legal"><summary>Disclaimer</summary><p>Plushbucket gives starting points for suspension setup, based on manufacturers' published setup guides and, where those don't exist, rider and tuner sources (labelled in the app). It isn't a substitute for your fork or shock's manual or a qualified mechanic, and makers can change their specs. Always follow the manufacturer's instructions, never exceed the maximum pressure printed on your fork or shock, and check your bike is safe before you ride. Mountain biking is dangerous and you ride at your own risk. Plushbucket is provided as is, without warranty. It isn't affiliated with or endorsed by any suspension brand; brand and product names belong to their owners.</p></details>
 <a href="https://plushbucket.com/terms">Terms &amp; disclaimer</a> · <a href="https://plushbucket.com/privacy">Privacy</a></footer>
@@ -3880,6 +3884,16 @@ $("svc-add").onclick=()=>{G.parts.push(partFromSetup());svcSave();renderService(
 $("ride-add").onclick=()=>{const hrs=parseFloat($("ride-h").value),ids=[...$("ride-parts").querySelectorAll("input:checked")].map(i=>i.value);
  if(!(hrs>0)||!ids.length)return;G.rides.push({id:uidGen(),date:$("ride-date").value||today(),h:hrs,wet:!!SV.wet,parts:ids});svcSave();renderService()};
 svcInit();
+// ---------- tip jar (iPhone app only): optional tips through Apple's in-app purchases; they unlock nothing ----------
+var TIPS=["com.plushbucket.app.tip.small","com.plushbucket.app.tip.coffee","com.plushbucket.app.tip.big"];
+async function tipInit(){let T;try{if(!NATIVE||!Capacitor.isPluginAvailable||!Capacitor.isPluginAvailable("TipJar"))return;T=Capacitor.registerPlugin?Capacitor.registerPlugin("TipJar"):Capacitor.Plugins.TipJar}catch(e){return}
+ let r;try{r=await T.products({ids:TIPS})}catch(e){return}const ps=(r&&r.products)||[];if(!ps.length)return;
+ $("tip-btns").innerHTML=ps.map(p=>`<button type="button" data-tip="${esc(p.id)}"><b>${esc(p.price)}</b> · ${esc(p.name)}</button>`).join("");
+ $("tipjar").hidden=false;
+ $("tip-btns").querySelectorAll("button").forEach(b=>b.onclick=async()=>{const m=$("tip-msg");m.textContent="";b.disabled=true;
+  try{const x=await T.purchase({id:b.dataset.tip});m.textContent=x&&x.result==="purchased"?"Thank you! That means a lot.":x&&x.result==="pending"?"Waiting for approval. Thanks for the thought!":""}catch(e){m.textContent="That didn't go through. Try again in a moment."}
+  b.disabled=false})}
+tipInit();
 // ---------- count your dials: when a maker doesn't publish a dial's total clicks, the rider counts it once ----------
 // Saved per damper in this browser; the app then treats that dial's total as known (no more "about").
 var DCO={};
