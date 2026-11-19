@@ -867,16 +867,16 @@ SHK.rs.shocks=Object.fromEntries(Object.entries(SHK.rs.shocks).flatMap(([k,v])=>
 SHK.dvo={name:"DVO",shocks:{
  tpp:{name:"Topaz Prime",sub:"air · 2024 on",years:"2024–2027",kind:"air",tmax:2,neg:2,maxPsi:300,sag:[20,30],
   dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
-  rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],start:"weight",bladder:"140–180 psi",spacers:"Up to two spacers in the positive chamber and two in the negative chamber.",
+  rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],start:"weight",bladder:"140–180 psi (never above 180)",spacers:"Up to two spacers in the positive chamber and two in the negative chamber.",
   notes:["Dials: low-speed compression 5 clicks, high-speed 10, rebound 9.","Air pressure and rebound charts from DVO's Topaz Air set-up guide (version 2.1)."]},
  tp3:{name:"Topaz T3 Air",sub:"air · trail",years:"before Topaz Prime",kind:"air",neg:2,negGuess:true,maxPsi:300,sag:[30,30],start:"weight",
   dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
   rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],
-  bladder:"170–200 psi",lever:"3-position lever: open for descending.",spacers:"Clip-on spacers for the positive and negative chambers.",
-  notes:["DVO's T3 Air guide: 300 psi max, 20–30% sag, reservoir bladder 170–200 psi (max 200) by rider weight, rebound counted 1–9 from fully closed.","Air pressure and rebound charts from DVO's Topaz Air set-up guide (version 2.1), which covers both the Prime and T3 dials; its rebound chart is for all Topaz models."]},
- jadep:{name:"Jade X Prime",sub:"coil · HSC and LSC dials",years:"2024–2027",kind:"coil",sag:[25,30],bladder:"140–180 psi",preload:"6 turns (6 mm)",
+  bladder:"140–180 psi (never above 180)",lever:"3-position lever: open for descending.",spacers:"Clip-on spacers for the positive and negative chambers.",
+  notes:["DVO's Topaz Air set-up guide (version 2.1, covers the T3): 300 psi max, 20–30% sag, reservoir bladder 140–180 psi and never above 180, lighter riders toward 140, heavier toward 180. Older T3 guides gave 170–200 psi; DVO's current guide replaces that.","Air pressure and rebound charts from DVO's Topaz Air set-up guide (version 2.1), which covers both the Prime and T3 dials; its rebound chart is for all Topaz models."]},
+ jadep:{name:"Jade X Prime",sub:"coil · HSC and LSC dials",years:"2024–2027",kind:"coil",sag:[25,30],bladder:"140–180 psi (never above 180)",preload:"6 turns (6 mm)",
   notes:["DVO's Jade X set-up guide (v2.0): sag 25–30%; one turn of the collar is 1 mm of preload, never more than 6 mm. If you can't reach sag within that, change the spring.","Dials, counted from fully closed: rebound about 18 clicks, high-speed compression (green) 10, low-speed compression (black) 5. Start compression fully open and add support to taste.","Reservoir bladder 140–180 psi, never above 180: lighter riders toward 140, heavier toward 180."]},
- jade:{name:"Jade X",sub:"coil · T3 lever",years:"2023–2027",kind:"coil",sag:[30,30],bladder:"140–180 psi",preload:"6 turns (6 mm)",lever:"T3 three-position compression lever: Open for rough descents, Mid for support on smooth descents and technical climbs, Firm for smooth climbs.",
+ jade:{name:"Jade X",sub:"coil · T3 lever",years:"2023–2027",kind:"coil",sag:[30,30],bladder:"140–180 psi (never above 180)",preload:"6 turns (6 mm)",lever:"T3 three-position compression lever: Open for rough descents, Mid for support on smooth descents and technical climbs, Firm for smooth climbs.",
   notes:["DVO's current Jade X set-up guide (v2.0): sag 25–30%; one turn of the collar is 1 mm of preload, never more than 6 mm. Rebound has about 18 clicks, counted from fully closed: start closed and back it out in two-click steps.","Reservoir bladder 140–180 psi, never above 180: lighter riders toward 140, heavier toward 180. Older Jade X guides gave 170–200 psi, so check the label on yours."]}}};
 
 // ---------- Marzocchi (researched 2026-10-28) ----------
