@@ -291,20 +291,20 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .note{color:var(--muted);font-size:.85rem;margin:14px 2px 0}
 /* scene */
 #scene{margin:0 0 6px;background:var(--sunk);border-radius:10px}
-#scene .gnd{fill:var(--dirt);stroke:var(--dirt-edge);stroke-width:1.5}
-#scene .tk{stroke:var(--dirt-edge);stroke-width:2}
-#scene .bk{stroke:var(--frame);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
-#scene .rd{stroke:var(--rider);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-#scene .wh{stroke:var(--frame);stroke-width:3;fill:none}
-#scene .sp{stroke:var(--muted);stroke-width:1}
-#scene .shk{stroke:var(--mark);stroke-width:7;stroke-linecap:round}
-#scene .fk{stroke:var(--mark);stroke-width:4;stroke-linecap:round}
-#scene .zb{fill:var(--surface);stroke:var(--line)}
-#scene .stn{fill:var(--ref)}
-#scene .low{fill:var(--grid);stroke:var(--muted)}
-#scene .or{fill:var(--mark)}
-#scene .crw{fill:var(--muted)}
-#scene text{fill:var(--muted)}
+:is(#scene,.gd-scene) .gnd{fill:var(--dirt);stroke:var(--dirt-edge);stroke-width:1.5}
+:is(#scene,.gd-scene) .tk{stroke:var(--dirt-edge);stroke-width:2}
+:is(#scene,.gd-scene) .bk{stroke:var(--frame);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+:is(#scene,.gd-scene) .rd{stroke:var(--rider);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+:is(#scene,.gd-scene) .wh{stroke:var(--frame);stroke-width:3;fill:none}
+:is(#scene,.gd-scene) .sp{stroke:var(--muted);stroke-width:1}
+:is(#scene,.gd-scene) .shk{stroke:var(--mark);stroke-width:7;stroke-linecap:round}
+:is(#scene,.gd-scene) .fk{stroke:var(--mark);stroke-width:4;stroke-linecap:round}
+:is(#scene,.gd-scene) .zb{fill:var(--surface);stroke:var(--line)}
+:is(#scene,.gd-scene) .stn{fill:var(--ref)}
+:is(#scene,.gd-scene) .low{fill:var(--grid);stroke:var(--muted)}
+:is(#scene,.gd-scene) .or{fill:var(--mark)}
+:is(#scene,.gd-scene) .crw{fill:var(--muted)}
+:is(#scene,.gd-scene) text{fill:var(--muted)}
 /* service */
 .part{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:10px 0}
 .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -467,6 +467,8 @@ body.gd-on{overflow:hidden}
 #pane-p .shop-hint{margin:0}#shop-list:empty{display:none}
 /* four tabs in the bottom bar: on small phones, let the longer labels take more room */
 @media (max-width:380px){.bnav{gap:4px;padding:5px}.bnav button{flex:1 1 auto;font-size:.9rem;padding:8px 3px}}
+.gd-scene{display:block;width:100%;height:auto;margin:18px 0 0;background:var(--sunk);border-radius:12px}
+.gd-cap{display:block;margin-top:6px;color:var(--muted);font-size:.85rem}
 /* first-time setup and the setup card, side by side and the same size */
 .r-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .r-btns button{width:100%;min-height:48px;padding:8px 10px}
@@ -1665,7 +1667,22 @@ function gdKnobSVG(n,T,ls){T=T>=n&&T>0?T:Math.max(n+4,12);const s=Math.min(22,30
 function gdDialRow(t,html,D,anim){const txt=String(html).replace(/<[^>]+>/g,""),N=dialNums([[t,txt]]),n=t==="Rebound"?N.reb:t==="Compression"?N.lsc:null,T=!D?0:t==="Rebound"?D.tot.r:D.tot.l;
  const ok=anim&&n!=null&&/counterclockwise from fully closed/.test(txt)&&!/^\D*\d+\s*[–-]\s*\d+/.test(txt)&&(t!=="Compression"||T>0);
  return ok?`<li class="gd-kr">${gdKnobSVG(n,T,/low-speed/i.test(txt))}<div><b>${t}</b>${html}<small class="gk-cap" aria-hidden="true">${n} click${n===1?"":"s"} out from closed</small></div></li>`:`<li><b>${t}</b>${html}</li>`}
-function gdAnimStart(root){gdStop();if(gdRM())return;
+function gdAnimStart(root){gdStop();const rm=gdRM();
+ // the rider gets on and the bike settles into sag, then steps off; the close-up's O-ring stays at the sag mark
+ root.querySelectorAll('[data-anim="scene"]').forEach(svg=>{const g=svg.querySelector("g"),f=+svg.dataset.f,mm=svg.dataset.mm,R0={sc:"brake",out:[[0,0,0]],sag:f};let key="";
+  const draw=(fr,mx,ro,lab)=>{const k=[fr.toFixed(3),mx.toFixed(3),ro.toFixed(2),lab].join("|");if(k===key)return;key=k;R0.out[0][1]=fr;drawScene(R0,0,0,mx,g,{ro,ry:(-12*(1-ro)).toFixed(1),lab})};
+  if(rm){draw(f,f,1,`Sag ${mm}`);return}
+  gdRun(t=>{const T=t%7000;
+   if(T<900)draw(0,0,0,"");else if(T<1900){const p=gdEase((T-900)/1000)*f;draw(p,p,Math.min(1,(T-900)/300),"")}else if(T<2700)draw(f,f,1,"");
+   else if(T<3700)draw(f*(1-gdEase((T-2700)/1000)),f,Math.max(0,1-(T-2700)/300),"");else draw(0,f,0,`Sag ${mm}`)})});
+ // the last screen: a jump landing with the starting settings, the same simulation as the Damping step
+ root.querySelectorAll('[data-anim="land"]').forEach(svg=>{const g=svg.querySelector("g");let r;try{r=sim(D,"land")}catch(e){svg.remove();return}
+  if(rm){drawScene(r,r.peak,r.out[r.peak][0],r.mx,g);return}
+  const o=r.out,slow=4,lead=TFALL+.08,L=(lead+r.dur)*slow*1000+2200;let mx=0,cyc=-1;
+  gdRun(t=>{const c=Math.floor(t/L),tt=(t%L)/1000/slow-lead;if(c!==cyc){cyc=c;mx=0}
+   if(tt<0){drawScene(r,0,tt,0,g);return}
+   const i=Math.min(o.length-1,Math.floor(tt/r.dur*(o.length-1)));mx=Math.max(mx,o[i][1]);drawScene(r,i,o[i][0],mx,g)})});
+ if(rm)return;
  root.querySelectorAll('[data-anim="gauge"]').forEach(svg=>{const v=+svg.dataset.v,mx=+svg.dataset.max,nd=svg.querySelector(".gg-n"),tx=svg.querySelector(".gg-v");
   gdRun(t=>{const p=gdOut(t/1500);nd.setAttribute("transform",`rotate(${(-135+270*p*v/mx).toFixed(1)} 38 38)`);tx.textContent=Math.round(p*v);return t<1500})});
  root.querySelectorAll('[data-anim="sag"]').forEach(el=>{const f=+el.dataset.f,fill=el.querySelector(".gs-fill"),ring=el.querySelector(".gs-ring"),dim=el.querySelector(".gs-dim"),cap=el.querySelector(".gs-cap"),mm=dim.textContent;
@@ -1708,12 +1725,13 @@ function gdRender(){const g=$("guide"),S=GD.steps,st=S[GD.i],D=GD.D,last=GD.i===
   b=`<p class="gd-t">${esc(D.title)}</p><p class="gd-t2">This walk-through is for the first time you set it up: one step per screen, with your numbers. You'll need ${air?"a shock pump and ":""}a ruler or tape measure for sag.</p>${gdChipsHTML(C)}<ul class="gd-dl">${row("Rebound")}${row("Compression")}${row("Dials")}${D.L.Compression?"":row("Lever")}${kept}</ul>`}
  else if(st.k==="step"){n=`Step ${st.n} of ${GD.total}`;let[f,rest]=splitFirst(st.t);const c=f.indexOf(": ");
   if(c>0&&c<60&&!/\(/.test(f.slice(0,c))){rest=capf(f.slice(c+2))+(rest?" "+rest:"");f=f.slice(0,c)}
-  h=f;b=(rest?`<p class="gd-t">${rest}</p>`:"")+gdChipsHTML(gdChips(st.t,D),true)}
+  const sp=/measure/i.test(st.t)&&/\bsag\b(?! check)/i.test(st.t)&&/(\d+(?:\.\d+)?)%/.exec(D.SG.m||"");
+  h=f;b=(rest?`<p class="gd-t">${rest}</p>`:"")+(sp?`<svg class="gd-scene" viewBox="0 0 360 190" aria-hidden="true" data-anim="scene" data-f="${+sp[1]/100}" data-mm="${esc(D.SG.v)}"><g></g></svg>`:"")+gdChipsHTML(gdChips(st.t,D),true)}
  else if(st.k==="dials"){n=`Step ${st.n} of ${GD.total}`;h="Set your dials";
   b=`<p class="gd-t">${GD.compOpen?"Sag is set. Now set compression to its starting point, and check rebound.":"Check each dial is on its starting point."}</p><ul class="gd-dl">${["Rebound","Compression","Dials","Lever","Adjustable Bottom Out"].map(t=>D.L[t]?gdDialRow(t,D.L[t],D,true):"").join("")}${kept}</ul>`+
    (D.click?`<p class="gd-tip">${D.click}</p>`:"")+(D.prof?`<div class="gd-tip"><b>${esc(D.prof.name)}:</b> change these from the starting point.<ul>${D.prof.items.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:"")}
  else{const m=U.mode,saved=garageHas(m),names=bikeNames(),on=nx?(nx.kind==="shock"?"shock":"fork"):"";h=nx?`${m==="shock"?"Shock":"Fork"} done`:"You're set";
-  b=`<p class="gd-t">${nx?`That's its starting point. Next, the ${on}: ${esc(partLabel(nx.kind,nx.snap))}.`:"That's your starting point. Ride a trail you know, then change one thing at a time."}</p>${st.tip?`<p class="gd-tip">${st.tip}</p>`:""}${nx?"":`<p class="gd-tip"><b>You only need this the first time.</b> From now on, tune it on the Setup page: the Spring and Damping steps show what each change does.</p>`}
+  b=`<p class="gd-t">${nx?`That's its starting point. Next, the ${on}: ${esc(partLabel(nx.kind,nx.snap))}.`:"That's your starting point. Ride a trail you know, then change one thing at a time."}</p><svg class="gd-scene" viewBox="0 0 360 190" aria-hidden="true" data-anim="land"><g></g></svg><small class="gd-cap">A simulated jump landing with these starting settings, in slow motion.</small>${st.tip?`<p class="gd-tip">${st.tip}</p>`:""}${nx?"":`<p class="gd-tip"><b>You only need this the first time.</b> From now on, tune it on the Setup page: the Spring and Damping steps show what each change does.</p>`}
   ${saved?"":`<div class="gd-save" id="gd-save"><h3>Keep these numbers in your garage?</h3><div class="row"><input id="gd-name" list="bike-names" maxlength="40" placeholder="${names[0]?esc(names[0]):"Levo, Big bike…"}" aria-label="Bike name"><button type="button" class="primary" id="gd-add">Add to garage</button></div></div>`}
   <div class="gd-more"><button type="button" id="gd-damp">See what each dial does</button><button type="button" id="gd-card">Setup card</button></div>`}
  g.innerHTML=`<div class="gd-top"><div class="gd-wrap"><div class="gd-row"><div><b>First-time setup</b><small>${esc(D.name)}</small></div><button type="button" class="gd-x" id="gd-x">Close</button></div>
@@ -2338,7 +2356,8 @@ const FX=RX+WB*KS;
 const VEL=sc=>sc==="land"?4:sc==="rock"?5:0;
 function gh(sc,sx,t,ref){ref=ref??FX;if(sc==="rock"){const g=groundFn("rock");return g(t+(sx-ref)/KS/5)}
  if(sc==="land"){const xw=sx/KS+4*t,E=FX/KS-4*TFALL;return xw<E?VD:0}return 0}
-function drawScene(r,idx,tt,mxSoFar){if(U.mode==="shock")return drawShockScene(r,idx,tt,mxSoFar);
+// el and opt let First-time setup draw this scene in its own svg: opt.ro fades the rider, opt.ry lifts them, opt.lab labels the close-up
+function drawScene(r,idx,tt,mxSoFar,el,opt){if(U.mode==="shock")return drawShockScene(r,idx,tt,mxSoFar,el,opt);
  const sc=r.sc,o=r.out[idx],fr=o[1],w=o[2],P=(x,y)=>[(RX+x*KS).toFixed(1),(GB-y*KS).toFixed(1)];
  let t=tt,air=0;if(sc==="land"&&t<0){const tau=-t;air=(3.6*tau-4.905*tau*tau)*VD/DROP}
  const gF=gh(sc,FX,t),gR=gh(sc,RX,t);
@@ -2365,13 +2384,13 @@ function drawScene(r,idx,tt,mxSoFar){if(U.mode==="shock")return drawShockScene(r
  const close=stn+`<rect class="crw" x="${zx+20}" y="${ty-10}" width="52" height="12" rx="3"/><rect class="stn" x="${zx+38}" y="${ty+2}" width="16" height="${trv+30}"/>`+
   `<rect class="low" x="${zx+33}" y="${lowTop.toFixed(1)}" width="26" height="${(zy+164-6-lowTop).toFixed(1)}" rx="5"/>`+
   `<rect class="or" x="${zx+36}" y="${(ringY-3).toFixed(1)}" width="20" height="4" rx="2"/>`+
-  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Fork close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${Math.round(fr*100)}% travel</text>`;
- $("sc").innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(0,rAy)+wheel(WB,fAy)+
+  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Fork close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${opt&&opt.lab||Math.round(fr*100)+"% travel"}</text>`;
+ (el||$("sc")).innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(0,rAy)+wheel(WB,fAy)+
   `<polyline class="bk" points="${ra.join(",")} ${pt("bb")} ${pt("seat")} ${pt("ht")} ${pt("bb")}"/><line class="bk" x1="${ra[0]}" y1="${ra[1]}" x2="${pt("seat").split(",")[0]}" y2="${pt("seat").split(",")[1]}"/>`+
   `<line class="fk" x1="${fa[0]}" y1="${fa[1]}" x2="${cr[0]}" y2="${cr[1]}"/><polyline class="bk" points="${cr.join(",")} ${pt("ht")} ${pt("bar")}"/>`+
-  `<polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/>`+close;
+  `<g${opt?` opacity="${opt.ro}" transform="translate(0 ${opt.ry})"`:""}><polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/></g>`+close;
 }
-function drawShockScene(r,idx,tt,mxSoFar){
+function drawShockScene(r,idx,tt,mxSoFar,el,opt){
  const sc=r.sc,o=r.out[idx],fr=o[1],w=o[2],P=(x,y)=>[(RX+x*KS).toFixed(1),(GB-y*KS).toFixed(1)];
  let t=tt,air=0;if(sc==="land"&&t<0){const tau=-t;air=(3.6*tau-4.905*tau*tau)*VD/DROP}
  const gF=gh(sc,FX,t,RX),gR=gh(sc,RX,t,RX);
@@ -2396,12 +2415,12 @@ function drawShockScene(r,idx,tt,mxSoFar){
   `<circle class="crw" cx="${zx+46}" cy="${ty-4}" r="7"/><rect class="low" x="${zx+30}" y="${ty+2}" width="32" height="${can}" rx="6"/>`+
   `<rect class="stn" x="${zx+40}" y="${cb}" width="12" height="${(yb-cb).toFixed(1)}"/><circle class="crw" cx="${zx+46}" cy="${(yb+6).toFixed(1)}" r="7"/>`+
   `<rect class="or" x="${zx+37}" y="${(ring-2).toFixed(1)}" width="18" height="4" rx="2"/>`+
-  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Shock close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${Math.round(fr*100)}% travel</text>`;
- $("sc").innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(ax,rAy)+wheel(WB,fAy)+
+  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Shock close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${opt&&opt.lab||Math.round(fr*100)+"% travel"}</text>`;
+ (el||$("sc")).innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(ax,rAy)+wheel(WB,fAy)+
   `<polyline class="bk" points="${pt("bb")} ${pt("seat")} ${pt("ht")} ${pt("bb")}"/><line class="bk" x1="${pvS[0]}" y1="${pvS[1]}" x2="${ra[0]}" y2="${ra[1]}"/>`+
   `<line class="bk" x1="${pvS[0]}" y1="${pvS[1]}" x2="${smS[0]}" y2="${smS[1]}"/><line class="shk" x1="${sf[0]}" y1="${sf[1]}" x2="${smS[0]}" y2="${smS[1]}"/>`+
   `<line class="bk" x1="${fa[0]}" y1="${fa[1]}" x2="${cr[0]}" y2="${cr[1]}"/><polyline class="bk" points="${cr.join(",")} ${pt("ht")} ${pt("bar")}"/>`+
-  `<polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/>`+close;
+  `<g${opt?` opacity="${opt.ro}" transform="translate(0 ${opt.ry})"`:""}><polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/></g>`+close;
 }
 function setGauge(now,mx,done){$("fill").style.width=(now*100)+"%";$("oring").style.left=`calc(${mx*100}% - 2px)`;OPCT=done?mx:null;showPct()}
 // when the run ends, the O-ring shows how much of the travel it used; it sits above the bar unless the caption is in the way
