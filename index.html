@@ -415,9 +415,6 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 #r-keep{margin-top:0}#r-keep:empty{display:none}
 .warn .wtail{display:none}.result.why .warn .wtail{display:inline}
 .r-acts{display:grid;gap:4px;margin:16px 0 0}
-.r-acts .primary{width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
-.r-acts .primary svg{width:20px;height:20px;flex:none}
-.r-acts2{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .why-t{border:0;background:none;padding:8px 2px;min-height:44px;color:var(--accent-ink);font-weight:700;display:inline-flex;align-items:center;gap:8px}
 .why-t::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
 .why-t[aria-expanded="true"]::after{transform:translateY(2px) rotate(-135deg)}
@@ -465,15 +462,44 @@ body.gd-on{overflow:hidden}
 .opct.below{bottom:auto;top:calc(100% + 6px)}
 .gauge.pb{margin-bottom:32px}
 /* "Set it up now" is the easy mode */
-.r-acts .primary.gd-btn{min-height:58px;justify-content:space-between;padding:10px 16px 10px 18px}
-.gd-ol{display:grid;text-align:left;gap:3px}.gd-ol small{font:600 .8rem/1.2 var(--body);opacity:.85}
 /* shop mode tab */
 #pane-p .card{margin-top:18px}
 #pane-p .shop-hint{margin:0}#shop-list:empty{display:none}
 /* four tabs in the bottom bar: on small phones, let the longer labels take more room */
 @media (max-width:380px){.bnav{gap:4px;padding:5px}.bnav button{flex:1 1 auto;font-size:.9rem;padding:8px 3px}}
-/* one clear main action on Setup: "Set it up now"; the next learning step stays, quieter */
-#go-s{background:var(--surface);color:var(--accent-ink);border:1.5px solid var(--accent)}
+/* first-time setup and the setup card, side by side and the same size */
+.r-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r-btns button{width:100%;min-height:48px;padding:8px 10px}
+.r-btns .gd-btn{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.r-acts .why-t{justify-self:start}
+@media (max-width:360px){.r-btns button{font-size:.9rem;padding:8px 4px}}
+/* first-time setup animations: pump gauge, O-ring for sag, counting a dial */
+.gd-tg>div.wide{grid-column:1/-1}
+.gd-tg .gd-pg{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.gg{width:76px;height:76px}
+.gg-face{fill:var(--sunk);stroke:var(--line);stroke-width:1.5}
+.gg-t line{stroke:var(--muted);stroke-width:1.5;stroke-linecap:round}
+.gg-tg{fill:var(--accent)}
+.gg-n{stroke:var(--mark);stroke-width:2.6;stroke-linecap:round}
+.gg-hub{fill:var(--ink)}
+svg text.gg-v{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tabular-nums}
+.gs{margin:14px 6px 0}
+.gs-bar{position:relative;height:14px;border-radius:7px;background:var(--grid)}
+.gs-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--ref);border-radius:7px 0 0 7px}
+.gs-seal{position:absolute;left:-6px;top:-5px;width:6px;height:24px;border-radius:2px;background:var(--ink);opacity:.7}
+.gs-ring{position:absolute;top:-3px;left:-2px;width:5px;height:20px;border-radius:3px;background:var(--mark)}
+.gs-dim{position:absolute;left:0;top:calc(100% + 5px);height:7px;border:2px solid var(--accent-ink);border-top:0;border-radius:0 0 3px 3px;opacity:0}
+.gs-dim b{position:absolute;top:9px;left:50%;transform:translateX(-50%);white-space:nowrap;font:italic 800 condensed 1rem/1 var(--display);color:var(--accent-ink)}
+.gs-cap{display:block;margin-top:38px;color:var(--muted);font-size:.86rem;min-height:1.3em}
+.gd-dl li.gd-kr{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.gk{width:76px;height:76px}
+.gk-t line{stroke:var(--muted);stroke-width:1.5;stroke-linecap:round}.gk-t line.z{stroke:var(--ink);stroke-width:2.5}.gk-t line.on{stroke:var(--accent);stroke-width:3.2}
+.gk-b{fill:var(--sunk);stroke:var(--ink);stroke-width:1.5}
+.gk-k line.kn{stroke:var(--muted);stroke-width:1.2}
+.gk-p{stroke:var(--mark);stroke-width:3;stroke-linecap:round}
+.gk-c{fill:var(--surface);stroke:var(--line)}
+svg text.gk-n{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tabular-nums}
+.gk-cap{display:block;margin-top:6px;color:var(--muted);font-size:.85rem;min-height:1.3em}
 .gd-foot .gd-wrap{display:flex;gap:10px}.gd-foot .primary{flex:1}.gd-foot button{min-height:48px}
 </style>
 
@@ -548,8 +574,8 @@ body.gd-on{overflow:hidden}
 <ul class="lines" id="r-lines"></ul>
 <ul class="lines" id="r-keep"></ul>
 <ul class="warn" id="r-warn"></ul>
-<div class="r-acts"><button type="button" class="primary gd-btn" id="gd-open"><span class="gd-ol"><span>Set it up now</span><small>Easy mode: one step at a time</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<div class="r-acts2"><button type="button" class="why-t" id="why-t" aria-expanded="false" aria-controls="why-box">Why these numbers?</button><button type="button" id="card-open" title="Every number for this bike on one screen, to screenshot or print">Setup card</button></div></div>
+<div class="r-acts"><div class="r-btns"><button type="button" class="gd-btn" id="gd-open" title="A walk-through with your numbers, one step per screen. You only need it the first time.">First-time setup</button><button type="button" id="card-open" title="Every number for this bike on one screen, to screenshot or print">Setup card</button></div>
+<button type="button" class="why-t" id="why-t" aria-expanded="false" aria-controls="why-box">Why these numbers?</button></div>
 <div class="why-box" id="why-box" hidden><ul class="lines" id="r-why"></ul><ul class="notes2" id="r-notes"></ul></div>
 </section>
 <details class="sect coilg" id="coil-guide" open hidden><summary>Choose your coil spring</summary><div class="sect-body">
@@ -1591,6 +1617,7 @@ function gdData(){const tx=id=>$(id).textContent.trim(),fork=U.mode==="fork",sh=
  if(!fork&&S3.l==="Max pressure"&&/\d/.test(S3.v)&&/\d/.test(S1.v))S1.m="Max "+S3.v;
  const notes=[...$("r-notes").children].map(li=>li.innerHTML);
  return{fork,coil,S1,S3,SG:{l:"Sag target",v:em?sg.textContent.replace(em.textContent,"").trim():sg.textContent.trim(),m:em?em.textContent.trim():""},L,
+  tot:(()=>{const dp=DAMP.x||{};return{r:dp.r||0,l:dp.lever?0:(dp.l||0)}})(),
   click:notes.find(n=>/^Click numbers count from fully closed/.test(n))||"",keep:[...$("r-keep").children].map(li=>li.innerHTML.replace(/^<b>Dials<\/b>/,"")),ramp:fork&&!!verOf().ramp,
   prof:$("r-prof").hidden?null:{name:profOf().name,items:[...$("r-prof").querySelectorAll("li")].map(li=>li.innerHTML)},
   name:pickSummary().name,title:$("r-title").textContent}}
@@ -1611,9 +1638,50 @@ function gdChips(t,D){const out=[],has=re=>re.test(t),num=x=>/\d/.test(x.v);
  if(comp&&D.L.Compression)out.push({row:["Compression",D.L.Compression]});
  if(((reb&&!D.L.Rebound)||(comp&&!D.L.Compression))&&D.keep.length)D.keep.forEach(k=>out.push({row:["Dials",k]}));
  return out}
-function gdChipsHTML(C){const st=C.filter(c=>c.s),rw=C.filter(c=>c.row);
- return(st.length?`<div class="gd-tg">${st.map(({s})=>`<div><small>${esc(s.l)}</small><b>${esc(s.v)}</b>${s.m?`<em>${esc(s.m)}</em>`:""}</div>`).join("")}</div>`:"")+
-  (rw.length?`<ul class="gd-dl">${rw.map(({row})=>`<li><b>${row[0]}</b>${row[1]}</li>`).join("")}</ul>`:"")}
+function gdChipsHTML(C,anim){const st=C.filter(c=>c.s),rw=C.filter(c=>c.row),D=GD&&GD.D;
+ const stat=s=>{const inner=`<small>${esc(s.l)}</small><b>${esc(s.v)}</b>${s.m?`<em>${esc(s.m)}</em>`:""}`,p=anim&&/^(\d+) psi$/.exec(s.v),sg=anim&&D&&s===D.SG&&/(\d+(?:\.\d+)?)%/.exec(s.m||"");
+  if(p){const v=+p[1],mm=/(\d+)\s*psi/.exec(s.m||"");return`<div class="gd-pg">${gdGaugeSVG(v,Math.max(v,mm?+mm[1]:Math.ceil(v*1.5/50)*50))}<div>${inner}</div></div>`}
+  if(sg)return`<div class="wide">${inner}${gdSagHTML(+sg[1]/100,s.v)}</div>`;
+  return`<div>${inner}</div>`};
+ return(st.length?`<div class="gd-tg">${st.map(({s})=>stat(s)).join("")}</div>`:"")+
+  (rw.length?`<ul class="gd-dl">${rw.map(({row})=>gdDialRow(row[0],row[1],D,anim)).join("")}</ul>`:"")}
+// ---------- first-time setup animations: a pump gauge, the O-ring for sag, and a dial being counted ----------
+let GDA=[];
+function gdStop(){GDA.forEach(x=>cancelAnimationFrame(x.id));GDA=[]}
+function gdRun(fn){const x={id:0},t0=performance.now(),f=now=>{if(fn(now-t0)!==false)x.id=requestAnimationFrame(f)};x.id=requestAnimationFrame(f);GDA.push(x)}
+const gdRM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}};
+const gdEase=x=>x<=0?0:x>=1?1:x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2,gdOut=x=>x<=0?0:x>=1?1:1-Math.pow(1-x,3);
+const gdPol=(c,r,a)=>[(c+r*Math.sin(a*Math.PI/180)).toFixed(1),(c-r*Math.cos(a*Math.PI/180)).toFixed(1)];
+function gdGaugeSVG(v,mx){const c=38,R=30,A=p=>-135+270*p;let t="";
+ for(let i=0;i<=10;i++){const[x1,y1]=gdPol(c,R,A(i/10)),[x2,y2]=gdPol(c,R-(i%5?4:7),A(i/10));t+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+ const[tx,ty]=gdPol(c,R+4,A(v/mx));
+ return`<svg class="gg" viewBox="0 0 76 76" aria-hidden="true" data-anim="gauge" data-v="${v}" data-max="${mx}"><circle class="gg-face" cx="${c}" cy="${c}" r="${R+6}"/><g class="gg-t">${t}</g><circle class="gg-tg" cx="${tx}" cy="${ty}" r="2.8"/><line class="gg-n" x1="${c}" y1="${c}" x2="${c}" y2="${c-R+6}" transform="rotate(${A(v/mx).toFixed(1)} ${c} ${c})"/><circle class="gg-hub" cx="${c}" cy="${c}" r="3.4"/><text class="gg-v" x="${c}" y="${c+21}" text-anchor="middle">${v}</text></svg>`}
+function gdSagHTML(f,mm){return`<div class="gs" data-anim="sag" data-f="${f}" aria-hidden="true"><div class="gs-bar"><span class="gs-seal"></span><i class="gs-fill"></i><span class="gs-ring" style="left:calc(${f*100}% - 2px)"></span><span class="gs-dim" style="width:${f*100}%;opacity:1"><b>${esc(mm)}</b></span></div><small class="gs-cap">Seal to O-ring: ${esc(mm)}</small></div>`}
+function gdKnobSVG(n,T,ls){T=T>=n&&T>0?T:Math.max(n+4,12);const s=Math.min(22,300/T),c=40;let t="",kn="";
+ for(let k=0;k<=T;k++){const[x1,y1]=gdPol(c,36,-k*s),[x2,y2]=gdPol(c,k===n?28.5:k===0?30:32.5,-k*s);t+=`<line class="${k===n?"on":k===0?"z":""}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+ for(let i=0;i<18;i++){const[x1,y1]=gdPol(c,25,i*20),[x2,y2]=gdPol(c,21.5,i*20);kn+=`<line class="kn" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+ return`<svg class="gk" viewBox="0 0 80 80" aria-hidden="true" data-anim="knob" data-n="${n}" data-s="${s}" data-t="${T}" data-ls="${ls?1:""}"><g class="gk-t">${t}</g><g class="gk-k" transform="rotate(${(-n*s).toFixed(1)} ${c} ${c})"><circle class="gk-b" cx="${c}" cy="${c}" r="25"/>${kn}<line class="gk-p" x1="${c}" y1="${c-13}" x2="${c}" y2="${c-23}"/></g><circle class="gk-c" cx="${c}" cy="${c}" r="11"/><text class="gk-n" x="${c}" y="${c+4}" text-anchor="middle">${n}</text></svg>`}
+// a dial line gets the counting animation when it's a single click number, counted from fully closed
+function gdDialRow(t,html,D,anim){const txt=String(html).replace(/<[^>]+>/g,""),N=dialNums([[t,txt]]),n=t==="Rebound"?N.reb:t==="Compression"?N.lsc:null,T=!D?0:t==="Rebound"?D.tot.r:D.tot.l;
+ const ok=anim&&n!=null&&/counterclockwise from fully closed/.test(txt)&&!/^\D*\d+\s*[–-]\s*\d+/.test(txt)&&(t!=="Compression"||T>0);
+ return ok?`<li class="gd-kr">${gdKnobSVG(n,T,/low-speed/i.test(txt))}<div><b>${t}</b>${html}<small class="gk-cap" aria-hidden="true">${n} click${n===1?"":"s"} out from closed</small></div></li>`:`<li><b>${t}</b>${html}</li>`}
+function gdAnimStart(root){gdStop();if(gdRM())return;
+ root.querySelectorAll('[data-anim="gauge"]').forEach(svg=>{const v=+svg.dataset.v,mx=+svg.dataset.max,nd=svg.querySelector(".gg-n"),tx=svg.querySelector(".gg-v");
+  gdRun(t=>{const p=gdOut(t/1500);nd.setAttribute("transform",`rotate(${(-135+270*p*v/mx).toFixed(1)} 38 38)`);tx.textContent=Math.round(p*v);return t<1500})});
+ root.querySelectorAll('[data-anim="sag"]').forEach(el=>{const f=+el.dataset.f,fill=el.querySelector(".gs-fill"),ring=el.querySelector(".gs-ring"),dim=el.querySelector(".gs-dim"),cap=el.querySelector(".gs-cap"),mm=dim.textContent;
+  const C=["Push the O-ring against the seal","Get on in your riding position","Step off without bouncing",`Measure seal to O-ring: ${mm}`];
+  const set=(fl,rg,d,c)=>{fill.style.width=fl*100+"%";ring.style.left=`calc(${rg*100}% - 2px)`;dim.style.opacity=d;if(cap.textContent!==C[c])cap.textContent=C[c]};
+  gdRun(t=>{const T=t%7000;
+   if(T<900)set(0,0,0,0);else if(T<1900){const p=gdEase((T-900)/1000)*f;set(p,p,0,1)}else if(T<2700)set(f,f,0,1);
+   else if(T<3700)set(f*(1-gdEase((T-2700)/1000)),f,0,2);else set(0,f,Math.min(1,(T-3700)/300),3)})});
+ root.querySelectorAll('[data-anim="knob"]').forEach(svg=>{const n=+svg.dataset.n,s=+svg.dataset.s,T=+svg.dataset.t,k=svg.querySelector(".gk-k"),num=svg.querySelector(".gk-n"),cap=svg.closest("li").querySelector(".gk-cap"),ls=svg.dataset.ls?" (low-speed)":"";
+  const set=(ang,txt,c)=>{k.setAttribute("transform",`rotate(${ang.toFixed(1)} 40 40)`);num.textContent=txt;if(cap.textContent!==c)cap.textContent=c};
+  const st=-Math.min(T,n+5)*s,per=Math.max(150,Math.min(320,4200/Math.max(1,n))),P1=1000,P2=700,P3=n*per,L=P1+P2+P3+3000;
+  gdRun(t=>{const x=t%L;
+   if(x<P1)set(st*(1-gdEase(x/P1)),"","Turn it clockwise until it stops");
+   else if(x<P1+P2)set(0,"0","That's fully closed");
+   else if(x<P1+P2+P3){const y=(x-P1-P2)/per,i=Math.floor(y);set(-(i+gdOut(Math.min(1,(y-i)*4)))*s,String(i+1),`Count clicks counterclockwise: ${i+1}`)}
+   else set(-n*s,String(n),`${n} click${n===1?"":"s"} out from closed${ls}`)})})}
 function gdBuild(){const D=gdData(),P=(PUMP[HOWK]||[]).slice();let tip="";
  if(P.length&&/^(Setting up the shock too|Changed the shock a lot)/.test(P[P.length-1]))tip=P.pop();
  const steps=[{k:"intro"}];P.forEach((t,i)=>steps.push({k:"step",t:gdClean(t),n:i+1}));steps.push({k:"dials",n:P.length+1},{k:"done",tip});
@@ -1625,7 +1693,7 @@ function gdOpen(){GD={...gdBuild(),done:[],from:document.activeElement};
  GD.inert=[...document.body.children].filter(el=>el!==g&&el.id!=="card-ov"&&el.tagName!=="SCRIPT"&&!el.inert);GD.inert.forEach(el=>{el.inert=true});
  g.hidden=false;document.body.classList.add("gd-on");try{history.pushState({pbGuide:1},"");GD.hist=true}catch(e){}
  gdRender()}
-function gdClose(fromPop){if(!GD)return;const o=GD;GD=null;$("guide").hidden=true;document.body.classList.remove("gd-on");(o.inert||[]).forEach(el=>{el.inert=false});
+function gdClose(fromPop){if(!GD)return;gdStop();const o=GD;GD=null;$("guide").hidden=true;document.body.classList.remove("gd-on");(o.inert||[]).forEach(el=>{el.inert=false});
  if(o.hist&&!fromPop){try{history.back()}catch(e){}}if(o.from&&o.from.focus)o.from.focus({preventScroll:true})}
 window.addEventListener("popstate",()=>{if(GD)gdClose(true)});
 // the same bike's other part (fork or shock) in the garage, if it hasn't had its turn in this run
@@ -1637,18 +1705,18 @@ function gdRender(){const g=$("guide"),S=GD.steps,st=S[GD.i],D=GD.D,last=GD.i===
  const row=(t)=>D.L[t]?`<li><b>${t}</b>${D.L[t]}</li>`:"",kept=D.keep.map(k=>`<li><b>Dials</b>${k}</li>`).join("");
  if(st.k==="intro"){h="Before you start";
   const air=!D.coil||/psi/.test(D.S3.v),C=[{s:D.S1},{s:D.SG}];if((D.ramp||D.coil)&&/\d/.test(D.S3.v))C.push({s:D.S3});
-  b=`<p class="gd-t">${esc(D.title)}</p><p class="gd-t2">You'll need ${air?"a shock pump, and ":""}a ruler or tape measure for sag. Each screen is one step, with your numbers on it.</p>${gdChipsHTML(C)}<ul class="gd-dl">${row("Rebound")}${row("Compression")}${row("Dials")}${D.L.Compression?"":row("Lever")}${kept}</ul>`}
+  b=`<p class="gd-t">${esc(D.title)}</p><p class="gd-t2">This walk-through is for the first time you set it up: one step per screen, with your numbers. You'll need ${air?"a shock pump and ":""}a ruler or tape measure for sag.</p>${gdChipsHTML(C)}<ul class="gd-dl">${row("Rebound")}${row("Compression")}${row("Dials")}${D.L.Compression?"":row("Lever")}${kept}</ul>`}
  else if(st.k==="step"){n=`Step ${st.n} of ${GD.total}`;let[f,rest]=splitFirst(st.t);const c=f.indexOf(": ");
   if(c>0&&c<60&&!/\(/.test(f.slice(0,c))){rest=capf(f.slice(c+2))+(rest?" "+rest:"");f=f.slice(0,c)}
-  h=f;b=(rest?`<p class="gd-t">${rest}</p>`:"")+gdChipsHTML(gdChips(st.t,D))}
+  h=f;b=(rest?`<p class="gd-t">${rest}</p>`:"")+gdChipsHTML(gdChips(st.t,D),true)}
  else if(st.k==="dials"){n=`Step ${st.n} of ${GD.total}`;h="Set your dials";
-  b=`<p class="gd-t">${GD.compOpen?"Sag is set. Now set compression to its starting point, and check rebound.":"Check each dial is on its starting point."}</p><ul class="gd-dl">${["Rebound","Compression","Dials","Lever","Adjustable Bottom Out"].map(row).join("")}${kept}</ul>`+
+  b=`<p class="gd-t">${GD.compOpen?"Sag is set. Now set compression to its starting point, and check rebound.":"Check each dial is on its starting point."}</p><ul class="gd-dl">${["Rebound","Compression","Dials","Lever","Adjustable Bottom Out"].map(t=>D.L[t]?gdDialRow(t,D.L[t],D,true):"").join("")}${kept}</ul>`+
    (D.click?`<p class="gd-tip">${D.click}</p>`:"")+(D.prof?`<div class="gd-tip"><b>${esc(D.prof.name)}:</b> change these from the starting point.<ul>${D.prof.items.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:"")}
  else{const m=U.mode,saved=garageHas(m),names=bikeNames(),on=nx?(nx.kind==="shock"?"shock":"fork"):"";h=nx?`${m==="shock"?"Shock":"Fork"} done`:"You're set";
-  b=`<p class="gd-t">${nx?`That's its starting point. Next, the ${on}: ${esc(partLabel(nx.kind,nx.snap))}.`:"That's your starting point. Ride a trail you know, then change one thing at a time."}</p>${st.tip?`<p class="gd-tip">${st.tip}</p>`:""}
+  b=`<p class="gd-t">${nx?`That's its starting point. Next, the ${on}: ${esc(partLabel(nx.kind,nx.snap))}.`:"That's your starting point. Ride a trail you know, then change one thing at a time."}</p>${st.tip?`<p class="gd-tip">${st.tip}</p>`:""}${nx?"":`<p class="gd-tip"><b>You only need this the first time.</b> From now on, tune it on the Setup page: the Spring and Damping steps show what each change does.</p>`}
   ${saved?"":`<div class="gd-save" id="gd-save"><h3>Keep these numbers in your garage?</h3><div class="row"><input id="gd-name" list="bike-names" maxlength="40" placeholder="${names[0]?esc(names[0]):"Levo, Big bike…"}" aria-label="Bike name"><button type="button" class="primary" id="gd-add">Add to garage</button></div></div>`}
-  <div class="gd-more"><button type="button" id="gd-card">Setup card</button><button type="button" id="gd-brk">Find your best click</button></div>`}
- g.innerHTML=`<div class="gd-top"><div class="gd-wrap"><div class="gd-row"><div><b>Set it up now</b><small>Easy mode · ${esc(D.name)}</small></div><button type="button" class="gd-x" id="gd-x">Close</button></div>
+  <div class="gd-more"><button type="button" id="gd-damp">See what each dial does</button><button type="button" id="gd-card">Setup card</button></div>`}
+ g.innerHTML=`<div class="gd-top"><div class="gd-wrap"><div class="gd-row"><div><b>First-time setup</b><small>${esc(D.name)}</small></div><button type="button" class="gd-x" id="gd-x">Close</button></div>
   <div class="ld-prog" aria-hidden="true">${S.map((x,i)=>`<i class="${i<=GD.i?"on":""}"></i>`).join("")}</div></div></div>
   <div class="gd-body" id="gd-body"><div class="gd-wrap">${n?`<span class="gd-n">${n}</span>`:""}<h2 class="gd-h${h.replace(/<[^>]+>/g,"").length>70?" long":""}" id="gd-h" tabindex="-1">${h}</h2>${b}</div></div>
   <div class="gd-foot"><div class="gd-wrap">${GD.i>0?`<button type="button" id="gd-back">Back</button>`:""}<button type="button" class="primary" id="gd-next">${GD.i===0?"Start":nx?`Next: your ${nx.kind==="shock"?"shock":"fork"}`:last?"Done":"Next"}</button></div></div>`;
@@ -1657,8 +1725,8 @@ function gdRender(){const g=$("guide"),S=GD.steps,st=S[GD.i],D=GD.D,last=GD.i===
  if($("gd-add")){const nm=$("gd-name");$("bike-names").innerHTML=bikeNames().map(x=>`<option value="${esc(x)}">`).join("");
   $("gd-add").onclick=()=>{const m=U.mode,name=nm.value.trim()||D.name;addPart(m,{...U},name);renderGarage();renderAddPrompt();$("gd-save").innerHTML=`<p class="done">Added to ${esc(name)} in your garage.</p>`}}
  if($("gd-card"))$("gd-card").onclick=()=>openCard();
- if($("gd-brk"))$("gd-brk").onclick=()=>{gdClose();const t=$("tools"),k=$("brk");t.open=true;if(!k.open){k.open=true;if(typeof renderBrk==="function")renderBrk(true)}k.scrollIntoView({block:"start"})};
- $("gd-body").scrollTop=0;$("gd-h").focus({preventScroll:true})}
+ if($("gd-damp"))$("gd-damp").onclick=()=>{gdClose();setTab("d");play()};
+ $("gd-body").scrollTop=0;$("gd-h").focus({preventScroll:true});gdAnimStart(g)}
 $("gd-open").onclick=gdOpen;
 function renderSetup(){
  fixU();
