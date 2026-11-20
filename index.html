@@ -291,20 +291,20 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .note{color:var(--muted);font-size:.85rem;margin:14px 2px 0}
 /* scene */
 #scene{margin:0 0 6px;background:var(--sunk);border-radius:10px}
-#scene .gnd{fill:var(--dirt);stroke:var(--dirt-edge);stroke-width:1.5}
-#scene .tk{stroke:var(--dirt-edge);stroke-width:2}
-#scene .bk{stroke:var(--frame);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
-#scene .rd{stroke:var(--rider);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-#scene .wh{stroke:var(--frame);stroke-width:3;fill:none}
-#scene .sp{stroke:var(--muted);stroke-width:1}
-#scene .shk{stroke:var(--mark);stroke-width:7;stroke-linecap:round}
-#scene .fk{stroke:var(--mark);stroke-width:4;stroke-linecap:round}
-#scene .zb{fill:var(--surface);stroke:var(--line)}
-#scene .stn{fill:var(--ref)}
-#scene .low{fill:var(--grid);stroke:var(--muted)}
-#scene .or{fill:var(--mark)}
-#scene .crw{fill:var(--muted)}
-#scene text{fill:var(--muted)}
+:is(#scene,.gd-scene) .gnd{fill:var(--dirt);stroke:var(--dirt-edge);stroke-width:1.5}
+:is(#scene,.gd-scene) .tk{stroke:var(--dirt-edge);stroke-width:2}
+:is(#scene,.gd-scene) .bk{stroke:var(--frame);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+:is(#scene,.gd-scene) .rd{stroke:var(--rider);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+:is(#scene,.gd-scene) .wh{stroke:var(--frame);stroke-width:3;fill:none}
+:is(#scene,.gd-scene) .sp{stroke:var(--muted);stroke-width:1}
+:is(#scene,.gd-scene) .shk{stroke:var(--mark);stroke-width:7;stroke-linecap:round}
+:is(#scene,.gd-scene) .fk{stroke:var(--mark);stroke-width:4;stroke-linecap:round}
+:is(#scene,.gd-scene) .zb{fill:var(--surface);stroke:var(--line)}
+:is(#scene,.gd-scene) .stn{fill:var(--ref)}
+:is(#scene,.gd-scene) .low{fill:var(--grid);stroke:var(--muted)}
+:is(#scene,.gd-scene) .or{fill:var(--mark)}
+:is(#scene,.gd-scene) .crw{fill:var(--muted)}
+:is(#scene,.gd-scene) text{fill:var(--muted)}
 /* service */
 .part{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:10px 0}
 .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -397,6 +397,112 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 .bnav button[aria-selected="true"]{background:var(--accent);color:var(--on-accent);box-shadow:0 2px 8px rgba(255,122,46,.35)}
 .bnav button:focus-visible{outline-color:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+/* declutter: answer first, four numbers up front, tools tucked away, guided setup */
+[hidden]{display:none!important}
+.pick-sum{display:grid;grid-template-columns:auto 1fr auto;column-gap:12px;align-items:center}
+.pick-sum .ps-ic{grid-row:1/4;grid-column:1}.ps-tx{display:contents}
+.ps-tx small{grid-row:1;grid-column:2}.ps-tx b{grid-row:2;grid-column:2/4}.ps-tx span{grid-row:3;grid-column:2/4}
+.pick-sum .ps-ch{grid-row:1;grid-column:3}
+.ps-ic{display:flex;color:var(--ink)}.ps-ic .ic{width:30px;height:44px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.ps-ic .ic .a{stroke:var(--accent)}.ps-ic .ic .f{fill:currentColor;fill-opacity:.12}
+.ps-tx small{display:block;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.ps-tx b{display:block;font:italic 700 condensed 1.45rem/1.1 var(--display);margin-top:1px}
+.ps-tx span{display:block;color:var(--muted);font-size:.9rem;line-height:1.35;margin-top:2px}
+.ps-ch{min-height:44px;padding:8px 16px}
+.pick-body{display:grid;gap:16px}
+.pick-done{width:100%}
+.stat .r-max{margin-top:4px;font-size:.85rem}
+#r-lines .tail,#r-lines li.more,#r-notes li.kept{display:none}
+#r-keep{margin-top:0}#r-keep:empty{display:none}
+.warn .wtail{display:none}.result.why .warn .wtail{display:inline}
+.r-acts{display:grid;gap:4px;margin:16px 0 0}
+.why-t{border:0;background:none;padding:8px 2px;min-height:44px;color:var(--accent-ink);font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.why-t::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.why-t[aria-expanded="true"]::after{transform:translateY(2px) rotate(-135deg)}
+.why-box{margin-top:4px;border-top:1px solid var(--line)}
+.why-box .lines{margin-top:0}.why-box .lines li:first-child{border-top:0}
+.why-box .lines:empty{display:none}.why-box .lines:empty+.notes2{border-top:0}
+.tools{margin-top:28px}
+.tools>summary small{display:block;font:500 .85rem/1.3 var(--body);color:var(--muted);margin-top:3px}
+.tools-in>details{border:0;border-top:1px solid var(--line);border-radius:0;margin:0;background:none;padding:0}
+.tools-in>details>summary{font-size:1.02rem;padding:12px 18px;min-height:50px}
+/* guided setup: one step per screen */
+#guide{position:fixed;inset:0;z-index:55;background:var(--bg);display:flex;flex-direction:column}
+body.gd-on{overflow:hidden}
+.gd-top{flex:none;background:var(--pine);color:var(--on-pine);padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px))}
+.gd-wrap{max-width:560px;margin:0 auto}
+.gd-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gd-row b{display:block;font:italic 800 condensed 1.2rem/1.1 var(--display);letter-spacing:.01em}
+.gd-row small{display:block;color:var(--pine-mut);font-size:.85rem;margin-top:2px}
+.gd-x{flex:none;background:none;border:1px solid rgba(255,255,255,.3);color:var(--on-pine);min-height:44px;padding:6px 16px}
+.gd-top .ld-prog{margin:12px 0 0}.gd-top .ld-prog i{background:rgba(255,255,255,.18)}.gd-top .ld-prog i.on{background:var(--accent)}
+.gd-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px max(16px,env(safe-area-inset-right,0px)) 28px max(16px,env(safe-area-inset-left,0px))}
+.gd-n{display:block;color:var(--accent-ink);font-weight:700;font-size:.9rem;margin:0 0 4px}
+.gd-h{font:italic 800 condensed 1.8rem/1.1 var(--display);margin:0 0 12px;outline:none;text-wrap:balance}
+.gd-h.long{font-size:1.4rem;line-height:1.2}
+.gd-t{font-size:1.08rem;line-height:1.5}
+.gd-t2{color:var(--muted);margin:10px 0 0}
+.gd-tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0 0}
+.gd-tg>div{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:10px 14px;min-width:0}
+.gd-tg small{display:block;color:var(--muted);font-weight:600;font-size:.85rem}
+.gd-tg b{display:block;font:italic 800 condensed 2.3rem/1.05 var(--display);color:var(--accent-ink);font-variant-numeric:tabular-nums;margin-top:2px}
+.gd-tg em{display:block;font-style:normal;color:var(--muted);font-size:.85rem;margin-top:2px}
+.gd-dl{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.gd-dl li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.gd-dl li b{display:block;color:var(--accent-ink);font-size:.9rem;margin-bottom:2px}
+.gd-tip{margin:16px 0 0;padding:10px 14px;border-radius:12px;background:var(--sunk);color:var(--muted);font-size:.92rem}
+.gd-tip ul{margin:6px 0 0;padding-left:18px}.gd-tip li{margin:4px 0}
+.gd-save{margin:18px 0 0;padding:12px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;background:var(--surface)}
+.gd-save h3{margin:0 0 8px;font-size:1rem}.gd-save .row{display:flex;gap:8px;flex-wrap:wrap}.gd-save input{flex:1 1 160px;min-width:0;font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;min-height:44px;padding:8px 12px}
+.gd-save .done{color:var(--ok);font-weight:600;margin:0}
+.gd-more{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.gd-foot{flex:none;border-top:1px solid var(--line);background:var(--surface);padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+/* % of travel used, shown at the O-ring when the animation ends */
+.opct{position:absolute;bottom:calc(100% + 5px);left:0;white-space:nowrap;font:italic 800 condensed 1.25rem/1 var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
+.opct small{font:600 .78rem/1 var(--body);color:var(--muted)}
+.opct.below{bottom:auto;top:calc(100% + 6px)}
+.gauge.pb{margin-bottom:32px}
+/* "Set it up now" is the easy mode */
+/* shop mode tab */
+#pane-p .card{margin-top:18px}
+#pane-p .shop-hint{margin:0}#shop-list:empty{display:none}
+/* four tabs in the bottom bar: on small phones, let the longer labels take more room */
+@media (max-width:380px){.bnav{gap:4px;padding:5px}.bnav button{flex:1 1 auto;font-size:.9rem;padding:8px 3px}}
+.gd-scene{display:block;width:100%;height:auto;margin:18px 0 0;background:var(--sunk);border-radius:12px}
+.gd-cap{display:block;margin-top:6px;color:var(--muted);font-size:.85rem}
+/* first-time setup and the setup card, side by side and the same size */
+.r-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r-btns button{width:100%;min-height:48px;padding:8px 10px}
+.r-btns .gd-btn{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.r-acts .why-t{justify-self:start}
+@media (max-width:360px){.r-btns button{font-size:.9rem;padding:8px 4px}}
+/* first-time setup animations: pump gauge, O-ring for sag, counting a dial */
+.gd-tg>div.wide{grid-column:1/-1}
+.gd-tg .gd-pg{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.gg{width:76px;height:76px}
+.gg-face{fill:var(--sunk);stroke:var(--line);stroke-width:1.5}
+.gg-t line{stroke:var(--muted);stroke-width:1.5;stroke-linecap:round}
+.gg-tg{fill:var(--accent)}
+.gg-n{stroke:var(--mark);stroke-width:2.6;stroke-linecap:round}
+.gg-hub{fill:var(--ink)}
+svg text.gg-v{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tabular-nums}
+.gs{margin:14px 6px 0}
+.gs-bar{position:relative;height:14px;border-radius:7px;background:var(--grid)}
+.gs-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--ref);border-radius:7px 0 0 7px}
+.gs-seal{position:absolute;left:-6px;top:-5px;width:6px;height:24px;border-radius:2px;background:var(--ink);opacity:.7}
+.gs-ring{position:absolute;top:-3px;left:-2px;width:5px;height:20px;border-radius:3px;background:var(--mark)}
+.gs-dim{position:absolute;left:0;top:calc(100% + 5px);height:7px;border:2px solid var(--accent-ink);border-top:0;border-radius:0 0 3px 3px;opacity:0}
+.gs-dim b{position:absolute;top:9px;left:50%;transform:translateX(-50%);white-space:nowrap;font:italic 800 condensed 1rem/1 var(--display);color:var(--accent-ink)}
+.gs-cap{display:block;margin-top:38px;color:var(--muted);font-size:.86rem;min-height:1.3em}
+.gd-dl li.gd-kr{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.gk{width:76px;height:76px}
+.gk-t line{stroke:var(--muted);stroke-width:1.5;stroke-linecap:round}.gk-t line.z{stroke:var(--ink);stroke-width:2.5}.gk-t line.on{stroke:var(--accent);stroke-width:3.2}
+.gk-b{fill:var(--sunk);stroke:var(--ink);stroke-width:1.5}
+.gk-k line.kn{stroke:var(--muted);stroke-width:1.2}
+.gk-p{stroke:var(--mark);stroke-width:3;stroke-linecap:round}
+.gk-c{fill:var(--surface);stroke:var(--line)}
+svg text.gk-n{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tabular-nums}
+.gk-cap{display:block;margin-top:6px;color:var(--muted);font-size:.85rem;min-height:1.3em}
+.gd-foot .gd-wrap{display:flex;gap:10px}.gd-foot .primary{flex:1}.gd-foot button{min-height:48px}
 </style>
 
 <main>
@@ -416,13 +522,16 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <button role="tab" id="tb-u" aria-selected="true" aria-controls="pane-u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12M8 3v9M16 3v9M7 12h2v9H7zM15 12h2v9h-2z"/></svg><span>My fork</span></button>
 <button role="tab" id="tb-k" aria-selected="false" aria-controls="pane-u"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/><path d="M12 6v2M12 16v2M9 8h6v4H9zM10 12l4 1-4 1 4 1"/></svg><span>My shock</span></button>
 <button role="tab" id="tb-v" aria-selected="false" aria-controls="pane-v"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.3-.7-.7-2.3z"/></svg><span>Service</span></button>
+<button role="tab" id="tb-p" aria-selected="false" aria-controls="pane-p" aria-label="Shop mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9 5 4h14l1.5 5z"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/></svg><span>Shop</span></button>
 </nav>
 <div class="steps" id="learn-head" role="tablist" aria-label="Setup steps"><button role="tab" id="st-u" aria-selected="true" aria-controls="pane-u"><b>1</b><span id="st-u-l">Fork</span></button><button role="tab" id="tb-s" aria-selected="false" aria-controls="pane-s"><b>2</b><span>Spring</span></button><button role="tab" id="tb-d" aria-selected="false" aria-controls="pane-d"><b>3</b><span>Damping</span></button></div>
 
 <!-- SETUP -->
 <div id="pane-u" role="tabpanel" aria-labelledby="tb-u">
 <section class="garage" id="garage" aria-label="Your garage"></section>
-<section class="card picker" aria-label="Choose your fork or shock">
+<section class="card picker" id="pick-card" aria-label="Choose your fork or shock">
+<div class="pick-sum" id="pick-sum" hidden><span class="ps-ic" id="ps-ic" aria-hidden="true"></span><div class="ps-tx"><small id="ps-k">Your fork</small><b id="ps-name"></b><span id="ps-det"></span></div><button type="button" class="ps-ch" id="ps-ch" aria-controls="pick-body" aria-expanded="false">Change</button></div>
+<div class="pick-body" id="pick-body">
 <div class="mode" id="c-mode" hidden></div>
 <div id="fork-ui" class="picker">
 <div class="field"><span class="lab">Brand</span><div class="chips" id="c-brand"></div></div>
@@ -451,22 +560,25 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <div class="field"><label for="wt">Your weight, dressed to ride</label>
 <div class="rider"><input id="wt" type="number" inputmode="decimal" min="60" max="400" value="175"><div class="chips" id="c-unit"></div><label class="sw" id="eb-row"><input type="checkbox" id="eb"> E-bike</label><label class="sw" id="runt-row" hidden><input type="checkbox" id="runt"> DSD Runt fitted</label><label class="sw" id="lrunt-row" hidden><input type="checkbox" id="lrunt"> DSD Lower Runt fitted</label></div>
 </div>
+<button type="button" class="primary pick-done" id="pick-done">Show my settings</button>
+</div>
 </section>
 
 <section class="card result" aria-live="polite">
 <div class="profrow"><small class="proflab">How are you riding today?</small><div class="chips scroll" id="c-prof"></div></div>
 <h2 id="r-title"></h2>
 <div class="stats">
-<div class="stat"><small id="r-l1">Starting pressure</small><strong class="big" id="r-psi"></strong></div>
+<div class="stat"><small id="r-l1">Starting pressure</small><strong class="big" id="r-psi"></strong><small class="r-max" id="r-max" hidden></small></div>
 <div class="stat"><small>Sag target</small><strong id="r-sag"></strong></div>
 <div class="stat"><small id="r-l3">Tokens</small><strong id="r-tok"></strong></div>
 </div>
 <div class="profbox" id="r-prof" hidden></div>
 <ul class="lines" id="r-lines"></ul>
-<ul class="notes2" id="r-notes"></ul>
+<ul class="lines" id="r-keep"></ul>
 <ul class="warn" id="r-warn"></ul>
-<details class="dcount" id="dcount" hidden><summary>Count your dials</summary><div id="dc-body"></div></details>
-<div class="cardrow"><button type="button" id="card-open">Setup card</button><span class="fk">Every number for this bike on one screen, to screenshot or print.</span></div>
+<div class="r-acts"><div class="r-btns"><button type="button" class="gd-btn" id="gd-open" title="A walk-through with your numbers, one step per screen. You only need it the first time.">First-time setup</button><button type="button" id="card-open" title="Every number for this bike on one screen, to screenshot or print">Setup card</button></div>
+<button type="button" class="why-t" id="why-t" aria-expanded="false" aria-controls="why-box">Why these numbers?</button></div>
+<div class="why-box" id="why-box" hidden><ul class="lines" id="r-why"></ul><ul class="notes2" id="r-notes"></ul></div>
 </section>
 <details class="sect coilg" id="coil-guide" open hidden><summary>Choose your coil spring</summary><div class="sect-body">
 <p class="fk" style="margin-top:0">The right rate depends on your frame as much as your weight. If your frame maker publishes a spring chart, start there. If not, estimate it here, then confirm with sag.</p>
@@ -479,6 +591,11 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <h3 class="cg-h">Check your sag</h3><ol class="lines cg-chk" id="cg-chk"></ol>
 <h3 class="cg-h">What fits your shock</h3><ul class="lines" id="cg-fit"></ul>
 </div></details>
+<div class="addg" id="addg" hidden></div><datalist id="bike-names"></datalist>
+<div class="cta" id="cta"><button class="primary" id="go-s">Next: set the spring</button></div>
+<p class="fk" id="shock-learn" hidden></p>
+<details class="sect tools" id="tools"><summary><span>Tools<small id="tools-sum">Count your dials · Balance check · Bracketing</small></span></summary><div class="tools-in">
+<details class="sect dcount" id="dcount" hidden><summary>Count your dials</summary><div class="sect-body" id="dc-body"></div></details>
 <details class="sect" id="bal"><summary>Balance check: front and rear sag</summary><div class="sect-body">
 <p class="fk" style="margin-top:0">Measure sag at both ends, the same way each time, and the app tells you which end to change. A bike that sits level front to rear steers and grips the way it was designed to.</p>
 <div class="grid2" style="margin-top:12px">
@@ -496,22 +613,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <div id="brk-out"></div>
 <ul class="brk-list" id="brk-list"></ul>
 </div></details>
-<details class="sect" id="shop"><summary>Shop mode: hand over a setup</summary><div class="sect-body">
-<p class="fk" style="margin-top:0">For mechanics. Record what you set on a customer's bike, then give them a link or QR code. When they open it, Plushbucket shows your settings and can add the bike to their garage.</p>
-<div class="grid2" style="margin-top:12px">
-<div class="field"><label for="shop-name">Shop name</label><input id="shop-name" type="text" maxlength="60" autocomplete="organization"></div>
-<div class="field"><label for="shop-cust">Customer or bike name</label><input id="shop-cust" type="text" maxlength="60" placeholder="e.g. Sam's Ripmo"></div>
-</div>
-<div id="shop-parts"></div>
-<div class="field" style="margin-top:10px"><label for="shop-notes">Notes for the rider (optional)</label><textarea id="shop-notes" rows="2" maxlength="400" placeholder="e.g. Fresh lower leg service. Check pressure again after the first ride."></textarea></div>
-<div class="brk-btns" style="margin-top:12px"><button type="button" class="primary" id="shop-make">Make link and QR code</button><button type="button" id="shop-fill">Refresh from setup</button></div>
-<div class="shop-out" id="shop-out" hidden></div>
-<div class="field" style="margin-top:16px"><label for="shop-paste">Got a setup link from a shop? Paste it here</label><div style="display:flex;gap:8px"><input id="shop-paste" type="url" placeholder="https://plushbucket.com/#shop=…" style="flex:1"><button type="button" id="shop-open">Open</button></div></div>
-<ul class="brk-list" id="shop-list"></ul>
 </div></details>
-<div class="addg" id="addg" hidden></div><datalist id="bike-names"></datalist>
-<div class="cta" id="cta"><button class="primary" id="go-s">Next: set the spring</button></div>
-<p class="fk" id="shock-learn" hidden></p>
 
 </div>
 
@@ -594,7 +696,7 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <text x="195" y="246" text-anchor="middle">Time (s)</text>
 <text transform="rotate(-90 10 116)" x="10" y="116" text-anchor="middle">Travel used (%)</text>
 </svg>
-<div class="gauge"><small id="gauge-l">O-ring on the stanchion</small><div class="gw"><div class="stan"><i id="fill"></i></div><span class="oring" id="oring"></span></div></div>
+<div class="gauge"><small id="gauge-l">O-ring on the stanchion</small><div class="gw"><div class="stan"><i id="fill"></i></div><span class="oring" id="oring"></span><b class="opct" id="opct" hidden></b></div></div>
 <p class="verdict" id="verdict"></p>
 <h3 class="ctl-h">Adjust the damping <small>The rider stays pinned at the top while you slide.</small></h3><section class="controls" id="ctl-d">
 <div class="ctl"><div class="row">Damper</div><p id="dp-name"></p></div>
@@ -648,6 +750,25 @@ textarea{font:inherit;font-size:1rem;color:var(--ink);background:var(--sunk);bor
 <p class="fk" style="margin-top:0">Saves everything in one file: your garage, forks and shocks, service dates, ride log, trail notes, bracketing results, shop setups and slider settings. Keep it somewhere safe, or open it on your new phone and restore it here.</p>
 <div class="bkrow"><button class="primary" id="bk-exp">Save backup file</button><button id="bk-pick">Restore from a file</button><input type="file" id="bk-imp" accept=".json,application/json" hidden></div>
 <p class="fk" id="bk-msg" role="status"></p>
+</section>
+</div>
+<!-- SHOP MODE -->
+<div id="pane-p" role="tabpanel" aria-labelledby="tb-p" hidden>
+<section class="card picker" id="shop" aria-label="Hand over a setup">
+<p class="fk shop-hint">It starts from the fork and shock picked in <b>My fork</b> and <b>My shock</b>. Change any number to what you actually set, then make the link. When the rider opens it, Plushbucket shows your settings and can add the bike to their garage.</p>
+<div class="grid2">
+<div class="field"><label for="shop-name">Shop name</label><input id="shop-name" type="text" maxlength="60" autocomplete="organization"></div>
+<div class="field"><label for="shop-cust">Customer or bike name</label><input id="shop-cust" type="text" maxlength="60" placeholder="e.g. Sam's Ripmo"></div>
+</div>
+<div id="shop-parts"></div>
+<div class="field"><label for="shop-notes">Notes for the rider (optional)</label><textarea id="shop-notes" rows="2" maxlength="400" placeholder="e.g. Fresh lower leg service. Check pressure again after the first ride."></textarea></div>
+<div class="brk-btns"><button type="button" class="primary" id="shop-make">Make link and QR code</button><button type="button" id="shop-fill">Refresh from setup</button></div>
+<div class="shop-out" id="shop-out" hidden></div>
+</section>
+<h2 class="h2">Got a setup from a shop?</h2>
+<section class="card picker" style="margin-top:0" aria-label="Setups from a shop">
+<div class="field"><label for="shop-paste">Paste a setup link from a shop</label><div style="display:flex;gap:8px"><input id="shop-paste" type="url" placeholder="https://plushbucket.com/#shop=…" style="flex:1"><button type="button" id="shop-open">Open</button></div></div>
+<ul class="brk-list" id="shop-list"></ul>
 </section>
 </div>
 <section class="tipjar" id="tipjar" hidden aria-labelledby="tip-h"><h3 id="tip-h">Support Plushbucket</h3><p>Plushbucket is free, with no ads and no tracking. If it helped you dial in your bike, you can leave a tip. Tips don't unlock anything; they just keep the app going.</p><div class="tiprow" id="tip-btns"></div><p class="fk" id="tip-msg" role="status"></p></section>
@@ -1275,7 +1396,7 @@ const FIXES=[
  {s:"I can't reach sag with the spring I have",b:"coil",t:"Preload is only for fine-tuning; stay within your shock's limit (two turns after the spring stops moving on Fox shocks). Go up a spring rate if sag is too deep, down one if it's too shallow. Springs usually come in 25 or 50 lb/in steps, though some brands only offer 50."}];
 function renderHowto(kind){
  const key=U.mode==="fork"?(verOf().runtOn?"runt":verOf().pump||U.brand):kind==="coil"?"coil":{fox:"foxShock",rs:"rsShock",oh:"ohShock",dvo:"dvoShock",mz:"mzShock",ext:"extShock",cc:"ccShock",man:"manShock",intend:"intendShock",srs:"srsShock"}[U.sb];
- $("pump-steps").innerHTML=PUMP[key].map(x=>`<li>${x}</li>`).join("");
+ HOWK=key;$("pump-steps").innerHTML=PUMP[key].map(x=>`<li>${x}</li>`).join("");
  $("sag-tips").innerHTML=`<b>For a reading you can trust:</b> once you're on the bike, bounce gently a couple of times to free up the seals before the final reading. Measure in the same position every time: standing and centered over the bike for trail and enduro riding, or seated if you mostly ride seated, like cross-country. A wall or door frame to lean an elbow on helps. Ride with a pack? Wear it.`;
  const ok=f=>f.b==="any"||(f.b==="fork"&&U.mode==="fork")||(kind==="coil"?f.b==="coil":(f.b==="air"||(f.b==="foxfork"?(U.mode==="fork"&&U.brand==="fox"):f.b==="other"?!(U.mode==="fork"&&U.brand==="fox"):false)));
  const noun=U.mode==="fork"?"fork":"shock";
@@ -1378,10 +1499,10 @@ function finishLanding(){const L=LD,name=(L.name||"").trim()||"My bike";
  Object.assign(U,{w:L.w,unit:L.unit,eb:L.eb});
  if(L.what!=="shock"){Object.assign(U,L.f);addPart("fork",{...U},name)}
  if(L.what!=="fork"){Object.assign(U,L.s);addPart("shock",{...U},name)}
- U.mode=L.what==="shock"?"shock":"fork";$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;
+ U.mode=L.what==="shock"?"shock":"fork";if(L.what!=="shock")pickSet("fork",false);if(L.what!=="fork")pickSet("shock",false);$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;
  LD=null;try{localStorage.setItem(LDK,"1")}catch(e){}
- // skip the Setup step: the parts were just picked, so go straight to the spring (Setup still builds the settings first)
- document.body.classList.remove("landing");$("landing").hidden=true;renderSetup();setTab("s")}
+ // the parts were just picked, so go straight into the easy mode, one step per screen (Setup builds the numbers first)
+ document.body.classList.remove("landing");$("landing").hidden=true;renderSetup();setTab("u");gdOpen()}
 const LASTK="setup-last-v1";
 function rememberLast(){try{const o=JSON.parse(localStorage.getItem(LASTK)||"{}");o[U.mode]=snapOf(U.mode);o.mode=U.mode;localStorage.setItem(LASTK,JSON.stringify(o))}catch(e){}}
 function restoreLast(){try{const o=JSON.parse(localStorage.getItem(LASTK)||"{}");["fork","shock"].forEach(m=>{if(o[m])Object.assign(U,o[m])});if(o.mode)U.mode=o.mode;$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate}catch(e){}}
@@ -1390,7 +1511,7 @@ function renderGarage(){let saved;try{saved=G.saved||(G.saved=[])}catch(e){retur
  const el=$("garage");
  if(!mine.length){el.innerHTML=`<h2>Your garage</h2><div class="gl"><button class="gadd" id="g-addbike">+ Add a bike</button></div>`;$("g-addbike").onclick=()=>openLanding();return}
  el.innerHTML=`<h2>Your garage</h2><div class="gl">`+mine.map(x=>`<div class="gi${JSON.stringify(x.snap)===cur?" on":""}"><button data-gload="${x.id}">${esc(x.name||x.label)}<small>${validSnap(x.kind,x.snap)?esc(x.name?x.label:(x.snap.unit==="kg"?x.snap.w+" kg":x.snap.w+" lb")):esc(x.label)+" · discontinued, no longer in the app"}</small></button><button class="x" data-gdel="${x.id}" aria-label="Remove ${esc(x.name||x.label)}">×</button></div>`).join("")+`<button class="gadd" id="g-addbike">+ Add a bike</button></div>`;$("g-addbike").onclick=()=>openLanding();
- el.querySelectorAll("[data-gload]").forEach(b=>b.onclick=()=>{const x=saved.find(y=>y.id===b.dataset.gload);if(!validSnap(x.kind,x.snap))return;if(x.kind==="fork"){U.runt=false;U.lrunt=false}Object.assign(U,x.snap);U.mode=x.kind;$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;renderSetup()});
+ el.querySelectorAll("[data-gload]").forEach(b=>b.onclick=()=>{const x=saved.find(y=>y.id===b.dataset.gload);if(!validSnap(x.kind,x.snap))return;if(x.kind==="fork"){U.runt=false;U.lrunt=false}Object.assign(U,x.snap);U.mode=x.kind;$("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;pickSet(x.kind,false);renderSetup()});
  el.querySelectorAll("[data-gdel]").forEach(b=>b.onclick=()=>{G.saved=saved.filter(y=>y.id!==b.dataset.gdel);svcSave();renderGarage()})}
 // Riding profiles: changes from the maker's starting point. Sag and offsets follow what tuners and riders commonly run
 // (EMTB Forums park guide, Howler Bike Park, Cam Cole, ENDURO, Blister, Competitive Cyclist, Vital/MTBR threads). They are the app's suggestions, not maker settings.
@@ -1439,6 +1560,192 @@ function applyProfile(realPsi){const P=profOf(),box=$("r-prof");PROFRES=null;
  box.hidden=false;PROFRES=o;
  if(o.psi!=null){$("r-psi").textContent=o.psi+" psi";if(!ramp)$("r-l1").textContent=`${P.name} pressure`}$("r-sag").innerHTML=sagText([o.sag,o.sag],fork?U.travel:U.stroke);if(o.tok!=null&&tk)$("r-tok").textContent=`${o.tok} of ${tk[1]} max`}
 let PROFRES=null;
+// ---------- declutter: answer first, four numbers up front, tools tucked away, guided setup ----------
+// Once a fork or shock has been picked, the picker folds into one summary line so the numbers come first.
+const PICKK="setup-picked-v1",WHYK="why-open-v1";
+let PICKED=(()=>{try{const raw=localStorage.getItem(PICKK);if(raw)return JSON.parse(raw)||{};
+ // first run of this version: anyone who has used Setup before has a last fork or shock saved, so start them folded
+ const o=JSON.parse(localStorage.getItem(LASTK)||"{}"),p={fork:!!o.fork,shock:!!o.shock};localStorage.setItem(PICKK,JSON.stringify(p));return p}catch(e){return{}}})();
+const OPEN={};let WHY=false,HOWK="";try{WHY=localStorage.getItem(WHYK)==="1"}catch(e){}
+function pickMark(m){if(PICKED[m])return;PICKED[m]=true;try{localStorage.setItem(PICKK,JSON.stringify(PICKED))}catch(e){}}
+function garageHas(m){try{const k=idOf(m,U);return(G.saved||[]).some(x=>x.kind===m&&idOf(m,x.snap)===k)}catch(e){return false}}
+function pickSet(m,open){OPEN[m]=open;if(!open)pickMark(m)}
+function pickSummary(){const w=`${Math.round(U.w*10)/10} ${U.unit} rider`;
+ if(U.mode==="fork"){const B=CAT[U.brand],fk=forkOf(),y=yearOf(),v=verOf(),dm=DMP[U.damp];
+  return{name:`${B.name} ${fk.name}`,ic:forkIc(fk),det:[U.year,y.versions.length>1?v.name:"",U.travel+" mm",dm&&dm.name||"",v.runtOn?"DSD Runt":"",v.lruntOn?"Lower Runt":"",w,U.eb?"e-bike":""].filter(Boolean).join(" · ")}}
+ const B=SHK[U.sb],sh=B.shocks[U.sk];
+ return{name:`${B.name} ${sh.name}`,ic:sh.kind==="coil"?ICO.coil:ICO.air,det:[sh.years,U.stroke+" mm stroke",sh.kind==="coil"?U.rate+" lb/in spring":"",w,U.eb?"e-bike":""].filter(Boolean).join(" · ")}}
+function applyPick(){const m=U.mode;if(OPEN[m]===undefined)OPEN[m]=!(PICKED[m]||garageHas(m));const open=OPEN[m];
+ $("pick-sum").hidden=open;$("pick-body").hidden=!open;$("r-title").hidden=!open;$("ps-ch").setAttribute("aria-expanded",String(open));
+ if(!open){const p=pickSummary();$("ps-k").textContent=m==="shock"?"Your shock":"Your fork";$("ps-name").textContent=p.name;$("ps-det").textContent=p.det;$("ps-ic").innerHTML=p.ic}
+ if(tab==="u")$("psub").textContent=open?`Step 1 of 3: pick your ${m==="shock"?"shock":"fork"} for a starting pressure and dial settings.`:"Step 1 of 3: your starting pressure and dial settings."}
+$("ps-ch").onclick=()=>{pickSet(U.mode,true);applyPick();$("pick-card").scrollIntoView({block:"start"});const f=[...$("pick-body").querySelectorAll("button,select,input")].filter(x=>x.offsetParent),b=f.find(x=>x.getAttribute("aria-pressed")==="true")||f[0];if(b)b.focus({preventScroll:true})};
+$("pick-done").onclick=()=>{pickSet(U.mode,false);applyPick();$("pick-card").scrollIntoView({block:"start"});$("ps-ch").focus({preventScroll:true})};
+["click","input","change"].forEach(ev=>$("pick-body").addEventListener(ev,e=>{if(e.target.closest("button,select,input"))pickMark(U.mode)}));
+// The first sentence of each dial line is the setting; the rest is the reason, shown under "Why these numbers?".
+// Tails that carry a limit or a warning stay in view.
+const TAILSAFE=/never|don't|do not|exceed|\bmax|limit|minimum|\d\s?psi|check the (label|max)|before (going|inflating)/i;
+function splitFirst(h){let d=0,tag=false;for(let i=0;i<h.length;i++){const c=h[i];
+  if(c==="<"){tag=true;continue}if(c===">"){tag=false;continue}if(tag)continue;
+  if(c==="(")d++;else if(c===")")d=Math.max(0,d-1);
+  else if(c==="."&&!d&&h[i+1]===" "&&/[\p{Lu}"“(<0-9]/u.test(h[i+2]||"")&&!/(e\.g|i\.e|vs|approx|No)$/.test(h.slice(Math.max(0,i-6),i)))return[h.slice(0,i+1),h.slice(i+2)]}
+ return[h,""]}
+const DIALNOTE=/^(Dials|Adjusters|Compression starts)\b|\bset rebound\b|\bstart (rebound|compression|closed)\b|starting point|starting clicks|start from that card|ships it at|factory setting|count your dials/i;
+function declutter(){const lis=[...$("r-lines").children],T=new Set(lis.map(li=>{const b=li.querySelector("b");return b?b.textContent:""}));
+ const keep=new RegExp(`^(Rebound|Compression|Dials|Spring|Preload|Reservoir bladder|Reservoir \\(IFP\\)${T.has("Compression")?"":"|Lever"})$`),short=/^(Rebound|Compression|Dials)$/,why=[];
+ lis.forEach(li=>{const b=li.querySelector("b"),t=b?b.textContent:"";
+  if(!b||!keep.test(t)){li.classList.add("more");why.push(`<li>${li.innerHTML}</li>`);return}
+  if(!short.test(t))return;const[f,rest]=splitFirst(li.innerHTML.slice(b.outerHTML.length));
+  if(rest&&!TAILSAFE.test(rest)){li.innerHTML=b.outerHTML+f+`<span class="tail"> ${rest}</span>`;why.push(`<li><b>${t}</b>${rest}</li>`)}});
+ $("r-why").innerHTML=why.join("");
+ // no rebound or compression line for this part: the maker's own dial notes stay in view instead of folding away
+ const kept=[];if(!T.has("Rebound")||!(T.has("Compression")||T.has("Lever")))[...$("r-notes").children].forEach(li=>{if(!li.querySelector("b")&&DIALNOTE.test(li.textContent)){li.classList.add("kept");kept.push(`<li><b>Dials</b>${capf(li.innerHTML.replace(/^Dials(:\s*|,\s*|\s+)/,""))}</li>`)}});
+ $("r-keep").innerHTML=kept.join("");
+ [...$("r-warn").children].forEach(li=>{const[f,rest]=splitFirst(li.innerHTML);if(rest&&!TAILSAFE.test(rest))li.innerHTML=f+`<span class="wtail"> ${rest}</span>`});
+ // the fork's maximum used to sit in the pressure source note, which is now folded away, so it moves under the pressure
+ let mx="";const notes=[...$("r-notes").children],nt=re=>notes.find(li=>re.test(li.textContent));
+ if(!/\d/.test($("r-psi").textContent)){const n=nt(/^Starting pressure:/);if(n)mx=capf(splitFirst(n.textContent.replace(/^Starting pressure:\s*/,""))[0])}
+ else if(U.mode==="fork"&&!COILF){const v=verOf(),n=nt(/^Maximum:/),fm=forkMax(v);mx=n?splitFirst(n.textContent)[0].replace(/^Maximum:\s*/,"Max ").replace(/\.$/,""):fm?`Max ${fm} psi${v.maxByTravel?` at ${U.travel} mm`:""}`:v.maxText==null?"Max: printed on the fork":""}
+ $("r-max").textContent=mx;$("r-max").hidden=!mx;whyView()}
+function whyView(){$("r-lines").closest(".result").classList.toggle("why",WHY);$("why-t").setAttribute("aria-expanded",String(WHY));$("why-box").hidden=!WHY}
+$("why-t").onclick=()=>{WHY=!WHY;try{localStorage.setItem(WHYK,WHY?"1":"0")}catch(e){}whyView()};
+function toolsSum(){const N={dcount:"Count your dials",bal:"Balance check",brk:"Bracketing"};$("tools-sum").textContent=Object.keys(N).filter(k=>!$(k).hidden).map(k=>N[k]).join(" · ")}
+// ---------- guided setup: the pump steps for this fork or shock, one per screen, with the numbers from Setup ----------
+let GD=null;
+function gdData(){const tx=id=>$(id).textContent.trim(),fork=U.mode==="fork",sh=fork?null:SHK[U.sb].shocks[U.sk],coil=fork?!!COILF:sh.kind==="coil";
+ const sg=$("r-sag"),em=sg.querySelector("em"),L={};
+ [...$("r-lines").children].forEach(li=>{const b=li.querySelector("b");if(!b)return;const c=li.cloneNode(true);c.querySelectorAll(".tail").forEach(x=>x.remove());L[b.textContent]=c.innerHTML.slice(c.querySelector("b").outerHTML.length)});
+ const S1={l:tx("r-l1"),v:tx("r-psi"),m:$("r-max").hidden?"":tx("r-max")},S3={l:tx("r-l3"),v:tx("r-tok")};
+ if(!fork&&S3.l==="Max pressure"&&/\d/.test(S3.v)&&/\d/.test(S1.v))S1.m="Max "+S3.v;
+ const notes=[...$("r-notes").children].map(li=>li.innerHTML);
+ return{fork,coil,S1,S3,SG:{l:"Sag target",v:em?sg.textContent.replace(em.textContent,"").trim():sg.textContent.trim(),m:em?em.textContent.trim():""},L,
+  tot:(()=>{const dp=DAMP.x||{};return{r:dp.r||0,l:dp.lever?0:(dp.l||0)}})(),
+  click:notes.find(n=>/^Click numbers count from fully closed/.test(n))||"",keep:[...$("r-keep").children].map(li=>li.innerHTML.replace(/^<b>Dials<\/b>/,"")),ramp:fork&&!!verOf().ramp,
+  prof:$("r-prof").hidden?null:{name:profOf().name,items:[...$("r-prof").querySelectorAll("li")].map(li=>li.innerHTML)},
+  name:pickSummary().name,title:$("r-title").textContent}}
+// the pump steps point at numbers "above" on the Spring page; here the numbers sit on the same screen
+const gdClean=t=>t.replace(/\s*\(see (above|below)\)/g,"").replace(/\s+above(?=\s*[.,;:()]|$)/g,"");
+function gdChips(t,D){const out=[],has=re=>re.test(t),num=x=>/\d/.test(x.v);
+ const kw=l=>{const w=(l||"").split(" ")[0];return/^[A-Z]{2,}$/.test(w)?new RegExp("\\b"+w+"\\b"):new RegExp("\\b"+w.replace(/-/g,"\\-")+"\\b","i")};
+ const PR=/\bpump (to|it|the)\b|pressure|psi|inflate|add air|\bfill|top (it )?(back )?up|gauge/i;
+ if(has(/\bsag\b(?! check)/i))out.push({s:D.SG});
+ else if(has(/reservoir|bladder|IFP/i)){const r=D.L["Reservoir bladder"]||D.L["Reservoir (IFP)"];if(r)out.push({row:["Reservoir",r]})}
+ else if(has(/\+\+/)){}// EXT's ++ chamber: its pressure comes from EXT's chart, which pairs it with the + pressure
+ else if(D.coil){if(has(/spring|chart/i))out.push(D.L.Spring?{row:["Spring",D.L.Spring]}:{s:D.S1});
+  if(num(D.S3)&&((has(/preload/i)&&/preload/i.test(D.S3.l))||(has(/bottom-out air/i)&&/bottom-out/i.test(D.S3.l))))out.push({s:D.S3})}
+ else if(D.ramp){const m=has(kw(D.S1.l)),r=has(kw(D.S3.l));if(r&&num(D.S3))out.push({s:D.S3});if(m||(!r&&has(PR)))out.push({s:D.S1})}
+ else if(has(PR))out.push({s:D.S1});
+ const reb=has(/rebound|\bdials\b|each dial|starting points|starting position/i),comp=has(/\bdials\b|each dial|starting points|starting position|compression dials? to its/i);
+ if(reb&&D.L.Rebound)out.push({row:["Rebound",D.L.Rebound]});
+ if(comp&&D.L.Compression)out.push({row:["Compression",D.L.Compression]});
+ if(((reb&&!D.L.Rebound)||(comp&&!D.L.Compression))&&D.keep.length)D.keep.forEach(k=>out.push({row:["Dials",k]}));
+ return out}
+function gdChipsHTML(C,anim){const st=C.filter(c=>c.s),rw=C.filter(c=>c.row),D=GD&&GD.D;
+ const stat=s=>{const inner=`<small>${esc(s.l)}</small><b>${esc(s.v)}</b>${s.m?`<em>${esc(s.m)}</em>`:""}`,p=anim&&/^(\d+) psi$/.exec(s.v),sg=anim&&D&&s===D.SG&&/(\d+(?:\.\d+)?)%/.exec(s.m||"");
+  if(p){const v=+p[1],mm=/(\d+)\s*psi/.exec(s.m||"");return`<div class="gd-pg">${gdGaugeSVG(v,Math.max(v,mm?+mm[1]:Math.ceil(v*1.5/50)*50))}<div>${inner}</div></div>`}
+  if(sg)return`<div class="wide">${inner}${gdSagHTML(+sg[1]/100,s.v)}</div>`;
+  return`<div>${inner}</div>`};
+ return(st.length?`<div class="gd-tg">${st.map(({s})=>stat(s)).join("")}</div>`:"")+
+  (rw.length?`<ul class="gd-dl">${rw.map(({row})=>gdDialRow(row[0],row[1],D,anim)).join("")}</ul>`:"")}
+// ---------- first-time setup animations: a pump gauge, the O-ring for sag, and a dial being counted ----------
+let GDA=[];
+function gdStop(){GDA.forEach(x=>cancelAnimationFrame(x.id));GDA=[]}
+function gdRun(fn){const x={id:0},t0=performance.now(),f=now=>{if(fn(now-t0)!==false)x.id=requestAnimationFrame(f)};x.id=requestAnimationFrame(f);GDA.push(x)}
+const gdRM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}};
+const gdEase=x=>x<=0?0:x>=1?1:x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2,gdOut=x=>x<=0?0:x>=1?1:1-Math.pow(1-x,3);
+const gdPol=(c,r,a)=>[(c+r*Math.sin(a*Math.PI/180)).toFixed(1),(c-r*Math.cos(a*Math.PI/180)).toFixed(1)];
+function gdGaugeSVG(v,mx){const c=38,R=30,A=p=>-135+270*p;let t="";
+ for(let i=0;i<=10;i++){const[x1,y1]=gdPol(c,R,A(i/10)),[x2,y2]=gdPol(c,R-(i%5?4:7),A(i/10));t+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+ const[tx,ty]=gdPol(c,R+4,A(v/mx));
+ return`<svg class="gg" viewBox="0 0 76 76" aria-hidden="true" data-anim="gauge" data-v="${v}" data-max="${mx}"><circle class="gg-face" cx="${c}" cy="${c}" r="${R+6}"/><g class="gg-t">${t}</g><circle class="gg-tg" cx="${tx}" cy="${ty}" r="2.8"/><line class="gg-n" x1="${c}" y1="${c}" x2="${c}" y2="${c-R+6}" transform="rotate(${A(v/mx).toFixed(1)} ${c} ${c})"/><circle class="gg-hub" cx="${c}" cy="${c}" r="3.4"/><text class="gg-v" x="${c}" y="${c+21}" text-anchor="middle">${v}</text></svg>`}
+function gdSagHTML(f,mm){return`<div class="gs" data-anim="sag" data-f="${f}" aria-hidden="true"><div class="gs-bar"><span class="gs-seal"></span><i class="gs-fill"></i><span class="gs-ring" style="left:calc(${f*100}% - 2px)"></span><span class="gs-dim" style="width:${f*100}%;opacity:1"><b>${esc(mm)}</b></span></div><small class="gs-cap">Seal to O-ring: ${esc(mm)}</small></div>`}
+function gdKnobSVG(n,T,ls){T=T>=n&&T>0?T:Math.max(n+4,12);const s=Math.min(22,300/T),c=40;let t="",kn="";
+ for(let k=0;k<=T;k++){const[x1,y1]=gdPol(c,36,-k*s),[x2,y2]=gdPol(c,k===n?28.5:k===0?30:32.5,-k*s);t+=`<line class="${k===n?"on":k===0?"z":""}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+ for(let i=0;i<18;i++){const[x1,y1]=gdPol(c,25,i*20),[x2,y2]=gdPol(c,21.5,i*20);kn+=`<line class="kn" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+ return`<svg class="gk" viewBox="0 0 80 80" aria-hidden="true" data-anim="knob" data-n="${n}" data-s="${s}" data-t="${T}" data-ls="${ls?1:""}"><g class="gk-t">${t}</g><g class="gk-k" transform="rotate(${(-n*s).toFixed(1)} ${c} ${c})"><circle class="gk-b" cx="${c}" cy="${c}" r="25"/>${kn}<line class="gk-p" x1="${c}" y1="${c-13}" x2="${c}" y2="${c-23}"/></g><circle class="gk-c" cx="${c}" cy="${c}" r="11"/><text class="gk-n" x="${c}" y="${c+4}" text-anchor="middle">${n}</text></svg>`}
+// a dial line gets the counting animation when it's a single click number, counted from fully closed
+function gdDialRow(t,html,D,anim){const txt=String(html).replace(/<[^>]+>/g,""),N=dialNums([[t,txt]]),n=t==="Rebound"?N.reb:t==="Compression"?N.lsc:null,T=!D?0:t==="Rebound"?D.tot.r:D.tot.l;
+ const ok=anim&&n!=null&&/counterclockwise from fully closed/.test(txt)&&!/^\D*\d+\s*[–-]\s*\d+/.test(txt)&&(t!=="Compression"||T>0);
+ return ok?`<li class="gd-kr">${gdKnobSVG(n,T,/low-speed/i.test(txt))}<div><b>${t}</b>${html}<small class="gk-cap" aria-hidden="true">${n} click${n===1?"":"s"} out from closed</small></div></li>`:`<li><b>${t}</b>${html}</li>`}
+function gdAnimStart(root){gdStop();const rm=gdRM();
+ // the rider gets on and the bike settles into sag, then steps off; the close-up's O-ring stays at the sag mark
+ root.querySelectorAll('[data-anim="scene"]').forEach(svg=>{const g=svg.querySelector("g"),f=+svg.dataset.f,mm=svg.dataset.mm,R0={sc:"brake",out:[[0,0,0]],sag:f};let key="";
+  const draw=(fr,mx,ro,lab)=>{const k=[fr.toFixed(3),mx.toFixed(3),ro.toFixed(2),lab].join("|");if(k===key)return;key=k;R0.out[0][1]=fr;drawScene(R0,0,0,mx,g,{ro,ry:(-12*(1-ro)).toFixed(1),lab})};
+  if(rm){draw(f,f,1,`Sag ${mm}`);return}
+  gdRun(t=>{const T=t%7000;
+   if(T<900)draw(0,0,0,"");else if(T<1900){const p=gdEase((T-900)/1000)*f;draw(p,p,Math.min(1,(T-900)/300),"")}else if(T<2700)draw(f,f,1,"");
+   else if(T<3700)draw(f*(1-gdEase((T-2700)/1000)),f,Math.max(0,1-(T-2700)/300),"");else draw(0,f,0,`Sag ${mm}`)})});
+ // the last screen: a jump landing with the starting settings, the same simulation as the Damping step
+ root.querySelectorAll('[data-anim="land"]').forEach(svg=>{const g=svg.querySelector("g");let r;try{r=sim(D,"land")}catch(e){svg.remove();return}
+  if(rm){drawScene(r,r.peak,r.out[r.peak][0],r.mx,g);return}
+  const o=r.out,slow=4,lead=TFALL+.08,L=(lead+r.dur)*slow*1000+2200;let mx=0,cyc=-1;
+  gdRun(t=>{const c=Math.floor(t/L),tt=(t%L)/1000/slow-lead;if(c!==cyc){cyc=c;mx=0}
+   if(tt<0){drawScene(r,0,tt,0,g);return}
+   const i=Math.min(o.length-1,Math.floor(tt/r.dur*(o.length-1)));mx=Math.max(mx,o[i][1]);drawScene(r,i,o[i][0],mx,g)})});
+ if(rm)return;
+ root.querySelectorAll('[data-anim="gauge"]').forEach(svg=>{const v=+svg.dataset.v,mx=+svg.dataset.max,nd=svg.querySelector(".gg-n"),tx=svg.querySelector(".gg-v");
+  gdRun(t=>{const p=gdOut(t/1500);nd.setAttribute("transform",`rotate(${(-135+270*p*v/mx).toFixed(1)} 38 38)`);tx.textContent=Math.round(p*v);return t<1500})});
+ root.querySelectorAll('[data-anim="sag"]').forEach(el=>{const f=+el.dataset.f,fill=el.querySelector(".gs-fill"),ring=el.querySelector(".gs-ring"),dim=el.querySelector(".gs-dim"),cap=el.querySelector(".gs-cap"),mm=dim.textContent;
+  const C=["Push the O-ring against the seal","Get on in your riding position","Step off without bouncing",`Measure seal to O-ring: ${mm}`];
+  const set=(fl,rg,d,c)=>{fill.style.width=fl*100+"%";ring.style.left=`calc(${rg*100}% - 2px)`;dim.style.opacity=d;if(cap.textContent!==C[c])cap.textContent=C[c]};
+  gdRun(t=>{const T=t%7000;
+   if(T<900)set(0,0,0,0);else if(T<1900){const p=gdEase((T-900)/1000)*f;set(p,p,0,1)}else if(T<2700)set(f,f,0,1);
+   else if(T<3700)set(f*(1-gdEase((T-2700)/1000)),f,0,2);else set(0,f,Math.min(1,(T-3700)/300),3)})});
+ root.querySelectorAll('[data-anim="knob"]').forEach(svg=>{const n=+svg.dataset.n,s=+svg.dataset.s,T=+svg.dataset.t,k=svg.querySelector(".gk-k"),num=svg.querySelector(".gk-n"),cap=svg.closest("li").querySelector(".gk-cap"),ls=svg.dataset.ls?" (low-speed)":"";
+  const set=(ang,txt,c)=>{k.setAttribute("transform",`rotate(${ang.toFixed(1)} 40 40)`);num.textContent=txt;if(cap.textContent!==c)cap.textContent=c};
+  const st=-Math.min(T,n+5)*s,per=Math.max(150,Math.min(320,4200/Math.max(1,n))),P1=1000,P2=700,P3=n*per,L=P1+P2+P3+3000;
+  gdRun(t=>{const x=t%L;
+   if(x<P1)set(st*(1-gdEase(x/P1)),"","Turn it clockwise until it stops");
+   else if(x<P1+P2)set(0,"0","That's fully closed");
+   else if(x<P1+P2+P3){const y=(x-P1-P2)/per,i=Math.floor(y);set(-(i+gdOut(Math.min(1,(y-i)*4)))*s,String(i+1),`Count clicks counterclockwise: ${i+1}`)}
+   else set(-n*s,String(n),`${n} click${n===1?"":"s"} out from closed${ls}`)})})}
+function gdBuild(){const D=gdData(),P=(PUMP[HOWK]||[]).slice();let tip="";
+ if(P.length&&/^(Setting up the shock too|Changed the shock a lot)/.test(P[P.length-1]))tip=P.pop();
+ const steps=[{k:"intro"}];P.forEach((t,i)=>steps.push({k:"step",t:gdClean(t),n:i+1}));steps.push({k:"dials",n:P.length+1},{k:"done",tip});
+ return{D,steps,i:0,total:P.length+1,mode:U.mode,
+  compOpen:P.some(t=>/compression[^.]*\bopen\b|\bopen the (compression|threshold|climb)|lever (in|to) (its )?open|lockout (off|open)|leave compression/i.test(t))}}
+function gdOpen(){GD={...gdBuild(),done:[],from:document.activeElement};
+ let g=$("guide");if(!g){g=document.createElement("div");g.id="guide";g.setAttribute("role","dialog");g.setAttribute("aria-modal","true");g.setAttribute("aria-labelledby","gd-h");document.body.appendChild(g);
+  g.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();gdClose()}else if(e.key==="Tab"){const f=[...g.querySelectorAll("button,input,a[href]")].filter(x=>!x.disabled&&x.offsetParent);if(!f.length)return;const a1=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a1){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a1.focus()}}})}
+ GD.inert=[...document.body.children].filter(el=>el!==g&&el.id!=="card-ov"&&el.tagName!=="SCRIPT"&&!el.inert);GD.inert.forEach(el=>{el.inert=true});
+ g.hidden=false;document.body.classList.add("gd-on");try{history.pushState({pbGuide:1},"");GD.hist=true}catch(e){}
+ gdRender()}
+function gdClose(fromPop){if(!GD)return;gdStop();const o=GD;GD=null;$("guide").hidden=true;document.body.classList.remove("gd-on");(o.inert||[]).forEach(el=>{el.inert=false});
+ if(o.hist&&!fromPop){try{history.back()}catch(e){}}if(o.from&&o.from.focus)o.from.focus({preventScroll:true})}
+window.addEventListener("popstate",()=>{if(GD)gdClose(true)});
+// the same bike's other part (fork or shock) in the garage, if it hasn't had its turn in this run
+function gdOther(){try{const m=U.mode,k=idOf(m,U),sv=G.saved||[],hit=sv.find(x=>x.kind===m&&idOf(m,x.snap)===k);if(!hit)return null;
+ const o=sv.find(x=>x.kind!==m&&(x.bike||x.id)===(hit.bike||hit.id)&&validSnap(x.kind,x.snap));return o&&!GD.done.includes(o.kind)?o:null}catch(e){return null}}
+function gdNextPart(o){GD.done.push(U.mode);if(o.kind==="fork"){U.runt=false;U.lrunt=false}Object.assign(U,o.snap);U.mode=o.kind;
+ $("wt").value=U.w;$("eb").checked=!!U.eb;$("rate").value=U.rate;pickSet(o.kind,false);setTab("u");Object.assign(GD,gdBuild());gdRender()}
+function gdRender(){const g=$("guide"),S=GD.steps,st=S[GD.i],D=GD.D,last=GD.i===S.length-1,nx=last?gdOther():null;let n="",h="",b="";
+ const row=(t)=>D.L[t]?`<li><b>${t}</b>${D.L[t]}</li>`:"",kept=D.keep.map(k=>`<li><b>Dials</b>${k}</li>`).join("");
+ if(st.k==="intro"){h="Before you start";
+  const air=!D.coil||/psi/.test(D.S3.v),C=[{s:D.S1},{s:D.SG}];if((D.ramp||D.coil)&&/\d/.test(D.S3.v))C.push({s:D.S3});
+  b=`<p class="gd-t">${esc(D.title)}</p><p class="gd-t2">This walk-through is for the first time you set it up: one step per screen, with your numbers. You'll need ${air?"a shock pump and ":""}a ruler or tape measure for sag.</p>${gdChipsHTML(C)}<ul class="gd-dl">${row("Rebound")}${row("Compression")}${row("Dials")}${D.L.Compression?"":row("Lever")}${kept}</ul>`}
+ else if(st.k==="step"){n=`Step ${st.n} of ${GD.total}`;let[f,rest]=splitFirst(st.t);const c=f.indexOf(": ");
+  if(c>0&&c<60&&!/\(/.test(f.slice(0,c))){rest=capf(f.slice(c+2))+(rest?" "+rest:"");f=f.slice(0,c)}
+  const sp=/measure/i.test(st.t)&&/\bsag\b(?! check)/i.test(st.t)&&/(\d+(?:\.\d+)?)%/.exec(D.SG.m||"");
+  h=f;b=(rest?`<p class="gd-t">${rest}</p>`:"")+(sp?`<svg class="gd-scene" viewBox="0 0 360 190" aria-hidden="true" data-anim="scene" data-f="${+sp[1]/100}" data-mm="${esc(D.SG.v)}"><g></g></svg>`:"")+gdChipsHTML(gdChips(st.t,D),true)}
+ else if(st.k==="dials"){n=`Step ${st.n} of ${GD.total}`;h="Set your dials";
+  b=`<p class="gd-t">${GD.compOpen?"Sag is set. Now set compression to its starting point, and check rebound.":"Check each dial is on its starting point."}</p><ul class="gd-dl">${["Rebound","Compression","Dials","Lever","Adjustable Bottom Out"].map(t=>D.L[t]?gdDialRow(t,D.L[t],D,true):"").join("")}${kept}</ul>`+
+   (D.click?`<p class="gd-tip">${D.click}</p>`:"")+(D.prof?`<div class="gd-tip"><b>${esc(D.prof.name)}:</b> change these from the starting point.<ul>${D.prof.items.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:"")}
+ else{const m=U.mode,saved=garageHas(m),names=bikeNames(),on=nx?(nx.kind==="shock"?"shock":"fork"):"";h=nx?`${m==="shock"?"Shock":"Fork"} done`:"You're set";
+  b=`<p class="gd-t">${nx?`That's its starting point. Next, the ${on}: ${esc(partLabel(nx.kind,nx.snap))}.`:"That's your starting point. Ride a trail you know, then change one thing at a time."}</p><svg class="gd-scene" viewBox="0 0 360 190" aria-hidden="true" data-anim="land"><g></g></svg><small class="gd-cap">A simulated jump landing with these starting settings, in slow motion.</small>${st.tip?`<p class="gd-tip">${st.tip}</p>`:""}${nx?"":`<p class="gd-tip"><b>You only need this the first time.</b> From now on, tune it on the Setup page: the Spring and Damping steps show what each change does.</p>`}
+  ${saved?"":`<div class="gd-save" id="gd-save"><h3>Keep these numbers in your garage?</h3><div class="row"><input id="gd-name" list="bike-names" maxlength="40" placeholder="${names[0]?esc(names[0]):"Levo, Big bike…"}" aria-label="Bike name"><button type="button" class="primary" id="gd-add">Add to garage</button></div></div>`}
+  <div class="gd-more"><button type="button" id="gd-damp">See what each dial does</button><button type="button" id="gd-card">Setup card</button></div>`}
+ g.innerHTML=`<div class="gd-top"><div class="gd-wrap"><div class="gd-row"><div><b>First-time setup</b><small>${esc(D.name)}</small></div><button type="button" class="gd-x" id="gd-x">Close</button></div>
+  <div class="ld-prog" aria-hidden="true">${S.map((x,i)=>`<i class="${i<=GD.i?"on":""}"></i>`).join("")}</div></div></div>
+  <div class="gd-body" id="gd-body"><div class="gd-wrap">${n?`<span class="gd-n">${n}</span>`:""}<h2 class="gd-h${h.replace(/<[^>]+>/g,"").length>70?" long":""}" id="gd-h" tabindex="-1">${h}</h2>${b}</div></div>
+  <div class="gd-foot"><div class="gd-wrap">${GD.i>0?`<button type="button" id="gd-back">Back</button>`:""}<button type="button" class="primary" id="gd-next">${GD.i===0?"Start":nx?`Next: your ${nx.kind==="shock"?"shock":"fork"}`:last?"Done":"Next"}</button></div></div>`;
+ $("gd-x").onclick=()=>gdClose();if($("gd-back"))$("gd-back").onclick=()=>{GD.i--;gdRender()};
+ $("gd-next").onclick=()=>{if(nx)gdNextPart(nx);else if(last)gdClose();else{GD.i++;gdRender()}};
+ if($("gd-add")){const nm=$("gd-name");$("bike-names").innerHTML=bikeNames().map(x=>`<option value="${esc(x)}">`).join("");
+  $("gd-add").onclick=()=>{const m=U.mode,name=nm.value.trim()||D.name;addPart(m,{...U},name);renderGarage();renderAddPrompt();$("gd-save").innerHTML=`<p class="done">Added to ${esc(name)} in your garage.</p>`}}
+ if($("gd-card"))$("gd-card").onclick=()=>openCard();
+ if($("gd-damp"))$("gd-damp").onclick=()=>{gdClose();setTab("d");play()};
+ $("gd-body").scrollTop=0;$("gd-h").focus({preventScroll:true});gdAnimStart(g)}
+$("gd-open").onclick=gdOpen;
 function renderSetup(){
  fixU();
  chips("c-mode",[["fork","Fork"],["shock","Rear shock"]],U.mode,v=>{U.mode=v;renderSetup()});
@@ -1452,7 +1759,7 @@ function renderSetup(){
  {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else src=tuneLoad()[k]||null;
   if(src&&src.s&&src.s.prof===D.prof){s={...src.s};R={...(src.R||src.s)};cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
   TUNEK=k;saveTune()}
- rememberLast();renderGarage();renderAddPrompt();renderBal();if(!GRAB){renderDcount();if($("brk")&&$("brk").open)renderBrk(true);SHOP=null;if($("shop")&&$("shop").open)shopFill()}}
+ rememberLast();renderGarage();renderAddPrompt();renderBal();if(!GRAB){renderDcount();if($("brk")&&$("brk").open)renderBrk(true)}declutter();applyPick();toolsSum()}
 // ---------- balance check: measured sag at both ends against the profile's targets ----------
 function renderBal(){if(!$("bal-out"))return;const P=profOf(),tf=P.sag[0],tr=P.sag[1],T=U.travel,S=U.stroke,f=parseFloat($("bal-f").value),r=parseFloat($("bal-r").value),mm=x=>Math.round(x*10)/10;
  $("bal-fl").textContent=`Fork sag you measured (mm, of ${T} mm travel)`;$("bal-rl").textContent=`Shock sag you measured (mm, of ${S} mm stroke)`;
@@ -2030,7 +2337,7 @@ function renderDamp(){
  const P=o=>o.map((p,i)=>(i?"L":"M")+pxT(p[0]).toFixed(1)+" "+py2(p[1]).toFixed(1)).join("");
  $("cur2").setAttribute("d",P(r.out));$("ref2").setAttribute("d",P(rr.out));
  $("verdict").textContent=verdict(r);
- setGauge(r.mx,r.mx);cancelAnimationFrame(anim);$("dot").style.display="none";drawScene(r,r.peak,r.out[r.peak][0],r.mx);
+ setGauge(r.mx,r.mx,true);cancelAnimationFrame(anim);$("dot").style.display="none";drawScene(r,r.peak,r.out[r.peak][0],r.mx);
  renderBikeCheck();renderTrailTune();$("d-sum").innerHTML=`<h2>Your starting clicks</h2><ul class="lines">${$("r-lines").innerHTML}</ul>`;
  renderLinks();
  const dp=DAMP.x;["r","l","h","hr"].forEach(k=>{const mx=dp[k]||1;$(k).max=mx;$(k).value=(k==="r"||k==="hr")?mx-(s[k]||0):(s[k]||0)});$("hrctl").hidden=!dp.hr;$("r-lab").textContent=dp.hr?"Low-speed rebound":"Rebound";$("hrv").textContent=!dp.hr?"":dp.hrGuess?`about ${s.hr} of ${dp.hr} from fully closed`:`${s.hr} ${CWO} (of ${dp.hr})`;
@@ -2049,7 +2356,8 @@ const FX=RX+WB*KS;
 const VEL=sc=>sc==="land"?4:sc==="rock"?5:0;
 function gh(sc,sx,t,ref){ref=ref??FX;if(sc==="rock"){const g=groundFn("rock");return g(t+(sx-ref)/KS/5)}
  if(sc==="land"){const xw=sx/KS+4*t,E=FX/KS-4*TFALL;return xw<E?VD:0}return 0}
-function drawScene(r,idx,tt,mxSoFar){if(U.mode==="shock")return drawShockScene(r,idx,tt,mxSoFar);
+// el and opt let First-time setup draw this scene in its own svg: opt.ro fades the rider, opt.ry lifts them, opt.lab labels the close-up
+function drawScene(r,idx,tt,mxSoFar,el,opt){if(U.mode==="shock")return drawShockScene(r,idx,tt,mxSoFar,el,opt);
  const sc=r.sc,o=r.out[idx],fr=o[1],w=o[2],P=(x,y)=>[(RX+x*KS).toFixed(1),(GB-y*KS).toFixed(1)];
  let t=tt,air=0;if(sc==="land"&&t<0){const tau=-t;air=(3.6*tau-4.905*tau*tau)*VD/DROP}
  const gF=gh(sc,FX,t),gR=gh(sc,RX,t);
@@ -2076,13 +2384,13 @@ function drawScene(r,idx,tt,mxSoFar){if(U.mode==="shock")return drawShockScene(r
  const close=stn+`<rect class="crw" x="${zx+20}" y="${ty-10}" width="52" height="12" rx="3"/><rect class="stn" x="${zx+38}" y="${ty+2}" width="16" height="${trv+30}"/>`+
   `<rect class="low" x="${zx+33}" y="${lowTop.toFixed(1)}" width="26" height="${(zy+164-6-lowTop).toFixed(1)}" rx="5"/>`+
   `<rect class="or" x="${zx+36}" y="${(ringY-3).toFixed(1)}" width="20" height="4" rx="2"/>`+
-  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Fork close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${Math.round(fr*100)}% travel</text>`;
- $("sc").innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(0,rAy)+wheel(WB,fAy)+
+  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Fork close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${opt&&opt.lab||Math.round(fr*100)+"% travel"}</text>`;
+ (el||$("sc")).innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(0,rAy)+wheel(WB,fAy)+
   `<polyline class="bk" points="${ra.join(",")} ${pt("bb")} ${pt("seat")} ${pt("ht")} ${pt("bb")}"/><line class="bk" x1="${ra[0]}" y1="${ra[1]}" x2="${pt("seat").split(",")[0]}" y2="${pt("seat").split(",")[1]}"/>`+
   `<line class="fk" x1="${fa[0]}" y1="${fa[1]}" x2="${cr[0]}" y2="${cr[1]}"/><polyline class="bk" points="${cr.join(",")} ${pt("ht")} ${pt("bar")}"/>`+
-  `<polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/>`+close;
+  `<g${opt?` opacity="${opt.ro}" transform="translate(0 ${opt.ry})"`:""}><polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/></g>`+close;
 }
-function drawShockScene(r,idx,tt,mxSoFar){
+function drawShockScene(r,idx,tt,mxSoFar,el,opt){
  const sc=r.sc,o=r.out[idx],fr=o[1],w=o[2],P=(x,y)=>[(RX+x*KS).toFixed(1),(GB-y*KS).toFixed(1)];
  let t=tt,air=0;if(sc==="land"&&t<0){const tau=-t;air=(3.6*tau-4.905*tau*tau)*VD/DROP}
  const gF=gh(sc,FX,t,RX),gR=gh(sc,RX,t,RX);
@@ -2107,27 +2415,35 @@ function drawShockScene(r,idx,tt,mxSoFar){
   `<circle class="crw" cx="${zx+46}" cy="${ty-4}" r="7"/><rect class="low" x="${zx+30}" y="${ty+2}" width="32" height="${can}" rx="6"/>`+
   `<rect class="stn" x="${zx+40}" y="${cb}" width="12" height="${(yb-cb).toFixed(1)}"/><circle class="crw" cx="${zx+46}" cy="${(yb+6).toFixed(1)}" r="7"/>`+
   `<rect class="or" x="${zx+37}" y="${(ring-2).toFixed(1)}" width="18" height="4" rx="2"/>`+
-  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Shock close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${Math.round(fr*100)}% travel</text>`;
- $("sc").innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(ax,rAy)+wheel(WB,fAy)+
+  `<text x="${zx+46}" y="${zy+16}" text-anchor="middle">Shock close-up</text><text x="${zx+46}" y="${zy+158}" text-anchor="middle">${opt&&opt.lab||Math.round(fr*100)+"% travel"}</text>`;
+ (el||$("sc")).innerHTML=`<path class="gnd" d="${gp}"/>${ticks}`+wheel(ax,rAy)+wheel(WB,fAy)+
   `<polyline class="bk" points="${pt("bb")} ${pt("seat")} ${pt("ht")} ${pt("bb")}"/><line class="bk" x1="${pvS[0]}" y1="${pvS[1]}" x2="${ra[0]}" y2="${ra[1]}"/>`+
   `<line class="bk" x1="${pvS[0]}" y1="${pvS[1]}" x2="${smS[0]}" y2="${smS[1]}"/><line class="shk" x1="${sf[0]}" y1="${sf[1]}" x2="${smS[0]}" y2="${smS[1]}"/>`+
   `<line class="bk" x1="${fa[0]}" y1="${fa[1]}" x2="${cr[0]}" y2="${cr[1]}"/><polyline class="bk" points="${cr.join(",")} ${pt("ht")} ${pt("bar")}"/>`+
-  `<polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/>`+close;
+  `<g${opt?` opacity="${opt.ro}" transform="translate(0 ${opt.ry})"`:""}><polyline class="rd" points="${pt("foot")} ${pt("knee")} ${pt("hip")} ${pt("sh")} ${pt("elb")} ${pt("bar")}"/><circle class="rd" cx="${hx}" cy="${hy}" r="${(.1*KS).toFixed(1)}"/></g>`+close;
 }
-function setGauge(now,mx){$("fill").style.width=(now*100)+"%";$("oring").style.left=`calc(${mx*100}% - 2px)`}
+function setGauge(now,mx,done){$("fill").style.width=(now*100)+"%";$("oring").style.left=`calc(${mx*100}% - 2px)`;OPCT=done?mx:null;showPct()}
+// when the run ends, the O-ring shows how much of the travel it used; it sits above the bar unless the caption is in the way
+let OPCT=null;
+function showPct(){const el=$("opct"),g=el.closest(".gauge"),W=el.parentElement.clientWidth;
+ if(OPCT==null||!W){el.hidden=true;g.classList.remove("pb");return}
+ el.innerHTML=`${Math.round(OPCT*100)}% <small>of travel</small>`;el.hidden=false;el.classList.remove("below");
+ const w=el.offsetWidth,x=OPCT*W,cap=$("gauge-l").offsetWidth+10,below=x-w/2<cap;
+ el.classList.toggle("below",below);g.classList.toggle("pb",below);el.style.left=Math.max(0,Math.min(W-w,x-w/2))+"px"}
+addEventListener("resize",()=>{if(OPCT!=null)showPct()});
 let anim=null;
 function play(){
  const r=sim(s,scn),o=r.out,dot=$("dot");cancelAnimationFrame(anim);
- if(matchMedia("(prefers-reduced-motion: reduce)").matches){setGauge(r.mx,r.mx);drawScene(r,r.peak,r.out[r.peak][0],r.mx);return}
+ if(matchMedia("(prefers-reduced-motion: reduce)").matches){setGauge(r.mx,r.mx,true);drawScene(r,r.peak,r.out[r.peak][0],r.mx);return}
  const slow=4,lead=r.sc==="land"?TFALL+.08:0,t0=performance.now();let mx=0;dot.style.display="";
  const step=now=>{const t=(now-t0)/1000/slow-lead;
   if(t<0){drawScene(r,0,t,0);setGauge(o[0][1],0);anim=requestAnimationFrame(step);return}
   const i=Math.min(o.length-1,Math.floor(t/r.dur*(o.length-1)));const p=o[i];
   mx=Math.max(mx,p[1]);at(dot,{cx:pxT(p[0]),cy:py2(p[1])});setGauge(p[1],mx);drawScene(r,i,p[0],mx);
-  if(i<o.length-1)anim=requestAnimationFrame(step);else{dot.style.display="none";setGauge(r.mx,r.mx)}};
+  if(i<o.length-1)anim=requestAnimationFrame(step);else{dot.style.display="none";setGauge(r.mx,r.mx,true)}};
  anim=requestAnimationFrame(step);
 }
-function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():renderDamp();if(tab==="s"||tab==="d")saveTune()}
+function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():tab==="p"?renderShopTab():renderDamp();if(tab==="s"||tab==="d")saveTune()}
 ["p","t","n","rp"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=+e.target.value;last=k;render()}));
 // rebound is stored as clicks from fully closed; sliders run open-to-closed so the inverse is stored on them
 ["r","l","h","hr"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=(k==="r"||k==="hr")?(+e.target.max)-(+e.target.value):+e.target.value;last2=k;render()}));
@@ -2170,17 +2486,17 @@ $("eb").addEventListener("change",e=>{U.eb=e.target.checked;renderSetup()});
 $("runt").addEventListener("change",e=>{U.runt=e.target.checked;USERPICK=true;renderSetup()});
 $("lrunt").addEventListener("change",e=>{U.lrunt=e.target.checked;USERPICK=true;renderSetup()});
 function setTab(x){tab=x;const learn=x==="s"||x==="d",setup=learn||x==="u";
- $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));
+ $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));$("tb-p").setAttribute("aria-selected",String(x==="p"));
  $("st-u").setAttribute("aria-selected",String(x==="u"));$("tb-s").setAttribute("aria-selected",String(x==="s"));$("tb-d").setAttribute("aria-selected",String(x==="d"));
- [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"]].forEach(([k,p])=>{$(p).hidden=k!==x});
+ [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x});
  const nn=U.mode==="shock"?"shock":"fork";
- const HD={u:[U.mode==="shock"?"Set up your shock":"Set up your fork",`Step 1 of 3: pick your ${nn} for a starting pressure and dial settings.`],s:["Set the spring","Step 2 of 3: pump it to your starting pressure and check your sag."],d:["Set the damping","Step 3 of 3: set your starting clicks, then see what each dial does on the trail."],v:["Service log","Log ride hours and see when each service is due."]};
+ const HD={u:[U.mode==="shock"?"Set up your shock":"Set up your fork",`Step 1 of 3: pick your ${nn} for a starting pressure and dial settings.`],s:["Set the spring","Step 2 of 3: pump it to your starting pressure and check your sag."],d:["Set the damping","Step 3 of 3: set your starting clicks, then see what each dial does on the trail."],v:["Service log","Log ride hours and see when each service is due."],p:["Shop mode","For mechanics: hand a customer the setup you put on their bike, as a link or QR code."]};
  $("ph1").textContent=HD[x][0];$("psub").textContent=HD[x][1];
  $("learn-head").hidden=!setup;$("btns").hidden=!learn;$("foot").hidden=!learn;if(learn)(x==="s"?$("smin"):$("dmin")).prepend($("btns"));
- const c=$("ctx");c.hidden=!learn;if(learn){c.innerHTML=`Setting up <b>${esc($("r-title").textContent)}</b> <button class="link" id="ctx-ch">Change</button>`;$("ctx-ch").onclick=()=>setTab("u")}
+ const c=$("ctx");c.hidden=!learn;if(learn){c.innerHTML=`Setting up <b>${esc($("r-title").textContent)}</b> <button class="link" id="ctx-ch">Change</button>`;$("ctx-ch").onclick=()=>{pickSet(U.mode,true);setTab("u")}}
  render();window.scrollTo({top:0})}
-const goMode=m=>{if(U.mode!==m){U.mode=m;setTab("u")}else setTab(tab==="v"?"u":tab)};
-$("tb-u").onclick=()=>goMode("fork");$("tb-k").onclick=()=>goMode("shock");$("tb-v").onclick=()=>setTab("v");$("st-u").onclick=()=>setTab("u");$("tb-s").onclick=()=>setTab("s");$("tb-d").onclick=()=>setTab("d");
+const goMode=m=>{if(U.mode!==m){U.mode=m;setTab("u")}else setTab(tab==="v"||tab==="p"?"u":tab)};
+$("tb-u").onclick=()=>goMode("fork");$("tb-k").onclick=()=>goMode("shock");$("tb-v").onclick=()=>setTab("v");$("tb-p").onclick=()=>setTab("p");$("st-u").onclick=()=>setTab("u");$("tb-s").onclick=()=>setTab("s");$("tb-d").onclick=()=>setTab("d");
 $("go-d").onclick=()=>setTab("d");$("back-u").onclick=()=>setTab("u");$("back-s").onclick=()=>setTab("s");
 $("go-s").onclick=()=>setTab("s");
 $("go-v").onclick=()=>{const p=partFromSetup();if(!G.parts.some(x=>x.label===p.label)){G.parts.push(p);svcSave()}setTab("v")};
@@ -3996,7 +4312,10 @@ $("shop-make").onclick=async()=>{if(!SHOP)shopFill();const shop=$("shop-name").v
  $("shop-try").onclick=()=>showShop(o,false);
  if($("shop-print"))$("shop-print").onclick=()=>{showShop(o,false,svg);setTimeout(()=>window.print(),300)};
  out.scrollIntoView({block:"nearest",behavior:"smooth"})};
-$("shop-fill").onclick=shopFill;$("shop").addEventListener("toggle",()=>{if($("shop").open&&!SHOP)shopFill()});
+// its own tab now: it fills in from Setup when the tab opens, and keeps the mechanic's edits unless the fork, shock or garage changed
+let SHOPKEY="";const shopKey=()=>{try{return JSON.stringify([U.mode,snapOf("fork"),snapOf("shock"),U.prof,(G.saved||[]).length])}catch(e){return""}};
+function renderShopTab(){const k=shopKey();if(!SHOP||k!==SHOPKEY){renderSetup();shopFill();SHOPKEY=k}renderShopList()}
+$("shop-fill").onclick=()=>{shopFill();SHOPKEY=shopKey()};$("shop").addEventListener("toggle",()=>{if($("shop").open&&!SHOP)shopFill()});
 try{$("shop-name").value=localStorage.getItem(SHOPK)||""}catch(e){}
 function validSnap(m,k){try{return m==="fork"?!!CAT[k.brand].forks[k.fork]:!!SHK[k.sb].shocks[k.sk]}catch(e){return false}}
 function showShop(o,incoming,qr){let ov=$("card-ov");if(!ov){ov=document.createElement("div");ov.id="card-ov";document.body.appendChild(ov)}
@@ -4009,7 +4328,7 @@ function showShop(o,incoming,qr){let ov=$("card-ov");if(!ov){ov=document.createE
  ov.hidden=false;ov.scrollTop=0;$("card-close").onclick=()=>{ov.hidden=true};ov.onclick=e=>{if(e.target===ov)ov.hidden=true};
  if(incoming)$("shop-keep").onclick=()=>{const name=(o.c||o.s||"From the shop").slice(0,40);let n=0;(o.p||[]).forEach(p=>{if(validSnap(p.m,p.k)){addPart(p.m,{...U,...p.k},name);n++}});
   G.sheets=G.sheets||[];G.sheets.push({id:uidGen(),got:today(),o});svcSave();renderShopList();
-  const first=(o.p||[]).find(p=>validSnap(p.m,p.k));if(document.body.classList.contains("landing")){try{localStorage.setItem(LDK,"1")}catch(e){}try{closeLanding()}catch(e){}}if(first){Object.assign(U,first.k);U.mode=first.m;setTab("u");renderSetup()}
+  const first=(o.p||[]).find(p=>validSnap(p.m,p.k));if(document.body.classList.contains("landing")){try{localStorage.setItem(LDK,"1")}catch(e){}try{closeLanding()}catch(e){}}if(first){Object.assign(U,first.k);U.mode=first.m;pickSet(first.m,false);setTab("u");renderSetup()}
   $("shop-keep").textContent=n?"Added":"Saved";$("shop-keep").disabled=true}}
 function renderShopList(){const L=(G.sheets||[]).slice().reverse();
  $("shop-list").innerHTML=L.length?`<li style="border:0;padding-bottom:0"><b>Setups you've received</b></li>`+L.map(x=>`<li><span>${esc(x.o.d||x.got)} · ${esc(x.o.c||"Setup")}${x.o.s?" · "+esc(x.o.s):""}</span><span><button class="tx" data-sopen="${x.id}">Open</button><button class="tx" data-sdel="${x.id}" aria-label="Delete">Delete</button></span></li>`).join(""):"";
