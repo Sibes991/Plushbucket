@@ -473,6 +473,7 @@ body.gd-on{overflow:hidden}
 .r-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .r-btns button{width:100%;min-height:48px;padding:8px 10px}
 .r-btns .gd-btn{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tcard-row{margin:14px 0 0}.tcard-row button{width:100%;min-height:48px;padding:8px 10px}
 .r-acts .why-t{justify-self:start}
 @media (max-width:360px){.r-btns button{font-size:.9rem;padding:8px 4px}}
 /* first-time setup animations: pump gauge, O-ring for sag, counting a dial */
@@ -712,6 +713,7 @@ svg text.gk-n{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tab
 <details class="sect" id="bikechk"><summary>Check rebound on the bike</summary><div class="sect-body" id="bikechk-body"></div></details>
 <details class="sect" id="trailtune"><summary>Tune it on the trail</summary><div class="sect-body" id="trailtune-body"></div></details>
 <details class="sect"><summary>Something feels wrong?</summary><div class="sect-body" id="fixes"></div></details>
+<div class="tcard-row"><button type="button" data-tcard title="Every setting you dialed in on the Spring and Damping steps, on one screen">Setup card with my settings</button></div>
 <div class="cta"><button id="back-s">Back</button><button class="primary" id="go-v">Done: track its service</button></div>
 </div>
 <p class="note" id="foot" hidden>Simplified physics, anchored to the manufacturer's starting point for your fork or shock. The direction of each change is the lesson, not the exact numbers.</p>
@@ -1842,7 +1844,7 @@ function renderSetup(){
  U.mode==="fork"?renderFork():renderShock();
  // keep the rider's slider changes and comparison while the bike and profile are unchanged, including after a reload
  {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR,ps:PS};else src=tuneLoad()[k]||null;
-  if(src&&src.s&&src.s.prof===D.prof&&src.ps){const f=src.ps/PS;s={...src.s};R={...(src.R||src.s)};if(f!==1){s.p=Math.round(s.p*f);R.p=Math.round(R.p*f)}cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
+  if(src&&src.s&&src.s.prof===D.prof&&src.ps){const f=src.ps/PS;s={...src.s};R={...(src.R||src.s)};if(f!==1){const g=+$("p").step||1;s.p=Math.round(s.p*f/g)*g;R.p=Math.round(R.p*f/g)*g}cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
   TUNEK=k;saveTune()}
  rememberLast();renderGarage();renderAddPrompt();renderBal();if(!GRAB){renderDcount();if($("brk")&&$("brk").open)renderBrk(true)}declutter();applyPick();toolsSum()}
 // ---------- balance check: measured sag at both ends against the profile's targets ----------
@@ -1871,16 +1873,49 @@ function cardGrab(){const one=t=>{const m=t.trim().match(/^([\s\S]*?[.!?])(\s|$)
  return{mode:U.mode,title:$("r-title").textContent,l1:$("r-l1").textContent,psi:$("r-psi").textContent,sag:$("r-sag").innerText.replace(/\s+/g," "),l3:$("r-l3").textContent,tok:$("r-tok").textContent,
   lines:[...$("r-lines").children].map(li=>{const b=li.querySelector("b"),h=b?b.textContent:"";return[h,one(li.textContent.slice(h.length))]}),
   prof:$("r-prof").hidden?[]:[...$("r-prof").querySelectorAll("li")].map(li=>one(li.textContent).replace(/\), \d+ clicks? (slower|faster|firmer|softer)[^.]*\./,")."))}}
-function openCard(){const m=U.mode,key=idOf(m,U),sv=G.saved||[],hit=sv.find(x=>x.kind===m&&idOf(m,x.snap)===key);let parts=[cardGrab()];
+// the dial readouts used on the Damping step and on the dialed-in setup card
+function dialTxt(dp,q){return{rl:dp.hr?"Low-speed rebound":"Rebound",ll:dp.lever?"Compression lever":dp.h?"Low-speed compression":"Compression",
+ r:dp.rGuess?`about ${q.r} of ${dp.r} from fully closed`:`${q.r} ${CWO} (of ${dp.r})`,
+ hr:!dp.hr?"":dp.hrGuess?`about ${q.hr} of ${dp.hr} from fully closed`:`${q.hr} ${CWO} (of ${dp.hr})`,
+ l:dp.lever?dp.lever[q.l]:dp.lGuess?`about ${dp.l-q.l} of ${dp.l} from fully closed`:dp.lLab?`${dp.l-q.l} ${CWO} (bezel ${q.l-7>0?"+":""}${q.l-7})`:`${dp.l-q.l} ${CWO} (of ${dp.l})`,
+ h:dp.hGuess?`about ${dp.h-q.h} of ${dp.h} from fully closed`:dp.hLab?`${dp.h-q.h} ${CWO} (bezel ${q.h-2>0?"+":""}${q.h-2})`:`${dp.h-q.h} ${CWO} (of ${dp.h})`}}
+// the setup card with what's on the Spring and Damping sliders now (s), and the starting point (D) next to anything changed
+function tunedGrab(){const g=cardGrab(),dp=DAMP.x||{},coil=s.prof==="coil",ramp=s.rp!=null,hasP=coil||/\d/.test(g.psi),A=dialTxt(dp,s),B=dialTxt(dp,D);
+ const pTxt=q=>coil?`${Math.round(q.p)} lb/in`:`${realP(q.p)} psi`,tTxt=q=>TCC?`${Math.round(q.t*TCC)} cc`:`${q.t} of ${TMAX} max`,
+  st=(k,q)=>k==="r"?(dp.rGuess?"about ":"")+q.r:k==="hr"?(dp.hrGuess?"about ":"")+q.hr:k==="l"?(dp.lever?dp.lever[q.l]:(dp.lGuess?"about ":"")+(dp.l-q.l)):(dp.hGuess?"about ":"")+(dp.h-q.h),
+  n=(d,up,down)=>`${Math.abs(d)} click${Math.abs(d)===1?"":"s"} ${d>0?up:down}`,ch=[],lines=[];
+ const tokBox=!coil&&!ramp&&/token|spacer/i.test(g.l3),rampBox=ramp&&/ramp/i.test(g.l3);
+ // what changed from the starting point
+ if(hasP&&pTxt(s)!==pTxt(D)){const d=coil?Math.round(s.p-D.p):realP(s.p)-realP(D.p);ch.push(`${d>0?"+":"−"}${Math.abs(d)}${coil?" lb/in":" psi"}`)}
+ if(ramp&&s.rp!==D.rp)ch.push(`ramp-up chamber ${s.rp>D.rp?"+":"−"}${Math.abs(s.rp-D.rp)} psi`);
+ if(!coil&&!ramp&&s.t!==D.t){if(TCC){const d=Math.round((s.t-D.t)*TCC);ch.push(`${d>0?"+":"−"}${Math.abs(d)} cc of volume spacers`)}
+  else{const d=s.t-D.t;ch.push(`${Math.abs(d)} ${d>0?"more":"fewer"} ${U.mode==="shock"?"volume spacer":"token"}${Math.abs(d)===1?"":"s"}`)}}
+ if(!coil&&NMAX&&s.n!==D.n){const d=s.n-D.n;ch.push(`${Math.abs(d)} ${d>0?"more":"fewer"} negative spacer${Math.abs(d)===1?"":"s"}`)}
+ if(dp.r&&s.r!==D.r)ch.push(`${A.rl.toLowerCase()} ${n(s.r-D.r,"faster","slower")}`);
+ if(dp.hr&&s.hr!==D.hr)ch.push(`high-speed rebound ${n(s.hr-D.hr,"faster","slower")}`);
+ if(dp.l&&s.l!==D.l)ch.push(dp.lever?`compression lever ${dp.lever[D.l]} to ${dp.lever[s.l]}`:`${A.ll.toLowerCase()} ${n(s.l-D.l,"firmer","softer")}`);
+ if(dp.h&&s.h!==D.h)ch.push(`high-speed compression ${n(s.h-D.h,"firmer","softer")}`);
+ lines.push(["From the starting point",ch.length?ch.join(", ").replace(/^./,c=>c.toUpperCase())+".":"No changes."]);
+ // spring settings that don't have a box of their own
+ if(!coil&&!ramp&&!tokBox&&(TCC||TMAX))lines.push([U.mode==="shock"?"Volume spacers":"Tokens",tTxt(s)+(s.t!==D.t?` (start ${tTxt(D)})`:"")]);
+ if(!coil&&NMAX)lines.push(["Negative volume spacers",`${s.n} of ${NMAX} max`+(s.n!==D.n?` (start ${D.n})`:"")]);
+ // one line per dial
+ [["r",A.rl],["hr","High-speed rebound"],["l",A.ll],["h","High-speed compression"]].forEach(([k,name])=>{if(!dp[k])return;
+  lines.push([name,A[k]+(s[k]!==D[k]?` (start ${st(k,D)})`:"")])});
+ // the setup card's other notes (levers, bladder, spacer kits), not its rebound and compression lines
+ g.lines.filter(([h])=>!/rebound|compression/i.test(h)).forEach(l=>lines.push(l));
+ return{mode:U.mode,title:g.title,l1:coil?g.l1:ramp?"Main chamber":"Pressure",psi:hasP?pTxt(s):g.psi,sag:g.sag,
+  l3:g.l3,tok:tokBox?tTxt(s):rampBox?`${s.rp} psi`:g.tok,lines,prof:[]}}
+function openCard(tuned){tuned=tuned===true;const grab=tuned?tunedGrab:cardGrab,m=U.mode,key=idOf(m,U),sv=G.saved||[],hit=sv.find(x=>x.kind===m&&idOf(m,x.snap)===key);let parts=[grab()];
  if(hit){const o=sv.find(x=>x.kind!==m&&(x.bike||x.id)===(hit.bike||hit.id)&&validSnap(x.kind,x.snap));
-  if(o){const keep={...U};GRAB++;try{Object.assign(U,o.snap);U.mode=o.kind;renderSetup();parts.push(cardGrab())}catch(e){}Object.keys(U).forEach(k=>delete U[k]);Object.assign(U,keep);renderSetup();GRAB--}}
+  if(o){const keep={...U};GRAB++;try{Object.assign(U,o.snap);U.mode=o.kind;renderSetup();parts.push(grab())}catch(e){}Object.keys(U).forEach(k=>delete U[k]);Object.assign(U,keep);renderSetup();GRAB--;if(tuned)render()}}
  parts.sort((a,b)=>a.mode===b.mode?0:a.mode==="fork"?-1:1);
  const P=profOf(),sec=p=>`<h3>${esc(p.title)}</h3><div class="sc-st"><div><small>${esc(p.l1)}</small><b>${esc(p.psi)}</b></div><div><small>Sag target</small><b>${esc(p.sag)}</b></div><div><small>${esc(p.l3)}</small><b>${esc(p.tok)}</b></div></div>
   <ul>${p.lines.map(([h,t])=>`<li><b>${esc(h)}:</b> ${esc(t)}</li>`).join("")}${p.prof.map(t=>`<li><b>${esc(P.name)}:</b> ${esc(t)}</li>`).join("")}</ul>`.replace(/ clicks? counterclockwise from fully closed/g," out");
  let ov=$("card-ov");if(!ov){ov=document.createElement("div");ov.id="card-ov";document.body.appendChild(ov)}
- ov.innerHTML=`<div class="scard" role="dialog" aria-label="Setup card"><div class="sc-h"><b>PLUSHBUCKET</b><span>${today()}</span></div><h2>${esc(hit&&hit.name||"My setup")}</h2><p class="sc-sub">${esc(String(U.w))} ${U.unit} rider${U.eb?" · e-bike":""} · ${esc(P.name)} profile</p>
+ ov.innerHTML=`<div class="scard" role="dialog" aria-label="Setup card"><div class="sc-h"><b>PLUSHBUCKET</b><span>${today()}</span></div><h2>${esc(hit&&hit.name||"My setup")}</h2><p class="sc-sub">${esc(String(U.w))} ${U.unit} rider${U.eb?" · e-bike":""} · ${esc(P.name)} profile${tuned?" · my settings":""}</p>
   ${parts.map(sec).join("")}
-  <p class="sc-f">"Out" means clicks counterclockwise from fully closed.${P.id==="trail"?"":` ${esc(P.name)} lines are the app's changes from the maker's starting point.`} Starting points only: check sag, and never exceed the maximum pressure printed on your fork or shock. plushbucket.com</p></div>
+  <p class="sc-f">"Out" means clicks counterclockwise from fully closed.${tuned?` These are the settings on the Spring and Damping sliders; "start" is the starting point for your weight${P.id==="trail"?"":` and the ${esc(P.name)} profile`}. Check sag after changing pressure,`:`${P.id==="trail"?"":` ${esc(P.name)} lines are the app's changes from the maker's starting point.`} Starting points only: check sag,`} and never exceed the maximum pressure printed on your fork or shock. plushbucket.com</p></div>
   <div class="scbtns"><span class="fk">${parts.length<2?"Add your fork and shock to the same bike in your garage to get both on one card.":"Take a screenshot to keep it."}</span>${NATIVE?"":`<button type="button" id="card-print">Print</button>`}<button type="button" class="primary" id="card-close">Close</button></div>`;
  ov.hidden=false;ov.scrollTop=0;$("card-close").onclick=()=>{ov.hidden=true};if($("card-print"))$("card-print").onclick=()=>window.print();ov.onclick=e=>{if(e.target===ov)ov.hidden=true}}
 let TUNEK=null,TUNES=null;const TUNESK="tune-state-v2";
@@ -2127,7 +2162,7 @@ function applyShock(psi){
  const base={prof:coil?"coil":(sh.shape||"std"),damp:"x",t:coil?0:1,n:0,r:Math.min(r,dm.r),l:lc,h:hc,hr:dm.hr?Math.min(hrv,dm.hr):0};
  if(coil){COIL0=U.rate;base.p=U.rate;PS=1}else{base.p=pAt(base,SAGT);PS=psi?psi/base.p:1}
  D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
- $("t").max=TMAX;$("n").max=Math.max(1,NMAX);$("p").step=coil?25:1;$("p").min=coil?200:Math.round(base.p*.55);$("p").max=coil?800:Math.round(base.p*1.5);
+ $("t").max=TMAX;$("n").max=Math.max(1,NMAX);{const g=coil||PS===1?1:1/PS;$("p").step=coil?25:g;$("p").min=coil?200:Math.ceil(base.p*.55/g)*g;$("p").max=coil?800:Math.floor(base.p*1.5/g)*g}
  ["p","t","n","r","l","h","hr"].forEach(k=>{$(k).value=s[k]});if(s.rp!=null)$("rp").value=s.rp;
  $("sp-name").textContent=`${SHK[U.sb].name} ${sh.name}, ${U.stroke} mm stroke (modelled as about ${Math.round(trav)} mm of rear wheel travel). ${coil?"A coil spring is a straight line: no ramp-up, so bottom-out control comes from the damper.":psi?"Pressure is scaled to your starting point.":""}`;
  $("dp-name").textContent=[dm.name,dm.rGuess||dm.lGuess||dm.hGuess?"Some click counts aren’t published, so those dials show position in their range.":""].filter(Boolean).join(". ")}
@@ -2253,8 +2288,8 @@ function applyFork(realPsi,rebR,rebH){LEV=null;
   {const st=rr<40?1:5;$("rp").step=st;$("rp").min=Math.max(st,Math.round(rr*.7/st)*st);$("rp").max=Math.max(Math.round(rr*1.3/st)*st,rr+st);$("rp").value=rr}}
  else if(COILF){base.prof="coil";base.t=0;COIL0=COILF.rate/1.5;base.p=COILF.rate}
  else base.p=pAt(base,SAGT);
- PS=COILF?1:realPsi?realPsi/base.p:1;$("rp-ctl").hidden=!v.ramp;$("p").step=1;D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
- $("t").max=TMAX;$("n").max=Math.max(1,NMAX);$("p").min=Math.round(base.p*.55);$("p").max=Math.round(base.p*1.5);
+ PS=COILF?1:realPsi?realPsi/base.p:1;$("rp-ctl").hidden=!v.ramp;const PG=COILF||PS===1?1:1/PS;$("p").step=PG;D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
+ $("t").max=TMAX;$("n").max=Math.max(1,NMAX);$("p").min=Math.ceil(base.p*.55/PG)*PG;$("p").max=Math.floor(base.p*1.5/PG)*PG;
  ["p","t","n","r","l","h","hr"].forEach(k=>{$(k).value=s[k]});if(s.rp!=null)$("rp").value=s.rp;
  $("sp-name").textContent=`${v.spring}, ${U.travel} mm. ${realPsi?"Pressure is scaled to your starting point.":"No starting pressure for this fork yet, so pressure is shown in model units."}`;
  $("dp-name").textContent=[dm.name,dm.rGuess||dm.lGuess?"Some click counts aren’t published yet, so those dials show position in their range.":""].filter(Boolean).join(". ")}
@@ -2426,13 +2461,10 @@ function renderDamp(){
  $("cur2").setAttribute("d",P(r.out));$("ref2").setAttribute("d",P(rr.out));
  $("verdict").textContent=verdict(r);
  setGauge(r.mx,r.mx,true);cancelAnimationFrame(anim);$("dot").style.display="none";drawScene(r,r.peak,r.out[r.peak][0],r.mx);
- renderBikeCheck();renderTrailTune();$("d-sum").innerHTML=`<h2>Your starting clicks</h2><ul class="lines">${$("r-lines").innerHTML}</ul>`;
+ renderBikeCheck();renderTrailTune();$("d-sum").innerHTML=`<h2>Your starting clicks</h2><ul class="lines">${$("r-lines").innerHTML}</ul><div class="tcard-row"><button type="button" data-tcard title="Every setting you dialed in on the Spring and Damping steps, on one screen">Setup card with my settings</button></div>`;
  renderLinks();
- const dp=DAMP.x;["r","l","h","hr"].forEach(k=>{const mx=dp[k]||1;$(k).max=mx;$(k).value=(k==="r"||k==="hr")?mx-(s[k]||0):(s[k]||0)});$("hrctl").hidden=!dp.hr;$("r-lab").textContent=dp.hr?"Low-speed rebound":"Rebound";$("hrv").textContent=!dp.hr?"":dp.hrGuess?`about ${s.hr} of ${dp.hr} from fully closed`:`${s.hr} ${CWO} (of ${dp.hr})`;
- $("rv").textContent=dp.rGuess?`about ${s.r} of ${dp.r} from fully closed`:`${s.r} ${CWO} (of ${dp.r})`;
- $("lv").textContent=dp.lever?dp.lever[s.l]:dp.lGuess?`about ${dp.l-s.l} of ${dp.l} from fully closed`:dp.lLab?`${dp.l-s.l} ${CWO} (bezel ${s.l-7>0?"+":""}${s.l-7})`:`${dp.l-s.l} ${CWO} (of ${dp.l})`;
- $("hv").textContent=dp.hGuess?`about ${dp.h-s.h} of ${dp.h} from fully closed`:dp.hLab?`${dp.h-s.h} ${CWO} (bezel ${s.h-2>0?"+":""}${s.h-2})`:`${dp.h-s.h} ${CWO} (of ${dp.h})`;
- $("l-lab").textContent=dp.lever?"Compression lever":dp.h?"Low-speed compression":"Compression";
+ const dp=DAMP.x;["r","l","h","hr"].forEach(k=>{const mx=dp[k]||1;$(k).max=mx;$(k).value=(k==="r"||k==="hr")?mx-(s[k]||0):(s[k]||0)});$("hrctl").hidden=!dp.hr;{const T=dialTxt(dp,s);$("r-lab").textContent=T.rl;$("hrv").textContent=T.hr}
+ {const T=dialTxt(dp,s);$("rv").textContent=T.r;$("lv").textContent=T.l;$("hv").textContent=T.h;$("l-lab").textContent=T.ll}
  $("hctl").hidden=!dp.h;$("l").closest(".ctl").hidden=!dp.l;
  $("cap2").textContent=U.mode==="shock"&&scn==="brake"&&!last2?PEDCAP:NOUN(last2?CAP2[last2]:CAP2[scn]);
  $("scn").children[2].textContent=U.mode==="shock"?"Pedaling":"Hard braking";$("gauge-l").textContent=U.mode==="shock"?"O-ring on the shock shaft":"O-ring on the stanchion";
@@ -2565,6 +2597,26 @@ function dampFx(k){before();const a=stats(sim(prevD,scn),scn),b=stats(sim(s,scn)
 $("sview").querySelectorAll("button").forEach(b=>b.onclick=()=>{$("spnl").dataset.v=b.dataset.v;$("sview").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)))});
 $("spt").addEventListener("input",e=>{cancelAnimationFrame(cutAnim);CUT=+e.target.value/100;drawCut(CUT)});$("sanim").onclick=animateCut;
 $("rst").onclick=()=>{s={...D};R={...D};last=last2=null;prevS={...D};prevD={...D};["p","t","n","r","l","h","hr"].forEach(k=>{$(k).value=D[k]});if(D.rp!=null)$("rp").value=D.rp;render()};
+// ---------- sliders: a tap beside the thumb moves one step (1 psi, 1 token or cc, 1 click) instead of jumping there ----------
+// Dragging the thumb works as before. A press that turns into a scroll changes nothing.
+(function(){const IDS=["p","t","rp","n","r","hr","l","h"];let tap=null,keep=null;
+ const tw=el=>Math.min(28,el.getBoundingClientRect().height);
+ const thumbX=el=>{const b=el.getBoundingClientRect(),mn=+el.min,mx=+el.max,f=mx>mn?(+el.value-mn)/(mx-mn):0;return b.left+tw(el)/2+f*(b.width-tw(el))};
+ // while the press lasts (and briefly after), the browser's own jump-to-tap is undone
+ const hold=e=>{const el=e.target,h=tap&&tap.el===el?tap:keep&&keep.el===el&&Date.now()<keep.until?keep:null;
+  if(h&&e.isTrusted&&el.value!==h.v){el.value=h.v;e.stopImmediatePropagation()}};
+ document.addEventListener("input",hold,true);document.addEventListener("change",hold,true);
+ addEventListener("pointerup",e=>{if(tap&&e.target!==tap.el)tap=null},true);addEventListener("pointercancel",()=>{tap=null},true);
+ IDS.forEach(id=>{const el=$(id);if(!el)return;
+  el.addEventListener("pointerdown",e=>{if(e.button>0||el.disabled)return;const x=thumbX(el);
+   if(Math.abs(e.clientX-x)<=tw(el)/2+(e.pointerType==="mouse"?4:10)){tap=null;keep=null;return}
+   e.preventDefault();tap={el,v:el.value,dir:e.clientX>x?1:-1,x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}});
+  el.addEventListener("pointermove",e=>{if(tap&&tap.el===el&&e.pointerId===tap.id&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>10)tap.moved=true});
+  el.addEventListener("pointerup",e=>{if(!tap||tap.el!==el)return;const t=tap;tap=null;if(t.moved)return;
+   const st=+el.step||1;el.value=Math.min(+el.max,Math.max(+el.min,+t.v+t.dir*st));keep={el,v:el.value,until:Date.now()+500};
+   if(el.value!==t.v){el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}))}
+   try{el.focus({preventScroll:true})}catch(_){}})})})();
+
 $("vf").onclick=()=>{zoom=false;render()};$("vs").onclick=()=>{zoom=true;render()};
 $("wt").addEventListener("input",e=>{const v=parseFloat(e.target.value);if(v>0){U.w=v;renderSetup()}});
 $("rate").addEventListener("input",e=>{const v=parseFloat(e.target.value);if(v>0){U.rate=v;renderSetup()}});
@@ -4428,6 +4480,7 @@ renderShopList();
 const shopFromHash=()=>{if(location.hash.startsWith("#shop="))setTimeout(async()=>{try{if(typeof closeLanding==="function"&&document.body.classList.contains("landing"))closeLanding();await openShopLink(location.hash)}catch(e){}try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}},400)};
 shopFromHash();addEventListener("hashchange",shopFromHash);
 $("card-open").onclick=openCard;
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-tcard]"))openCard(true)});
 try{const b=JSON.parse(localStorage.getItem("bal-v1")||"{}");$("bal-f").value=b.f||"";$("bal-r").value=b.r||""}catch(e){}
 ["bal-f","bal-r"].forEach(id=>$(id).oninput=()=>{try{localStorage.setItem("bal-v1",JSON.stringify({f:$("bal-f").value,r:$("bal-r").value}))}catch(e){}renderBal()});renderBal();
 $("ride-date").value=today();
