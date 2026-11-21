@@ -980,18 +980,28 @@ CAT.man={name:"Manitou",forks:{
   sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. Manitou's R8 pressures are based on 15–20% sag.",
   notes:["Pressures from Manitou's R8 Pro set-up guide: at 100 mm with the IVA piston in position 2, at 120 mm in position 1. Maximum 150 psi.","IVA (Incremental Volume Adjustment) takes the place of tokens: position 1 is the most linear and position 3 the most progressive. Always let the air out before moving it.","At 120 mm Manitou also lists a setup with no IVA fitted, for riders up to 160 lb, at 4–9 psi more than the numbers shown."],warns:[],reb:{},start:{}}]}]}}};
 CAT.dvo={name:"DVO",forks:{
- dia36:{name:"Diamond 36",sub:"36 mm · SL air · trail",years:[{label:"2024–2027",versions:[{name:"SL air",spring:"DVO SL air spring",maxPsi:100,travel:[140,150,160,170],chart:{kind:"interp",W:[120,140,160,180,200,220,240,250],byTravel:Object.fromEntries([140,150,160,170].map(t=>[String(t),[55,60,65,70,75,80,85,95]]))},ebike:"none",tokens:{"140":[0,6],"150":[0,6],"160":[0,6],"170":[0,6]},sag:[15,30],
-  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's Diamond 36 guide gives 15–30%: less for high-speed stability, more for comfort and cornering grip.",dampers:["dvo36"],shape:"std",abo:false,notes:["Pressure from DVO's Diamond CORE set-up guide (v1.1): it gives a plush-to-firm range for each weight band, such as 60–70 psi for 160–179 lb, and the app uses the middle. Go toward the low end for comfort and grip, the high end for support.","Air setup (DVO): inflate, push the fork down about 25 mm until you hear air transfer, then reset the pressure with the fork fully extended. Never exceed 100 psi."],reb:{},warns:[]}]}]},
+ dia36:{name:"Diamond 36",sub:"36 mm · Core · trail",years:[{label:"2024–2027",versions:[{name:"SL air",spring:"DVO SL air spring",maxPsi:100,travel:[140,150,160,170],chart:{kind:"interp",W:[120,140,160,180,200,220,240,250],byTravel:Object.fromEntries([140,150,160,170].map(t=>[String(t),[55,60,65,70,75,80,85,95]]))},ebike:"none",tokens:{"140":[0,6],"150":[0,6],"160":[0,6],"170":[0,6]},sag:[15,30],
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's Diamond 36 guide gives 15–30%: less for high-speed stability, more for comfort and cornering grip.",dampers:["dvo36"],shape:"std",abo:false,notes:["Pressure from DVO's Diamond CORE set-up guide (v1.1): it gives a plush-to-firm range for each weight band, such as 60–70 psi for 160–179 lb, and the app uses the middle. Go toward the low end for comfort and grip, the high end for support.","Air setup (DVO): inflate, push the fork down about 25 mm until you hear air transfer, then reset the pressure with the fork fully extended. Never exceed 100 psi."],reb:{},warns:["Not for the Diamond 36 Prime SL (2026): its new Prime damper has 8 high-speed, 8 low-speed and 22 rebound clicks and is made to run lower pressures, so these charts don't apply. These numbers are for the Diamond 36 Core."]}]}]},
  onyx38:{name:"Onyx 38",sub:"38 mm · SL air · enduro",years:[{label:"2024–2027",versions:[{name:"SL air",spring:"DVO SL air spring",maxPsi:100,travel:[160,170,180],chart:{kind:"interp",W:[120,140,160,180,200,220,240,250],byTravel:Object.fromEntries([160,170,180].map(t=>[String(t),[55,60,65,70,75,80,85,95]]))},ebike:"none",tokens:{"160":[0,4],"170":[0,4],"180":[0,4]},sag:[15,30],
-  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's Onyx 38 guide gives 15–30%: less for high-speed stability, around 30% for comfort and cornering grip.",dampers:["onyx"],shape:"std",abo:false,
-  notes:["Pressure, rebound and high-speed compression from DVO's Onyx 38 set-up guide (v1.1). The pressure chart gives a plush-to-firm range for each weight band, and the app uses the middle. Maximum 100 psi.","On an e-bike, DVO says you may need 5–10 psi more than the chart.","Volume spacers fit SL models only: none stock, up to 4."],reb:{},warns:[]}]}]}}};
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's Onyx 38 guide gives 15–30%: less for high-speed stability, around 30% for comfort and cornering grip.",dampers:["onyx","onyxd2","onyxd3"],shape:"std",abo:false,
+  notes:["Pressure, rebound and high-speed compression from DVO's Onyx 38 set-up guide (v1.1). The pressure chart gives a plush-to-firm range for each weight band, and the app uses the middle. Maximum 100 psi.","On an e-bike, DVO says you may need 5–10 psi more than the chart.","Volume spacers fit SL models only: none stock, up to 4.","The D2 and D3 are fitted to some complete bikes: the D2 has a 3-position low-speed dial, the D3 a full-range one, and neither has a high-speed dial."],reb:{},warns:["Not for the Onyx 38 Prime SL (2026): its new Prime damper has 8 high-speed, 8 low-speed and 22 rebound clicks, so these damper numbers don't apply."]},
+ {name:"WP1 · SL air",spring:"DVO SL air spring",maxPsi:100,travel:[160,170],chart:{kind:"interp",W:[120,140,160,180,200,220,240,250],byTravel:Object.fromEntries([160,170].map(t=>[String(t),[55,60,65,70,75,80,85,95]]))},ebike:"none",tokens:{"160":[0,4],"170":[0,4]},sag:[15,30],
+  sagNote:"<b>Sag:</b> the app targets 20%, the usual baseline. DVO's Onyx 38 WP1 guide gives 15–30%: less for high-speed stability, around 30% for comfort and cornering grip.",dampers:["onyxwp"],shape:"std",abo:false,
+  notes:["Pressure, rebound and high-speed compression from DVO's Onyx 38 WP1 set-up guide (May 2024). The pressure chart gives a plush-to-firm range for each weight band, and the app uses the middle. Maximum 100 psi.","On an e-bike, DVO says you may need 5–10 psi more than the chart.","Volume spacers fit SL models only: none stock, up to 4."],reb:{},warns:[]}]}]}}};
 Object.assign(DMP,{
  ttx18:{name:"TTX18",r:16,l:16,h:3,start:`Low-speed 8 ${CWO} (of 16). High-speed 2 ${CWO} (of 3): Öhlins labels that position 2, and fully clockwise (0) is for long climbs only. Öhlins' manual doesn't list starting clicks, so these are the halfway points.`,init:{l:8,h:1},
   rebText:`8 ${CWO} (of 16). Öhlins' manual doesn't list a starting number, so this is halfway`},
  onyx:{name:"DVO Onyx D1 damper",r:25,l:4,h:20,hGuess:true,start:"",init:{l:0,h:4},
   rebPsi:[[50,55,24,20],[55,60,22,18],[60,65,20,16],[65,70,18,14],[70,75,16,12],[75,80,14,10],[80,90,12,8],[90,95,10,6],[95,101,8,4]],
   hscTurns:[[50,60,0],[60,70,1],[70,80,2],[80,90,3],[90,101,4]]},
- dvo36:{name:"DVO Diamond 36 damper",r:28,l:14,h:0,hFix:.5,start:`Low-speed compression 7 ${CWO} (of 14): DVO says start in the middle of its range.`,init:{l:7},
+ onyxd2:{name:"DVO Onyx D2 damper",r:25,l:2,h:0,hFix:.5,start:`Low-speed compression (3 positions): 2 ${CWO} (of 2), which is fully open. Add a click clockwise for more support. DVO doesn't give a starting position, and the D2 has no high-speed dial.`,init:{l:0},
+  rebPsi:[[50,55,24,20],[55,60,22,18],[60,65,20,16],[65,70,18,14],[70,75,16,12],[75,80,14,10],[80,90,12,8],[90,95,10,6],[95,101,8,4]]},
+ onyxd3:{name:"DVO Onyx D3 damper",r:25,l:10,lGuess:true,h:0,hFix:.5,start:"Low-speed compression: start fully open (counterclockwise), then add support in full turns clockwise, as DVO's guide says. DVO doesn't give a click count for this dial, and the D3 has no high-speed dial.",init:{l:0},
+  rebPsi:[[50,55,24,20],[55,60,22,18],[60,65,20,16],[65,70,18,14],[70,75,16,12],[75,80,14,10],[80,90,12,8],[90,95,10,6],[95,101,8,4]]},
+ onyxwp:{name:"DVO Onyx 38 WP1 damper",r:25,l:10,lGuess:true,h:28,hGuess:true,init:{l:0,h:12},
+  rebPsi:[[50,55,24,20],[55,60,22,18],[60,65,20,16],[65,70,18,14],[70,75,16,12],[75,80,14,10],[80,90,12,8],[90,95,10,6],[95,101,8,4]],
+  hscClk:[[50,55,0,4],[55,60,0,8],[60,65,4,12],[65,70,8,16],[70,75,12,20],[75,80,16,24],[80,90,20,28],[90,95,24,28],[95,101,28,28]]},
+ dvo36:{name:"DVO Diamond 36 Core damper",r:28,l:14,h:0,hFix:.5,start:`Low-speed compression 7 ${CWO} (of 14): DVO says start in the middle of its range.`,init:{l:7},
   // DVO Diamond CORE guide: rebound clicks out from closed by air pressure (fast to slow end of each row)
   rebPsi:[[50,55,24,20],[55,60,22,18],[60,65,20,16],[65,70,18,14],[70,75,16,12],[75,80,14,10],[80,90,12,8],[90,95,10,6],[95,101,8,4]]},
  dvogen:{name:"DVO damper",r:20,rGuess:true,l:6,lGuess:true,h:20,hGuess:true,start:`Compression fully open, or 1 click in from open. Check DVO's setup guide for its exact numbers.`,init:{l:1,h:4},rebText:"check DVO's setup guide for the starting number, then count it counterclockwise from fully closed"}});
@@ -1099,6 +1109,15 @@ SHK.dvo={name:"DVO",shocks:{
   dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
   rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],start:"weight",bladder:"140–180 psi (never above 180)",spacers:"Up to two spacers in the positive chamber and two in the negative chamber.",
   notes:["Dials: low-speed compression 5 clicks, high-speed 10, rebound 9.","Air pressure and rebound charts from DVO's Topaz Air set-up guide (version 2.1)."]},
+ tpwp:{name:"Topaz WP1",sub:"air · HSC and LSC dials",years:"2024–2027",kind:"air",neg:2,negGuess:true,maxPsi:300,sag:[20,30],sagBy:"DVO's Topaz WP1 guide",start:"weight",
+  airSrc:"Topaz WP1 set-up guide, December 2023",
+  dvoAir:[[0,140,145,160],[140,160,160,170],[160,180,170,180],[180,200,190,210],[200,220,200,220],[220,240,220,240],[240,999,240,250]],
+  rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],
+  bladder:"140–180 psi (never above 180)",
+  bladderRows:[[0,140,140,150],[140,160,145,150],[160,180,150,155],[180,200,155,160],[200,220,160,165],[220,240,165,170],[240,999,175,180]],
+  compLine:`high-speed (red knob) 4 ${CWO} (of 6) and low-speed (black knob) 6 ${CWO} (of 18), DVO's starting points. Turn high-speed clockwise for more support on big hits, low-speed clockwise for more support under pedalling and in turns.`,
+  spacers:"Spacers for the positive and negative chambers come with the shock. DVO's guide: if it bottoms out too easily, add 1–2 positive spacers; for more pedalling support, add 1–2 negative spacers. Watch DVO's video before changing them.",
+  notes:["Air pressure, bladder, rebound and compression from DVO's Topaz WP1 set-up guide (December 2023). Its sag table lists 60 and 65 mm strokes.","Dials, counted from fully closed: rebound 9 clicks, high-speed compression 6, low-speed compression 18."]},
  tp3:{name:"Topaz T3 Air",sub:"air · trail",years:"before Topaz Prime",kind:"air",neg:2,negGuess:true,maxPsi:300,sag:[30,30],start:"weight",
   dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
   rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],
@@ -1247,6 +1266,8 @@ function rebFor(v,id,w){const dm=DMP[id],ov=(v.reb||{})[id],i=band10(w);
  if(!T)return{text:"see your fork's manual",r:null};
  return{text:cwc(T[i],dm.rUnk?0:dm.r),r:T[i]}}
 function startFor(v,id){const st=v.start||{};
+ if(DMP[id].hscClk){const T=DMP[id].hscClk,ps=forkPsi(v,lb(),U.travel,U.eb).psi,row=ps==null?null:(T.find(x=>ps>=x[0]&&ps<x[1])||T[ps<50?0:T.length-1]);
+  return `High-speed (red dial): ${row?`turn it fully counterclockwise (open), then ${row[2]===row[3]?row[2]:row[2]+"–"+row[3]} clicks clockwise, from DVO's chart for ${row[0]}–${Math.min(row[1],100)} psi`:"start fully open"}. DVO counts this dial in from open and doesn't publish its total, so it can't be converted to clicks from closed. Low-speed (black): start fully open (fully counterclockwise); each click clockwise is firmer. DVO doesn't give a low-speed starting click.`}
  if(DMP[id].hscTurns){const ps=forkPsi(v,lb(),U.travel,U.eb).psi,row=ps==null?null:(DMP[id].hscTurns.find(x=>ps>=x[0]&&ps<x[1])||DMP[id].hscTurns[ps<50?0:DMP[id].hscTurns.length-1]);
   return `High-speed (green dial): ${row?`${row[2]} full turn${row[2]===1?"":"s"} clockwise from fully open, from DVO's chart for ${row[0]}–${Math.min(row[1],100)} psi`:"start fully open"}. DVO counts it in full turns, not clicks. Low-speed (black, 5 settings): start fully open. On D1 forks DVO's guide reverses it: fully clockwise is open, and each click counterclockwise is firmer.`}
  if(id==="gx"&&st.gx)return`High-speed ${st.gx[0]} and low-speed ${st.gx[1]} ${CWO} (of 15 and 16). Fox changed this for 2027.`;
@@ -1405,7 +1426,7 @@ function renderHowto(kind){
 // ---------- setup rendering ----------
 const sagText=(sg,len)=>{const mm=x=>Math.round(len*x/10)/10;return sg[0]===sg[1]?`${mm(sg[0])} mm<em> ${sg[0]}% of travel</em>`:`${mm(sg[0])}–${mm(sg[1])} mm<em> ${sg[0]}–${sg[1]}% of travel</em>`};
 const capf=s=>s.charAt(0).toUpperCase()+s.slice(1);
-function setLines(L){if(L.some(x=>/counterclockwise from fully closed/.test(x)))L.push("Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. \"Of\" is the dial's total. Where a maker counts from fully open, the app has converted it.");NEEDCOUNT=false;const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});const one=h=>h.replace(/(^|[^\d–-])1 clicks\b/g,"$11 click");$("r-lines").innerHTML=one(P.join(""));$("r-notes").innerHTML=one(N.join(""))}
+function setLines(L){if(L.some(x=>/counterclockwise from fully closed/.test(x)))L.push("Click numbers count from fully closed: turn the dial clockwise until it stops, then count clicks counterclockwise. \"Of\" is the dial's total. Where a maker counts from fully open, the app has converted it, unless the line says it can't.");NEEDCOUNT=false;const P=[],N=[];L.forEach(x=>{const m=x.match(/^<b>([^<]+?):?<\/b>\s*([\s\S]*)$/);if(m&&!/^(Pressure source|Sag|Starting pressure)$/.test(m[1]))P.push(`<li><b>${m[1]}</b>${capf(m[2])}</li>`);else N.push(`<li>${m?`<b>${m[1]}:</b> ${m[2]}`:x}</li>`)});const one=h=>h.replace(/(^|[^\d–-])1 clicks\b/g,"$11 click");$("r-lines").innerHTML=one(P.join(""));$("r-notes").innerHTML=one(N.join(""))}
 const SNAPK={fork:["brand","fork","year","ver","travel","damp","w","unit","eb","runt","lrunt"],shock:["sb","sk","stroke","rate","w","unit","eb","wtrav","csag","cbias","bike","levA","levB"]};
 const snapOf=m=>Object.fromEntries(SNAPK[m].map(k=>[k,U[k]]));
 
@@ -1867,7 +1888,7 @@ function renderShock(){
  if(sh.kind==="air"){
   $("r-l1").textContent="Starting pressure";
   if(sh.start==="weight"){const dv=sh.dvoAir&&(sh.dvoAir.find(x=>w>=x[0]&&w<x[1])||sh.dvoAir[sh.dvoAir.length-1]);psi=dv?Math.round((dv[2]+dv[3])/10)*5:Math.round(w*(sh.startMul||1));if(sh.startMul)L.push(`<b>Starting pressure:</b> your weight plus ${Math.round((sh.startMul-1)*100)}% ${sh.startWhy||"for the MegNeg can"}, then set it by sag.`);const mx=maxP(sh);if(mx&&psi>mx){warn.push(`Your weight in psi is above the ${mx} psi maximum, so it's capped. Don't exceed it.`);psi=mx}
-   $("r-psi").textContent=psi+" psi";L.push(dv?`<b>Pressure source:</b> the middle of DVO's air chart for your weight (Topaz Air set-up guide, version 2.1), then set it by sag.`:U.sb==="fox"||sh.rule?`<b>Pressure source:</b> start at your body weight in pounds (${sh.rule||"Fox's rule"}), then set it by sag.`:U.sb!=="rs"?"<b>Pressure source:</b> start at your body weight in pounds, the usual shop rule, then set it by sag. Your frame maker's chart can fine-tune it.":"<b>Pressure source:</b> start at your body weight in pounds, the same shop rule that works on Fox, then set it by sag. RockShox's TrailHead app or your frame maker's chart can fine-tune it for your bike.")}
+   $("r-psi").textContent=psi+" psi";L.push(dv?`<b>Pressure source:</b> the middle of DVO's air chart for your weight (${sh.airSrc||"Topaz Air set-up guide, version 2.1"}), then set it by sag.`:U.sb==="fox"||sh.rule?`<b>Pressure source:</b> start at your body weight in pounds (${sh.rule||"Fox's rule"}), then set it by sag.`:U.sb!=="rs"?"<b>Pressure source:</b> start at your body weight in pounds, the usual shop rule, then set it by sag. Your frame maker's chart can fine-tune it.":"<b>Pressure source:</b> start at your body weight in pounds, the same shop rule that works on Fox, then set it by sag. RockShox's TrailHead app or your frame maker's chart can fine-tune it for your bike.")}
   else if(sh.start==="sag"){$("r-psi").textContent="By sag";L.push(sh.startText)}
   else{$("r-psi").textContent="TrailHead";L.push("<b>Starting pressure:</b> RockShox gives a number for your exact bike in the TrailHead app (scan the QR code or enter the serial number). Your frame maker's setup chart works too. Rear shock pressure depends on the frame, so there's no single chart.")}
   $("r-tok").textContent=maxP(sh)?maxP(sh)+" psi":"—"}
@@ -1903,7 +1924,8 @@ function renderShock(){
  if(U.sb==="rs"&&sh.kind==="air"&&!sh.rebW)L.push(U.sk==="dlx"||U.sk==="dlxo"||U.sk==="dlxom"?`<b>Compression:</b> threshold lever in Open for descending.`:U.sk==="sdo"||U.sk==="sdom"?`<b>Compression:</b> threshold lever in Open for descending. If your shock has a low-speed compression dial, start it fully counterclockwise (open) and add clicks to taste.`:`<b>Compression:</b> start each compression dial at its middle (0) setting, RockShox's starting point${["vac","vad","sdc","sdd"].includes(U.sk)?` (position 3 of 5, so turn fully clockwise, then 2 clicks counterclockwise)`:""}. Use TrailHead's suggestion for your bike if it gives a different one.`);
  if(sh.rebW){const w=lb(),rw=sh.rebW.find(x=>w>=x[0]&&w<x[1])||sh.rebW[sh.rebW.length-1];L.push(`<b>Rebound:</b> ${rw[2]} ${CWO} (of ${SDMP[U.sk].r}), from ${sh.rebBy} for ${Math.round(w)} lb. Heavier riders run fewer clicks out.`)}
  if(sh.rebLine)L.push(`<b>Rebound:</b> ${sh.rebLine}`);if(sh.compLine)L.push(`<b>Compression:</b> ${sh.compLine}`);
- if(sh.bladder)L.push(`<b>Reservoir bladder:</b> set it to ${sh.bladder} through the valve under the reservoir cap: lighter riders at the low end, heavier riders at the high end.`);
+ if(sh.bladderRows){const r=sh.bladderRows.find(x=>w>=x[0]&&w<x[1])||sh.bladderRows[sh.bladderRows.length-1];L.push(`<b>Reservoir bladder:</b> about ${r[2]}–${r[3]} psi for your weight, from DVO's chart (plush to firm), through the valve under the reservoir cap. The full range is ${sh.bladder}.`)}
+ else if(sh.bladder)L.push(`<b>Reservoir bladder:</b> set it to ${sh.bladder} through the valve under the reservoir cap: lighter riders at the low end, heavier riders at the high end.`);
  if(sh.lever)L.push(`<b>Lever:</b> ${sh.lever}`);
  if(sh.spacers)L.push(`<b>Volume:</b> ${sh.spacers}`);
  (sh.notes||[]).forEach(n=>L.push(n));
@@ -1984,6 +2006,7 @@ const SDMP={
  ttx2:{name:"TTX2Air",r:12,rGuess:true,l:10,lGuess:true,h:3,hGuess:true,init:{l:5,h:1}},
  ttx22:{name:"TTX22m.2",r:12,rGuess:true,l:10,lGuess:true,h:2,init:{l:5,h:1}},
  tpp:{name:"Topaz Prime",r:9,l:5,h:10,init:{l:2,h:7}},
+ tpwp:{name:"Topaz WP1",r:9,l:18,h:6,init:{l:12,h:2}},
  kair:{name:"Kitsuma Air",r:11,hr:13,l:11,h:13,init:{l:5,h:6}},
  kcoil:{name:"Kitsuma Coil",r:11,hr:13,l:11,h:13,init:{l:5,h:6}},
  tigon:{name:"Tigon",r:15,l:12,h:0,hFix:.45,init:{l:6}},
@@ -2156,7 +2179,7 @@ function applyFork(realPsi,rebR,rebH){LEV=null;
  S=U.travel/10;T=U.travel/1000;SC=U.travel/160;TCC=0;$("t").step=1;TMAX=tk?tk[1]:6;NMAX=v.neg||0;
  DAMP={x:dm};
  const r=rebR!=null?Math.min(dm.r,rebR):Math.round(dm.r*.6);
- let l=dm.init.l||0,hh=dm.init.h||0;if(U.damp==="gx"&&v.start&&v.start.gx){l=dm.l-v.start.gx[1];hh=dm.h-v.start.gx[0]}if(U.damp==="gx2"&&v.start&&v.start.gx2){l=dm.l-v.start.gx2[1];hh=dm.h-v.start.gx2[0]}
+ let l=dm.init.l||0,hh=dm.init.h||0;if(dm.hscClk&&realPsi){const T=dm.hscClk,rw=T.find(x=>realPsi>=x[0]&&realPsi<x[1])||T[realPsi<50?0:T.length-1];hh=Math.round((rw[2]+rw[3])/2)}if(U.damp==="gx"&&v.start&&v.start.gx){l=dm.l-v.start.gx[1];hh=dm.h-v.start.gx[0]}if(U.damp==="gx2"&&v.start&&v.start.gx2){l=dm.l-v.start.gx2[1];hh=dm.h-v.start.gx2[0]}
  const base={prof:v.shape,damp:"x",t:v.ramp?0:Math.min(tk?tk[0]:1,TMAX),n:0,r,l,h:hh,hr:dm.hr?Math.min(dm.hr,rebH??Math.round(dm.hr/2)):0};
  SAGT=.2;PS=1;
  if(v.ramp){const rr=rampPsi(v,lb());

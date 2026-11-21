@@ -43,7 +43,7 @@ Then it teaches you what those numbers do:
 | **RockShox** | SID, SID SL, Pike, Lyrik, ZEB, BoXXer | Super Deluxe, Vivid Air, Vivid / Super Deluxe Coil, Deluxe / SIDLuxe |
 | **Marzocchi** | Bomber Z1, Bomber Z2, Super Z, Bomber 58 | Bomber Air, Bomber CR |
 | **Öhlins** | RXF36, RXF38 | TTX1Air, TTX2Air, TTX22m.2 |
-| **DVO** | Diamond 36, Onyx 38 | Topaz Prime, Topaz T3 Air, Jade X |
+| **DVO** | Diamond 36 (Core), Onyx 38 (D1, D2, D3, WP1) | Topaz Prime, Topaz WP1, Topaz T3 Air, Jade X |
 | **Intend** | Hero, Edge, Flash, Flash 38, Samurai XC, Samurai Supertrail | Hover, Rover |
 | **SR Suntour** | Durolux 38 / 38 X, RUX 38, Aion 38 X, Auron 36, Aion 36 X, Zeron 36 / 36 X, Mobie 36, Mobie 34, Axon 34, Axon 34 Werx / Elite, Raidon 34, XCR 36 X, XCR 34, XCR 32, XCM 34 Air, XCM 32 Air, Epixon 32 | Edge X, Edge Evo, TriAir 2, TriAir, Raidon |
 
