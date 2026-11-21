@@ -1841,8 +1841,8 @@ function renderSetup(){
  const tk0=tuneKey(),keepS=s&&{...s},keepR=R&&{...R};
  U.mode==="fork"?renderFork():renderShock();
  // keep the rider's slider changes and comparison while the bike and profile are unchanged, including after a reload
- {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR};else src=tuneLoad()[k]||null;
-  if(src&&src.s&&src.s.prof===D.prof){s={...src.s};R={...(src.R||src.s)};cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
+ {const k=tuneKey();let src=null;if(k===TUNEK&&keepS)src={s:keepS,R:keepR,ps:PS};else src=tuneLoad()[k]||null;
+  if(src&&src.s&&src.s.prof===D.prof&&src.ps){const f=src.ps/PS;s={...src.s};R={...(src.R||src.s)};if(f!==1){s.p=Math.round(s.p*f);R.p=Math.round(R.p*f)}cache={};last=last2=null;prevS={...s};prevD={...s};["p","t","n"].forEach(k2=>{$(k2).value=s[k2]??0});if(s.rp!=null)$("rp").value=s.rp}
   TUNEK=k;saveTune()}
  rememberLast();renderGarage();renderAddPrompt();renderBal();if(!GRAB){renderDcount();if($("brk")&&$("brk").open)renderBrk(true)}declutter();applyPick();toolsSum()}
 // ---------- balance check: measured sag at both ends against the profile's targets ----------
@@ -1857,6 +1857,7 @@ function renderBal(){if(!$("bal-out"))return;const P=profOf(),FR=forkSagR().map(
  const fix=(d,coil,fork)=>d>2?(coil?(fork?"too deep: add preload if your fork has it, or go one spring firmer":"too deep: add preload up to your shock's limit, or fit a firmer spring"):`too deep: add air about ${fork?5:10} psi at a time`):d<-2?(coil?(fork?"too shallow: back off the preload, or go one spring softer":"too shallow: back off the preload, or fit a softer spring"):`too shallow: let air out about ${fork?5:10} psi at a time`):"on target";
  let verdict;
  if(okf&&okr)verdict="<b>Balanced.</b> Both ends are within 2 points of their targets, so leave the springs alone and tune with the dials.";
+ else if(okf!==okr)verdict=(okf?dr<0:df>0)?"<b>The front sits deeper than the rear.</b> The bike rides nose-low: steering gets steeper and twitchier, and the fork dives under braking and on steep ground.":"<b>The rear sits deeper than the front.</b> The bike sits back: the front goes light, steers slowly and can push wide in corners, and it wallows on climbs.";
  else if(nf-nr>.12)verdict="<b>The front sits deeper than the rear.</b> The bike rides nose-low: steering gets steeper and twitchier, and the fork dives under braking and on steep ground.";
  else if(nr-nf>.12)verdict="<b>The rear sits deeper than the front.</b> The bike sits back: the front goes light, steers slowly and can push wide in corners, and it wallows on climbs.";
  else verdict=df>0?"<b>Both ends are too soft by a similar amount.</b> The bike sits level but low, so it uses its travel too easily and can bottom out.":"<b>Both ends are too firm by a similar amount.</b> The bike sits level but high, so it feels harsh and has less grip.";
@@ -1886,7 +1887,7 @@ let TUNEK=null,TUNES=null;const TUNESK="tune-state-v2";
 // slider settings are kept per part (fork and shock separately), so switching between them doesn't lose either
 function tuneLoad(){if(!TUNES){try{TUNES=JSON.parse(localStorage.getItem(TUNESK)||"{}")||{}}catch(e){TUNES={}}}return TUNES}
 const tuneKey=()=>JSON.stringify([U.mode,U.mode==="fork"?[U.brand,U.fork,U.year,U.ver,U.travel,U.damp].concat(U.runt?["runt"]:[],U.lrunt?["lrunt"]:[]):[U.sb,U.sk,U.stroke,U.rate,U.levA||0,U.levB||0,U.wtrav],U.w,U.unit,U.eb,U.prof]);
-function saveTune(){if(!TUNEK||!s)return;const T=tuneLoad();delete T[TUNEK];T[TUNEK]={s:{...s},R:{...R},t:Date.now()};const ks=Object.keys(T);if(ks.length>40)ks.sort((a,b)=>T[a].t-T[b].t).slice(0,ks.length-40).forEach(x=>delete T[x]);try{localStorage.setItem(TUNESK,JSON.stringify(T))}catch(e){}}
+function saveTune(){if(!TUNEK||!s)return;const T=tuneLoad();delete T[TUNEK];T[TUNEK]={s:{...s},R:{...R},ps:PS,t:Date.now()};const ks=Object.keys(T);if(ks.length>40)ks.sort((a,b)=>T[a].t-T[b].t).slice(0,ks.length-40).forEach(x=>delete T[x]);try{localStorage.setItem(TUNESK,JSON.stringify(T))}catch(e){}}
 function renderFork(){
  const B=CAT[U.brand],fk=forkOf(),y=yearOf(),v=verOf(),dm=DMP[U.damp],w=lb();
  chips("c-brand",Object.entries(CAT).map(([k,x])=>[k,x.name]),U.brand,x=>{U.brand=x;renderSetup()});
