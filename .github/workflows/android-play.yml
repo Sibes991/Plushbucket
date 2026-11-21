@@ -34,6 +34,16 @@ jobs:
           sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/" build.gradle
           sed -i -E "s/versionName \"[^\"]*\"/versionName \"${{ inputs.version }}\"/" build.gradle
           grep -E "versionCode|versionName" build.gradle
+      - name: Turn on R8 (shrinks and optimizes the release build)
+        working-directory: native/android/app
+        run: |
+          perl -0pi -e 's/minifyEnabled\s+false/minifyEnabled true\n            shrinkResources true/' build.gradle
+          perl -pi -e 's/proguard-android\.txt/proguard-android-optimize.txt/' build.gradle
+          cat ../../android-proguard-rules.pro >> proguard-rules.pro
+          grep -nE "minifyEnabled|shrinkResources|proguard" build.gradle
+          # stop here if Capacitor's template changed and the edits above didn't apply
+          grep -q "minifyEnabled true" build.gradle
+          grep -q "proguard-android-optimize.txt" build.gradle
       - name: Build the release bundle
         working-directory: native/android
         run: ./gradlew bundleRelease
@@ -56,3 +66,10 @@ jobs:
           name: plushbucket-android-bundle
           path: out/*.aab
           retention-days: 7
+      # R8's map from shortened names back to the real ones, for reading crash reports.
+      # The .aab carries it too, so Play Console decodes crashes by itself.
+      - uses: actions/upload-artifact@v6
+        with:
+          name: plushbucket-android-r8-mapping
+          path: native/android/app/build/outputs/mapping/release/mapping.txt
+          retention-days: 30
