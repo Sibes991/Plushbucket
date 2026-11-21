@@ -1,0 +1,11 @@
+{
+  "name": "plushbucket-health-rides",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plushbucket ride import: reads bike rides that other apps (Garmin Connect, Strava, Trailforks...) saved to Apple Health or Health Connect, so their hours count toward service. Read-only; nothing leaves the phone.",
+  "files": ["ios/Sources", "Package.swift", "android/src", "android/build.gradle"],
+  "capacitor": {
+    "ios": { "src": "ios" },
+    "android": { "src": "android" }
+  }
+}

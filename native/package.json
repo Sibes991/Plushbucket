@@ -19,6 +19,7 @@
     "@capacitor/filesystem": "^8.0.0",
     "@capacitor/ios": "^8.0.0",
     "@capacitor/share": "^8.0.0",
+    "plushbucket-health-rides": "file:plugins/health-rides",
     "plushbucket-tip-jar": "file:plugins/tip-jar",
     "plushbucket-trail-notes": "file:plugins/trail-notes",
     "plushbucket-watch-sync": "file:plugins/watch-sync"
