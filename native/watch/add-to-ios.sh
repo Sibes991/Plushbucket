@@ -10,5 +10,8 @@ cp health/App.entitlements ios/App/App/App.entitlements
 PL=ios/App/App/Info.plist
 MSG="Plushbucket reads your cycling workouts, so rides you record with Garmin, Strava, Trailforks or other apps count toward your fork and shock service hours. Nothing leaves your iPhone."
 plutil -replace NSHealthShareUsageDescription -string "$MSG" "$PL"
+# Apple requires the saving text too whenever the app has the HealthKit entitlement, even though the iPhone app only reads
+UPD="Plushbucket saves rides you time on its Apple Watch app as Outdoor Cycle workouts in Health. The iPhone app itself only reads your rides."
+plutil -replace NSHealthUpdateUsageDescription -string "$UPD" "$PL"
 ruby -e 'require "xcodeproj"' 2>/dev/null || sudo gem install xcodeproj --no-document
 ruby watch/add-watch-target.rb ios/App/App.xcodeproj
