@@ -1178,7 +1178,32 @@ SHK.dvo={name:"DVO",shocks:{
  jadep:{name:"Jade X Prime",sub:"coil · HSC and LSC dials",years:"2024–2027",kind:"coil",sag:[25,30],bladder:"140–180 psi (never above 180)",preload:"6 turns (6 mm)",
   notes:["DVO's Jade X set-up guide (v2.0): sag 25–30%; one turn of the collar is 1 mm of preload, never more than 6 mm. If you can't reach sag within that, change the spring.","Dials, counted from fully closed: rebound about 18 clicks, high-speed compression (green) 10, low-speed compression (black) 5. Start compression fully open and add support to taste.","Reservoir bladder 140–180 psi, never above 180: lighter riders toward 140, heavier toward 180."]},
  jade:{name:"Jade X",sub:"coil · T3 lever",years:"2023–2027",kind:"coil",sag:[30,30],bladder:"140–180 psi (never above 180)",preload:"6 turns (6 mm)",lever:"T3 three-position compression lever: Open for rough descents, Mid for support on smooth descents and technical climbs, Firm for smooth climbs.",
-  notes:["DVO's current Jade X set-up guide (v2.0): sag 25–30%; one turn of the collar is 1 mm of preload, never more than 6 mm. Rebound has about 18 clicks, counted from fully closed: start closed and back it out in two-click steps.","Reservoir bladder 140–180 psi, never above 180: lighter riders toward 140, heavier toward 180. Older Jade X guides gave 170–200 psi, so check the label on yours."]}}};
+  notes:["DVO's current Jade X set-up guide (v2.0): sag 25–30%; one turn of the collar is 1 mm of preload, never more than 6 mm. Rebound has about 18 clicks, counted from fully closed: start closed and back it out in two-click steps.","Reservoir bladder 140–180 psi, never above 180: lighter riders toward 140, heavier toward 180. Older Jade X guides gave 170–200 psi, so check the label on yours."]},
+ jxwp:{name:"Jade X WP",sub:"coil · WP Cone Valve · HSC and LSC dials",years:"2024–2027",kind:"coil",sag:[25,30],sagBy:"DVO's Jade X WP guide",preload:"6 turns (6 mm)",bladder:"140–180 psi (never above 180)",
+  springRows:[[0,132,300],[132,154,350],[154,176,400],[176,220,450],[220,999,500]],springBy:"DVO's Jade X WP base setting",
+  rebLine:"start fully closed (clockwise) and back it out in two-click steps until it returns quickly without kicking. About 18 clicks, counted from fully closed. A stiffer spring needs more rebound damping.",
+  compLine:`high-speed (red knob) 4 ${CWO} (of 6) and low-speed (black knob) 6 ${CWO} (of 18). DVO's Jade X WP guide shows its starting clicks only on a dial picture, so these are the starting points from the Topaz WP1 guide, which uses the same WP Cone Valve damper. Turn high-speed clockwise for more support on big hits, low-speed clockwise for more support under pedalling and in turns.`,
+  notes:["Spring chart, sag (25–30%), preload (one turn is 1 mm, never more than 6 mm), bladder (140–180 psi, never above 180) and dial counts from DVO's Jade X WP set-up guide (December 2023). Only size: 205×65 trunnion.","DVO sells it with 350, 400 and 450 lb/in WP springs."]},
+ tp2:{name:"Topaz 2",sub:"air · trunnion · Giant Maestro",years:"205×62.5 trunnion",kind:"air",neg:2,negGuess:true,maxPsi:300,sag:[20,30],sagBy:"DVO's Topaz Air set-up guide",start:"weight",
+  dvoAir:[[0,140,140,150],[140,160,150,165],[160,180,165,175],[180,200,180,200],[200,220,190,210],[220,240,210,230],[240,999,230,250]],
+  rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],
+  bladder:"140–180 psi (never above 180)",lever:"T3 three-position compression lever: Open for descending, Mid for support, Firm for climbing.",
+  spacers:"Positive and negative volume spacers. DVO's guide: if it bottoms out too easily, add 1–2 positive spacers; for more pedalling support, add 1–2 negative spacers.",
+  notes:["DVO's Topaz 2 page links its Topaz Air set-up guide (version 2.1), so pressure, rebound, bladder and spacers come from that guide: 300 psi max, 20–30% sag, bladder 140–180 psi. Older Topaz 2 pages gave 25–30% sag.","Made for trunnion bikes with lower leverage (starting around 2.4 or lower), such as Giant's Maestro bikes like the Reign; DVO points higher-leverage bikes to the Topaz T3 Air. Only size: 205×62.5 trunnion."]},
+ tpg1:{name:"Topaz Gen 1",sub:"air · T3 lever · the original Topaz",years:"original Topaz T3AIR",kind:"air",neg:2,negGuess:true,sag:[25,30],sagBy:"DVO's original Topaz guide",start:"weight",
+  rule:"the usual rear-shock start; DVO's original Topaz guide has no pressure chart",
+  rebRows:[[0,140,8,9],[140,160,6,7],[160,180,5,6],[180,200,4,5],[200,220,3,4],[220,240,2,3],[240,999,1,2]],
+  bladder:"170–200 psi",lever:"T3 three-position compression lever: Open for the most grip, Medium for traversing, Closed for climbing (not a lockout).",
+  spacers:"Air volume spacers: add them for a more progressive feel and fewer harsh bottom-outs, remove them for a more linear feel and full travel.",
+  notes:["DVO's original Topaz T3AIR set-up guide (part 910400-00): sag 25–30%, bladder 170–200 psi and 9 clicks of rebound. It gives 200–300 psi as the usual pressure range, with no chart by weight.","Rebound starting point from DVO's Topaz Air guide (version 2.1), whose rebound chart covers all Topaz models."]},
+ jadeo:{name:"Jade",sub:"coil · the original Jade · HSC and LSC dials",years:"first generation, before the Jade X",kind:"coil",sag:[25,30],sagBy:"DVO's Jade setup page",preload:"5 mm",
+  bladder:"170–200 psi",bladderRows:[[0,140,170,170],[140,160,175,175],[160,180,180,180],[180,200,185,185],[200,220,190,190],[220,999,200,200]],
+  tune:{by:"DVO's Jade base tune",groups:[
+   {max:66,rows:[[0,140,"34-32","3","1",400],[140,160,"33-31","4","2",450],[160,180,"32-29","4-6","3-5",500],[180,200,"31-28","6-9","5-8",550],[200,999,"29-26","6-9","5-8",600]]},
+   {max:99,rows:[[0,140,"34-32","2","1",350],[140,160,"33-31","3","2",400],[160,180,"32-29","3-5","2-5",450],[180,200,"31-28","5-8","5-8",500],[200,999,"29-26","5-8","5-8",550]]}]},
+  notes:["Base tune, bladder, sag (25–30%) and preload (never more than 5 mm) from DVO's Jade setup page. Rebound has 37 clicks, high-speed compression 24 and low-speed 22. DVO's table stops at 220 lb.","DVO's table has one set of rows for 200×57 and 216×63 shocks (up to 65 mm stroke here) and another for 222×70 and 241×76 shocks. The 267×89 downhill Jade has its own rows on DVO's page."]}}};
+// the original Jade's base tune: the row for this shock size (by stroke) and rider weight
+function tuneRow(sh){if(!sh||!sh.tune)return null;const g=sh.tune.groups.find(x=>U.stroke<=x.max)||sh.tune.groups[sh.tune.groups.length-1],w=lb();return g.rows.find(r=>w>=r[0]&&w<r[1])||g.rows[g.rows.length-1]}
 
 // ---------- Marzocchi (researched 2026-10-28) ----------
 // Charts from Marzocchi tuning guides: Z1/DJ 605-00-256 rev B (2020), Z2 (2019), Bomber 58 605-00-174 (2017).
@@ -2007,6 +2032,8 @@ function renderShock(){
   $("r-tok").textContent=maxP(sh)?maxP(sh)+" psi":"—"}
  else{$("r-l1").textContent="Spring";$("r-psi").textContent=U.rate+" lb/in";$("r-l3").textContent="Max preload";$("r-tok").textContent=(U.sb==="fox")?"2 turns":sh.preload||(U.sk==="rcoil"?"5 turns (SD Coil)":"See manual");
   L.push("<b>Spring rate:</b> the right spring depends on your frame's leverage, so use your frame maker's chart or the shock maker's spring calculator, then confirm with sag.");
+  if(sh.springRows){const w2=lb(),sr=sh.springRows.find(x=>w2>=x[0]&&w2<x[1])||sh.springRows[sh.springRows.length-1];L.push(`<b>${SHK[U.sb].name}'s spring chart:</b> ${sr[2]} lb/in for ${Math.round(w2)} lb, from ${sh.springBy}. It goes by rider weight only, so confirm with sag.`)}
+  {const tr=tuneRow(sh);if(tr&&tr[5])L.push(`<b>${SHK[U.sb].name}'s spring chart:</b> ${tr[5]} lb/in for ${Math.round(lb())} lb on a ${U.stroke} mm stroke, from ${sh.tune.by}. It goes by rider weight only, so confirm with sag.`)}
   L.push(U.sb==="fox"?"<b>Preload:</b> thread the collar on until the spring stops moving, then no more than two full turns (Fox's limit).":sh.preload?`<b>Preload:</b> thread the collar on until the spring stops moving, then no more than ${sh.preload.replace("2","two")} (the maker's limit).`:"<b>Preload:</b> thread the collar on until the spring stops moving, then add only as much as you need, within the limit in your shock's manual.")}
  const SR=shockSagR();$("r-sag").innerHTML=sagText(SR,U.stroke);
  if(sh.sagStroke||sh.sagBy||SR[0]!==30||SR[1]!==30)L.push(`<b>Sag:</b> ${pctR(SR)}${sh.sagStroke?` for a ${U.stroke} mm stroke`:""}, from ${sh.sagBy||(U.sb==="fox"?"Fox's manual":SHK[U.sb].name+"'s guide")}. If your frame maker recommends a different sag for your bike, use theirs.`);
@@ -2036,8 +2063,11 @@ function renderShock(){
  else if(U.sb==="rs"&&sh.kind==="air"&&!sh.rebW){L.push(`<b>Rebound:</b> get your number from TrailHead. It counts from fully closed: turn the dial fully clockwise, then counterclockwise the number of clicks it shows.`)}
  if(U.sb==="rs"&&sh.kind==="air"&&!sh.rebW)L.push(U.sk==="dlx"||U.sk==="dlxo"||U.sk==="dlxom"?`<b>Compression:</b> threshold lever in Open for descending.`:U.sk==="sdo"||U.sk==="sdom"?`<b>Compression:</b> threshold lever in Open for descending. If your shock has a low-speed compression dial, start it fully counterclockwise (open) and add clicks to taste.`:`<b>Compression:</b> start each compression dial at its middle (0) setting, RockShox's starting point${["vac","vad","sdc","sdd"].includes(U.sk)?` (position 3 of 5, so turn fully clockwise, then 2 clicks counterclockwise)`:""}. Use TrailHead's suggestion for your bike if it gives a different one.`);
  if(sh.rebW){const w=lb(),rw=sh.rebW.find(x=>w>=x[0]&&w<x[1])||sh.rebW[sh.rebW.length-1];L.push(`<b>Rebound:</b> ${rw[2]} ${CWO} (of ${SDMP[U.sk].r}), from ${sh.rebBy} for ${Math.round(w)} lb. Heavier riders run fewer clicks out.`)}
+ {const tr=tuneRow(sh);if(tr){const dm2=SDMP[U.sk],asc=v=>{const n=String(v).split("-").map(Number).sort((x,y)=>x-y);return n[0]===n[n.length-1]?String(n[0]):n.join("–")},cl=(v,t)=>asc(String(v).split("-").map(x=>t-Number(x)).join("-"));
+  L.push(`<b>Rebound:</b> ${asc(tr[2])} ${CWO} (of ${dm2.r}), from ${sh.tune.by} for ${Math.round(lb())} lb.`);
+  L.push(`<b>Compression:</b> high-speed ${cl(tr[3],dm2.h)} and low-speed ${cl(tr[4],dm2.l)} ${CWO} (of ${dm2.h} and ${dm2.l}). DVO lists them as ${asc(tr[3])} and ${asc(tr[4])} clicks in from fully open.`)}}
  if(sh.rebLine)L.push(`<b>Rebound:</b> ${sh.rebLine}`);if(sh.compLine)L.push(`<b>Compression:</b> ${sh.compLine}`);
- if(sh.bladderRows){const r=sh.bladderRows.find(x=>w>=x[0]&&w<x[1])||sh.bladderRows[sh.bladderRows.length-1];L.push(`<b>Reservoir bladder:</b> about ${r[2]}–${r[3]} psi for your weight, from DVO's chart (plush to firm), through the valve under the reservoir cap. The full range is ${sh.bladder}.`)}
+ if(sh.bladderRows){const r=sh.bladderRows.find(x=>w>=x[0]&&w<x[1])||sh.bladderRows[sh.bladderRows.length-1];L.push(r[2]===r[3]?`<b>Reservoir bladder:</b> ${r[2]} psi for your weight, from DVO's chart, through the valve under the reservoir cap. The full range is ${sh.bladder}.`:`<b>Reservoir bladder:</b> about ${r[2]}–${r[3]} psi for your weight, from DVO's chart (plush to firm), through the valve under the reservoir cap. The full range is ${sh.bladder}.`)}
  else if(sh.bladder)L.push(`<b>Reservoir bladder:</b> set it to ${sh.bladder} through the valve under the reservoir cap: lighter riders at the low end, heavier riders at the high end.`);
  if(sh.lever)L.push(`<b>Lever:</b> ${sh.lever}`);
  if(sh.spacers)L.push(`<b>Volume:</b> ${sh.spacers}`);
@@ -2120,6 +2150,8 @@ const SDMP={
  ttx22:{name:"TTX22m.2",r:12,rGuess:true,l:10,lGuess:true,h:2,init:{l:5,h:1}},
  tpp:{name:"Topaz Prime",r:9,l:5,h:10,init:{l:2,h:7}},
  tpwp:{name:"Topaz WP1",r:9,l:18,h:6,init:{l:12,h:2}},
+ jxwp:{name:"Jade X WP",r:18,rGuess:true,l:18,h:6,init:{l:12,h:2}},
+ jadeo:{name:"DVO Jade",r:37,l:22,h:24,init:{l:2,h:4}},
  kair:{name:"Kitsuma Air",r:11,hr:13,l:11,h:13,init:{l:5,h:6}},
  kcoil:{name:"Kitsuma Coil",r:11,hr:13,l:11,h:13,init:{l:5,h:6}},
  tigon:{name:"Tigon",r:15,l:12,h:0,hFix:.45,init:{l:6}},
@@ -2134,6 +2166,8 @@ const SDMP={
  aria:{name:"EXT Aria",r:20,rGuess:true,l:12,lGuess:true,h:10,hGuess:true,init:{l:6,h:5}},
  fenix:{name:"FAST Fenix 2.0",r:24,rGuess:true,l:24,lGuess:true,h:0,hFix:.45,init:{l:12}},
  tp3:{name:"Topaz T3 Air",r:9,l:2,lever:["Open","Middle","Firm"],h:0,hFix:.45,init:{l:0}},
+ tp2:{name:"Topaz 2",r:9,l:2,lever:["Open","Middle","Firm"],h:0,hFix:.45,init:{l:0}},
+ tpg1:{name:"Topaz Gen 1",r:9,l:2,lever:["Open","Middle","Firm"],h:0,hFix:.45,init:{l:0}},
  jade:{name:"Jade X",r:18,rGuess:true,l:2,lever:["Open","Middle","Firm"],h:0,hFix:.45,init:{l:0}},
  dlx:{name:"Deluxe / SIDLuxe",r:15,rGuess:true,l:2,lever:["Open","Pedal","Lock"],h:0,hFix:.45,init:{l:0}}};
 SDMP.dlxsp={"name":"Deluxe Select+","r":10,"l":1,"lever":["Open","Firm"],"h":0,"hFix":0.45,"init":{"l":0}};
@@ -2163,6 +2197,7 @@ function applyShock(psi){
  if(dm.tbl==="x2o"&&psi!=null){const i=Math.max(0,Math.min(21,Math.round((psi-90)/10))),mid=v=>{const [a,b]=String(v).split("-").map(Number);return Math.round((a+(b??a))/2)};r=Math.min(dm.r,mid(X2O.LSR[i]));hrv=Math.min(dm.hr,mid(X2O.HSR[i]))}
  if(SHK[U.sb].shocks[U.sk].rebW){const w=lb(),rw=SHK[U.sb].shocks[U.sk].rebW.find(x=>w>=x[0]&&w<x[1]);if(rw)r=rw[2]}
  if(SHK[U.sb].shocks[U.sk].rebRows&&psi!=null){const rw=SHK[U.sb].shocks[U.sk].rebRows.find(x=>psi>=x[0]&&psi<x[1]);if(rw)r=Math.round((rw[2]+rw[3])/2)}
+ const TR=tuneRow(SHK[U.sb].shocks[U.sk]),midT=v=>{const [a2,b2]=String(v).split("-").map(Number);return Math.round((a2+(b2??a2))/2)};if(TR)r=Math.min(dm.r,midT(TR[2]));
  if(dm.tbl==="x2tt"&&psi!=null){const i=Math.max(0,Math.min(21,Math.round((psi-90)/10))),mid=v=>{const [a,b]=String(v).split("-").map(Number);return Math.round((a+(b??a))/2)};r=Math.min(16,mid(X2TT.LSR[i]));hrv=Math.min(8,mid(X2TT.HSR[i]))}
  if(dm.tbl==="dhx2"){const Rr=DH2T.springLbIn;let i=0,b=1e9;Rr.forEach((x,j)=>{if(Math.abs(x-U.rate)<b){b=Math.abs(x-U.rate);i=j}});r=DH2T.LSR[i];hrv=DH2T.HSR[i]}
  // compression start from the maker's table where there is one (tables count from closed; the sim stores compression from open)
@@ -2172,6 +2207,7 @@ function applyShock(psi){
   else if(dm.tbl==="dhx2"){const Rr=DH2T.springLbIn;let bb=1e9;Rr.forEach((x,j)=>{if(Math.abs(x-U.rate)<bb){bb=Math.abs(x-U.rate);i=j}});T=DH2T}
   else if(dm.tbl==="dhx2tt"){const d=dhxTT();if(d){T=d.t;i=d.i}}
   if(T&&T.LSC&&T.HSC){lc=Math.max(0,dm.l-Math.min(dm.l,mid(T.LSC[i])));hc=Math.max(0,dm.h-Math.min(dm.h,mid(T.HSC[i])))}}
+ if(TR){lc=Math.min(dm.l,midT(TR[4]));hc=Math.min(dm.h,midT(TR[3]))}  // DVO lists the Jade's compression in clicks from open
  const base={prof:coil?"coil":(sh.shape||"std"),damp:"x",t:coil?0:1,n:0,r:Math.min(r,dm.r),l:lc,h:hc,hr:dm.hr?Math.min(hrv,dm.hr):0};
  if(coil){COIL0=U.rate;base.p=U.rate;PS=1}else{base.p=pAt(base,SAGT);PS=psi?psi/base.p:1}
  D={...base};s={...base};R={...base};cache={};last=last2=null;setCC(base);
