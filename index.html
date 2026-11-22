@@ -279,6 +279,7 @@ svg text.lv{fill:var(--accent-ink)}
 .row span{font-variant-numeric:tabular-nums;color:var(--accent-ink);font-weight:600;text-align:right}
 .ends{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem}
 .ctl p{color:var(--muted);font-size:.92rem}
+html{touch-action:manipulation}
 input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .controls{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:4px 16px;margin:12px 0 0}
 .gauge{margin:10px 4px 2px}
@@ -330,6 +331,11 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;max-width
 input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .rides{list-style:none;margin:0;padding:0}.rides li{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;gap:8px}
 #ride-parts{display:grid;gap:2px}
+.hr-rides li{flex-wrap:wrap;align-items:flex-start;padding:8px 0}.hr-rides .sw{min-height:36px;align-items:flex-start;font-weight:600}
+.hr-rides .sw input{margin-top:2px}.hr-rides small{display:block;font-weight:400;color:var(--muted);font-size:.85rem}
+.hr-opts{display:flex;gap:4px 14px;align-items:center;flex-wrap:wrap;margin-left:32px}.hr-opts .sw{min-height:36px;font-weight:400}
+.hr-opts select{min-height:36px;padding:2px 8px;width:auto;max-width:15em;margin:0}
+.hr-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.hr-btns:empty{display:none}#hr-msg:empty{display:none}
 /* setup card and balance check */
 .cardrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}.cardrow .fk{margin:0;flex:1;min-width:150px}
 #card-ov{position:fixed;inset:0;z-index:60;background:rgba(12,23,18,.72);overflow:auto;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
@@ -724,6 +730,13 @@ svg text.gk-n{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tab
 <h2 class="h2">Your fork and shock</h2>
 <div id="svc-parts"></div>
 <div class="cta" style="margin-top:6px"><button id="svc-add">Add <span id="svc-add-what">the one in Setup</span></button></div>
+<h2 class="h2" id="hr-h" hidden>Rides from <span class="hr-name">Apple Health</span></h2>
+<section class="card picker" id="hr-box" style="margin-top:0" hidden>
+<p class="fk" style="margin-top:0" id="hr-intro"></p>
+<div id="hr-list"></div>
+<div class="hr-btns" id="hr-btns"></div>
+<p class="fk" id="hr-msg" role="status" aria-live="polite"></p>
+</section>
 <h2 class="h2">Log a ride</h2>
 <section class="card picker" style="margin-top:0">
 <div class="logrow"><div class="field"><label for="ride-h">Hours</label><input id="ride-h" type="number" inputmode="decimal" min="0.1" step="0.25" value="1.5"></div><div class="field"><label for="ride-date">Date</label><input id="ride-date" type="date"></div></div>
@@ -779,7 +792,7 @@ svg text.gk-n{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tab
 <a href="https://plushbucket.com/terms">Terms &amp; disclaimer</a> · <a href="https://plushbucket.com/privacy">Privacy</a></footer>
 </main>
 <script>
-try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())document.documentElement.classList.add('native')}catch(e){}
+try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){document.documentElement.classList.add('native');const vp=document.querySelector('meta[name=viewport]');if(vp&&!/user-scalable/.test(vp.content))vp.content+=',maximum-scale=1,user-scalable=no';document.addEventListener('gesturestart',e=>e.preventDefault())}}catch(e){}
 
 // true inside the iPhone and Android apps (Capacitor shell), false on the website
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
@@ -2611,6 +2624,7 @@ $("rst").onclick=()=>{s={...D};R={...D};last=last2=null;prevS={...D};prevD={...D
   el.addEventListener("pointerdown",e=>{if(e.button>0||el.disabled)return;const x=thumbX(el);
    if(Math.abs(e.clientX-x)<=tw(el)/2+(e.pointerType==="mouse"?4:10)){tap=null;keep=null;return}
    e.preventDefault();tap={el,v:el.value,dir:e.clientX>x?1:-1,x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}});
+  el.addEventListener("keydown",()=>{if(keep&&keep.el===el)keep=null});   // arrow keys right after a tap work as usual
   el.addEventListener("pointermove",e=>{if(tap&&tap.el===el&&e.pointerId===tap.id&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>10)tap.moved=true});
   el.addEventListener("pointerup",e=>{if(!tap||tap.el!==el)return;const t=tap;tap=null;if(t.moved)return;
    const st=+el.step||1;el.value=Math.min(+el.max,Math.max(+el.min,+t.v+t.dir*st));keep={el,v:el.value,until:Date.now()+500};
@@ -2709,15 +2723,17 @@ function renderService(){
    <button class="sm" data-done="${p.id}|${s.k}">Mark done</button></div>`}).join("")+
   `<div class="prow"><label class="svdate">Last serviced <input type="date" max="${today()}" value="${p.svcDate||""}" data-sdate="${p.id}"></label><label>Hours ridden since that service <input type="number" min="0" step="1" value="${p.base||0}" data-base="${p.id}"></label><label class="sw"><input type="checkbox" data-eb="${p.id}" ${p.ebike?"checked":""}> E-bike</label><button class="sm ghost" data-del="${p.id}">Remove</button></div></div>`}).join("");
  const ck=$("ride-parts");ck.innerHTML=G.parts.map(p=>`<label class="sw"><input type="checkbox" value="${p.id}" checked> ${esc(p.label)}</label>`).join("")||`<p class="fk">Add a fork or shock first.</p>`;
- $("ride-list").innerHTML=G.rides.slice().reverse().slice(0,12).map(r=>`<li><span>${esc(r.date)} · ${f1(r.h)} h${r.wet?" · wet, muddy or dusty":""}</span><button class="sm ghost" data-rdel="${r.id}">Delete</button></li>`).join("")||`<li class="fk">No rides logged yet.</li>`;
+ $("ride-list").innerHTML=G.rides.slice().reverse().slice(0,12).map(r=>`<li><span>${esc(r.date)} · ${f1(r.h)} h${r.wet?" · wet, muddy or dusty":""}${r.src?" · from "+esc(r.src):""}</span><button class="sm ghost" data-rdel="${r.id}">Delete</button></li>`).join("")||`<li class="fk">No rides logged yet.</li>`;
  chips("c-cond",[["0","Dry"],["1","Wet, muddy or dusty"]],String(SV.wet),v=>{SV.wet=+v;renderService()});
  parts.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.done.split("|"),p=G.parts.find(x=>x.id===id),s=svcPlan(p).find(x=>x.k===k),H=effHours(p);
-  p.done[k]={h:H,date:today()};(s.resets||[]).forEach(r=>{p.done[r]={h:H,date:today()}});svcSave();renderService()});
+  p.done[k]={h:H,date:today(),t:Date.now()};(s.resets||[]).forEach(r=>{p.done[r]={h:H,date:today(),t:Date.now()}});svcSave();renderService()});
  parts.querySelectorAll("[data-sdate]").forEach(i=>i.onchange=()=>{const p=G.parts.find(x=>x.id===i.dataset.sdate),v=i.value;p.svcDate=v&&v<=today()?v:"";if(v&&v>today())i.value="";svcSave();renderService()});
  parts.querySelectorAll("[data-base]").forEach(i=>i.onchange=()=>{const p=G.parts.find(x=>x.id===i.dataset.base);p.base=Math.max(0,+i.value||0);svcSave();renderService()});
  parts.querySelectorAll("[data-eb]").forEach(i=>i.onchange=()=>{const p=G.parts.find(x=>x.id===i.dataset.eb);p.ebike=i.checked;svcSave();renderService()});
  parts.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Remove this part and its service history?"))return;G.parts=G.parts.filter(x=>x.id!==b.dataset.del);G.rides.forEach(r=>r.parts=r.parts.filter(x=>x!==b.dataset.del));svcSave();renderService()});
- $("ride-list").querySelectorAll("[data-rdel]").forEach(b=>b.onclick=()=>{G.rides=G.rides.filter(r=>r.id!==b.dataset.rdel);svcSave();renderService()})}
+ $("ride-list").querySelectorAll("[data-rdel]").forEach(b=>b.onclick=()=>{const r=G.rides.find(x=>x.id===b.dataset.rdel);if(r&&r.hid)G.hskip=(G.hskip||[]).concat(r.hid).slice(-600);
+  G.rides=G.rides.filter(x=>x.id!==b.dataset.rdel);svcSave();renderService()});
+ if(typeof HR==="object"&&HR){hrRender();hrAuto()}}
 const SV={wet:0};
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -4545,6 +4561,96 @@ async function watchTake(){const W=watchPlugin();if(!W)return;let r;try{r=await 
 if(watchPlugin()){try{watchPlugin().addListener("ride",()=>watchTake())}catch(e){}
  setTimeout(()=>{watchTake();watchPush()},1500);
  document.addEventListener("visibilitychange",()=>{if(document.hidden)watchPush();else watchTake()})}
+// ---------- ride import (iPhone and Android apps): rides other apps saved to Apple Health or Health Connect ----------
+// Garmin Connect, Strava, Trailforks and others save rides there; their hours count here like a ride logged by hand.
+// Read-only and on the phone (plugins/health-rides). Plushbucket's own watch rides are already in the log, so they and
+// anything recorded at the same time are left out, and a ride two apps saved counts once.
+var HRP,HR={st:null,list:[],sel:{},groups:[],busy:false,at:0,msg:"",perm:true};const HRK="hr-asked-v1",HRGK="hr-group-v1";
+function hrPlugin(){if(HRP===undefined){HRP=null;try{if(NATIVE&&Capacitor.isPluginAvailable&&Capacitor.isPluginAvailable("HealthRides"))HRP=Capacitor.registerPlugin?Capacitor.registerPlugin("HealthRides"):Capacitor.Plugins.HealthRides}catch(e){}}return HRP}
+const hrAndroid=()=>{try{return Capacitor.getPlatform()==="android"}catch(e){return false}};
+const hrName=()=>hrAndroid()?"Health Connect":"Apple Health";
+const hrDay=ms=>new Date(ms-new Date(ms).getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const hrLS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}return null};
+function hrAsked(){const st=HR.st||{};return hrAndroid()?!!st.granted:(hrLS(HRK)==="1"||!!st.asked)}
+// a ride counts for a fork or shock only from the day it was added, its last service date, or when a service was marked done
+function hrStart(p){let t=Date.parse((p.added||"2000-01-01")+"T00:00");if(p.svcDate)t=Math.max(t,Date.parse(p.svcDate+"T00:00"));
+ Object.values(p.done||{}).forEach(d=>{if(d&&d.date)t=Math.max(t,d.t||Date.parse(d.date+"T00:00")+864e5)});return t}
+// what a ride can count for: each garage bike's fork and shock, any part that isn't on a saved bike, or everything
+function hrGroups(){const P=G.parts,out=[],used=new Set(),sv=(G.saved||[]).filter(x=>validSnap(x.kind,x.snap));
+ [...new Set(sv.map(x=>x.bike||x.id))].forEach(b=>{const ps=sv.filter(x=>(x.bike||x.id)===b);
+  const ids=[...new Set(ps.map(x=>withSnap(x,()=>{const l=partFromSetup().label,q=P.find(y=>y.label===l);return q?q.id:null})).filter(Boolean))].filter(i=>!used.has(i));
+  if(ids.length){out.push({k:"b:"+b,n:ps[0].name||ps[0].label||"Bike",ids});ids.forEach(i=>used.add(i))}});
+ P.filter(p=>!used.has(p.id)).forEach(p=>out.push({k:"p:"+p.id,n:p.label,ids:[p.id]}));
+ if(out.length>1)out.push({k:"all",n:"All my forks and shocks",ids:P.map(p=>p.id)});
+ return out}
+function hrSort(raw){const seen=new Set();G.rides.forEach(r=>(r.hid||[]).forEach(i=>seen.add(i)));(G.hskip||[]).forEach(i=>seen.add(i));
+ const mine=w=>/^com\.plushbucket\./.test(w.bundle||""),ov=(a,b)=>Math.min(a.end,b.end)-Math.max(a.start,b.start)>0;
+ // already in the log: rides timed on the watch, and rides imported before (in case another app saves the same ride later)
+ const logged=raw.filter(mine).concat(G.rides.filter(r=>r.hs&&r.he).map(r=>({start:r.hs,end:r.he})));
+ const keep=[];raw.filter(w=>!mine(w)&&!w.indoor&&w.end>w.start&&(w.duration||0)>=180).sort((a,b)=>(b.duration||0)-(a.duration||0)).forEach(w=>{
+  if(logged.some(o=>ov(o,w)))return;
+  const k=keep.find(x=>ov(x,w));if(k){k.ids.push(w.id);if(w.source&&w.source!==k.source&&!k.also.includes(w.source))k.also.push(w.source);return}
+  keep.push({...w,ids:[w.id],also:[]})});
+ const first=Math.min(...G.parts.map(hrStart));
+ return keep.filter(w=>!w.ids.some(i=>seen.has(i))&&w.start>=first).sort((a,b)=>b.start-a.start).slice(0,40)}
+const hrOk=(w,g)=>g?g.ids.filter(pid=>{const p=G.parts.find(q=>q.id===pid);return p&&w.start>=hrStart(p)}):[];
+async function hrFind(ask){const H=hrPlugin();if(!H||HR.busy)return;HR.busy=true;HR.msg="";hrRender();
+ try{if(ask){const r=await H.request();hrLS(HRK,"1");if(r&&r.granted!=null)HR.st={...HR.st,granted:!!r.granted,asked:true}}
+  if(!G.parts.length){HR.list=[];HR.msg="Add your fork or shock above first.";return}
+  const r=await H.rides({from:Math.min(...G.parts.map(hrStart))-6*36e5});HR.at=Date.now();
+  if(r&&r.error&&r.error!=="permission")throw new Error(r.error);
+  HR.perm=!(r&&r.error==="permission")&&!(hrAndroid()&&HR.st&&HR.st.granted===false);
+  HR.list=hrSort((r&&r.rides)||[]);HR.groups=HR.list.length?hrGroups():[];
+  let last={};try{last=JSON.parse(hrLS(HRGK)||"{}")||{}}catch(e){}
+  const sel={};HR.list.forEach(w=>{const o=HR.sel[w.id];if(o){sel[w.id]=o;return}
+   const g=(HR.groups.find(x=>x.k===last[w.source])||HR.groups[0]||{}).k;
+   const same=G.rides.some(x=>!x.hid&&x.date===hrDay(w.start));
+   sel[w.id]={on:!same&&hrOk(w,HR.groups.find(x=>x.k===g)).length>0,wet:false,g,same}});HR.sel=sel;
+  HR.msg=HR.list.length?"":!HR.perm?`Plushbucket can't see your rides in ${hrName()} yet.`:`No new rides in ${hrName()}.`+(hrAndroid()?"":" If you expected some, check that the app you record with saves rides to Apple Health, and that Plushbucket is allowed to read workouts (Health app, your profile, Apps, Plushbucket).")}
+ catch(e){HR.msg=`Couldn't read ${hrName()} just now. Try again in a moment.`}
+ finally{HR.busy=false;hrRender()}}
+function hrAuto(){if(!hrPlugin()||HR.busy||!HR.st||!HR.st.available||!hrAsked()||Date.now()-HR.at<6e4)return;hrFind(false)}
+function hrAdd(){let n=0;
+ HR.list.forEach(w=>{const s=HR.sel[w.id]||{},g=HR.groups.find(x=>x.k===s.g),ids=hrOk(w,g);
+  if(!s.on||!ids.length){G.hskip=(G.hskip||[]).concat(w.ids).slice(-600);return}
+  G.rides.push({id:uidGen(),date:hrDay(w.start),h:Math.round((w.duration||0)/36)/100,wet:!!s.wet,parts:ids,src:w.source||hrName(),hid:w.ids,hs:w.start,he:w.end});n++});
+ HR.list=[];HR.sel={};HR.msg=n?`Added ${n} ride${n===1?"":"s"} to the service log.`:"Done. Those rides won't be offered again.";HR.at=Date.now();svcSave();renderService()}
+function hrRender(){const box=$("hr-box");if(!box)return;const H=hrPlugin(),st=HR.st,on=!!(H&&st&&(st.available||st.needsInstall));
+ box.hidden=!on;$("hr-h").hidden=!on;if(!on)return;const N=hrName();
+ // the list is rebuilt on every change: remember which control had focus, to give it back afterwards
+ const ae=document.activeElement,fk=ae&&box.contains(ae)&&ae.dataset?["hron","hrwet","hrg","hract"].map(k=>ae.dataset[k]!=null?[k,ae.dataset[k]]:null).find(Boolean):null;
+ document.querySelectorAll(".hr-name").forEach(e=>e.textContent=N);
+ $("hr-intro").textContent=`Rides you record with Garmin, Strava, Trailforks or another app can count here too. In that app, turn on its ${N} setting so it saves your rides there. Plushbucket only reads your bike rides, and nothing leaves this phone.`+(hrAndroid()?" Health Connect shares rides from up to 30 days before you first allow access, and every ride after that.":"");
+ const L=HR.list,gs=HR.groups;
+ $("hr-list").innerHTML=L.length?`<ul class="rides hr-rides">${L.map(w=>{const s=HR.sel[w.id]||{},g=gs.find(x=>x.k===s.g),ok=hrOk(w,g).length>0;
+   const when=new Date(w.start).toLocaleString(undefined,{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+   const note=!ok?"Before this fork or shock was added or last serviced, so it won't count":s.same?"You already logged a ride by hand this day":"";
+   return`<li><label class="sw"><input type="checkbox" data-hron="${esc(w.id)}" ${s.on&&ok?"checked":""} ${ok?"":"disabled"}><span>${esc(when)} · ${f1((w.duration||0)/3600)} h<small>${esc(w.source||N)}${w.also.length?" · also in "+esc(w.also.join(", ")):""}</small>${note?`<small>${note}</small>`:""}</span></label>
+   <span class="hr-opts"><label class="sw"><input type="checkbox" data-hrwet="${esc(w.id)}" ${s.wet?"checked":""}> Wet, muddy or dusty</label>${gs.length>1?`<select data-hrg="${esc(w.id)}" aria-label="Counts for">${gs.map(x=>`<option value="${esc(x.k)}" ${x.k===s.g?"selected":""}>${esc(x.n)}</option>`).join("")}</select>`:""}</span></li>`}).join("")}</ul>
+   <p class="fk">Rides you untick won't be offered again. Indoor trainer rides are left out.</p>`:"";
+ const n=L.filter(w=>{const s=HR.sel[w.id]||{};return s.on&&hrOk(w,gs.find(x=>x.k===s.g)).length}).length,b=[];
+ if(st.needsInstall)b.push(`<button class="primary" data-hract="get">Get Health Connect</button>`);
+ else if(!hrAsked()){b.push(`<button class="primary" data-hract="ask" ${HR.busy?"disabled":""}>Connect ${N}</button>`);
+  // Android stops showing its permission screen after the rider says no twice; access is then given in Health Connect
+  if(hrAndroid()&&hrLS(HRK)==="1")b.push(`<button data-hract="open">Open Health Connect</button>`)}
+ else{if(L.length)b.push(`<button class="primary" data-hract="add">${n?`Add ${n} ride${n===1?"":"s"}`:"Skip these rides"}</button>`);
+  b.push(`<button class="${L.length?"ghost":""}" data-hract="find" ${HR.busy?"disabled":""}>${HR.busy?"Looking…":L.length?"Check again":"Find rides"}</button>`);
+  if(hrAndroid()&&!HR.perm)b.push(`<button data-hract="open">Open Health Connect</button>`)}
+ $("hr-btns").innerHTML=b.join("");$("hr-msg").textContent=HR.busy?"":HR.msg;
+ box.querySelectorAll("[data-hract]").forEach(x=>x.onclick=async()=>{const a=x.dataset.hract;
+  if(a==="ask")hrFind(true);else if(a==="find")hrFind(false);else if(a==="add")hrAdd();
+  else{try{await H.openSettings()}catch(e){}}});
+ box.querySelectorAll("[data-hron]").forEach(i=>i.onchange=()=>{const s=HR.sel[i.dataset.hron];if(s){s.on=i.checked;s.user=true}hrRender()});
+ box.querySelectorAll("[data-hrwet]").forEach(i=>i.onchange=()=>{(HR.sel[i.dataset.hrwet]||{}).wet=i.checked});
+ box.querySelectorAll("[data-hrg]").forEach(i=>i.onchange=()=>{const s=HR.sel[i.dataset.hrg],w=L.find(x=>x.id===i.dataset.hrg);if(!s||!w)return;s.g=i.value;
+  if(!hrOk(w,gs.find(x=>x.k===s.g)).length)s.on=false;else if(!s.user)s.on=!s.same;let last={};try{last=JSON.parse(hrLS(HRGK)||"{}")||{}}catch(e){}if(w.source){last[w.source]=s.g;hrLS(HRGK,JSON.stringify(last))}hrRender()});
+ if(fk){const el=box.querySelector(`[data-${fk[0]}="${CSS.escape(fk[1])}"]`);if(el&&!el.disabled)el.focus({preventScroll:true})}}
+async function hrInit(){const H=hrPlugin();if(!H)return;try{HR.st=await H.status()}catch(e){HR.st=null}
+ if(!HR.st||(!HR.st.available&&!HR.st.needsInstall)){HRP=null;HR.st=null}
+ hrRender();if(tab==="v")hrAuto()}
+if(hrPlugin()){setTimeout(hrInit,800);document.addEventListener("visibilitychange",()=>{if(!document.hidden&&HR.st){
+ // back from Health Connect's settings: if access was just given, look right away
+ if(hrAndroid()){const H=hrPlugin(),was=!!HR.st.granted;H&&H.status().then(s=>{HR.st=s;if(s.granted&&!was){HR.at=0;HR.perm=true;HR.msg=""}hrRender();if(tab==="v")hrAuto()}).catch(()=>{})}else if(tab==="v")hrAuto()}})}
 // ---------- backup and restore (all data lives in this browser) ----------
 const BKEYS=()=>[SK,TUNESK,LASTK,LDK];
 $("bk-exp").onclick=async()=>{const data={app:"Plushbucket",version:1,saved:new Date().toISOString(),store:{}};
@@ -4563,7 +4669,7 @@ $("bk-imp").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f
   let g={parts:[],rides:[]};try{g=JSON.parse(d.store[SK]||"{}")}catch(x){}
   if(!confirm(`Restore the backup from ${String(d.saved||"").slice(0,10)}? It has ${(g.parts||[]).length} fork${(g.parts||[]).length===1?"":"s"} or shock${(g.parts||[]).length===1?"":"s"} in the service log and ${(g.rides||[]).length} ride${(g.rides||[]).length===1?"":"s"}. It replaces what's saved on this phone now.`))return;
   BKEYS().forEach(k=>{try{if(d.store[k]!=null)localStorage.setItem(k,d.store[k])}catch(x){}});
-  G={parts:g.parts||[],rides:g.rides||[],saved:g.saved||[],notes:g.notes||[],tests:g.tests||[],sheets:g.sheets||[]};await svcSave();
+  G={parts:g.parts||[],rides:g.rides||[],saved:g.saved||[],notes:g.notes||[],tests:g.tests||[],sheets:g.sheets||[],hskip:g.hskip||[]};await svcSave();
   $("bk-msg").textContent="Restored. Reloading…";setTimeout(()=>location.reload(),600)}
  catch(x){$("bk-msg").textContent="That file isn't a Plushbucket backup, so nothing was changed."}};
 

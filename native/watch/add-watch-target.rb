@@ -12,8 +12,12 @@ WATCHOS = '10.0'
 project = Xcodeproj::Project.open(project_path)
 app = project.targets.find { |t| t.name == 'App' } or abort 'No App target in the project'
 
-# The iPhone app keeps its own bundle ID here, so the build command doesn't have to set it for every target
-app.build_configurations.each { |c| c.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = APP_ID }
+# The iPhone app keeps its own bundle ID here, so the build command doesn't have to set it for every target.
+# Its entitlements turn on HealthKit (read-only ride import); add-to-ios.sh copies the file in.
+app.build_configurations.each do |c|
+  c.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = APP_ID
+  c.build_settings['CODE_SIGN_ENTITLEMENTS'] = 'App/App.entitlements'
+end
 
 if project.targets.any? { |t| t.name == NAME }
   puts "#{NAME} is already in the project"

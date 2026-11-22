@@ -24,6 +24,8 @@ jobs:
       - run: npm run build:web
       - name: Create the Android project if it isn't committed yet
         run: test -d android || npx cap add android
+      - name: Android 8.0 or newer (Health Connect's library, used for ride import, needs it)
+        run: node scripts/android-min-sdk.mjs
       - run: npm run icons -- --android
       - run: npx cap sync android
       - name: Build debug APK
