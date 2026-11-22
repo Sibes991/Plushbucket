@@ -4708,7 +4708,7 @@ const hrDay=ms=>new Date(ms-new Date(ms).getTimezoneOffset()*6e4).toISOString().
 const hrLS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}return null};
 function hrAsked(){const st=HR.st||{};return hrAndroid()?!!st.granted:(hrLS(HRK)==="1"||!!st.asked)}
 // a ride counts for a fork or shock only from the day it was added, its last service date, or when a service was marked done
-function hrStart(p){let t=Date.parse((p.added||"2000-01-01")+"T00:00");if(p.svcDate)t=Math.max(t,Date.parse(p.svcDate+"T00:00"));
+function hrStart(p){let t=p.svcDate?Date.parse(p.svcDate+"T00:00"):Date.parse((p.added||"2000-01-01")+"T00:00");
  Object.values(p.done||{}).forEach(d=>{if(d&&d.date)t=Math.max(t,d.t||Date.parse(d.date+"T00:00")+864e5)});return t}
 // what a ride can count for: each garage bike's fork and shock, any part that isn't on a saved bike, or everything
 function hrGroups(){const P=G.parts,out=[],used=new Set(),sv=(G.saved||[]).filter(x=>validSnap(x.kind,x.snap));
@@ -4732,7 +4732,7 @@ const hrOk=(w,g)=>g?g.ids.filter(pid=>{const p=G.parts.find(q=>q.id===pid);retur
 async function hrFind(ask){const H=hrPlugin();if(!H||HR.busy)return;HR.busy=true;HR.msg="";hrRender();
  try{if(ask){const r=await H.request();hrLS(HRK,"1");if(r&&r.granted!=null)HR.st={...HR.st,granted:!!r.granted,asked:true}}
   if(!G.parts.length){HR.list=[];HR.msg="Add your fork or shock above first.";return}
-  const r=await H.rides({from:Math.min(...G.parts.map(hrStart))-6*36e5});HR.at=Date.now();
+  const hrFrom=Math.min(...G.parts.map(hrStart));const r=await H.rides({from:hrFrom-6*36e5});HR.at=Date.now();
   if(r&&r.error&&r.error!=="permission")throw new Error(r.error);
   HR.perm=!(r&&r.error==="permission")&&!(hrAndroid()&&HR.st&&HR.st.granted===false);
   HR.list=hrSort((r&&r.rides)||[]);HR.groups=HR.list.length?hrGroups():[];
@@ -4741,7 +4741,7 @@ async function hrFind(ask){const H=hrPlugin();if(!H||HR.busy)return;HR.busy=true
    const g=(HR.groups.find(x=>x.k===last[w.source])||HR.groups[0]||{}).k;
    const same=G.rides.some(x=>!x.hid&&x.date===hrDay(w.start));
    sel[w.id]={on:!same&&hrOk(w,HR.groups.find(x=>x.k===g)).length>0,wet:false,g,same}});HR.sel=sel;
-  HR.msg=HR.list.length?"":!HR.perm?`Plushbucket can't see your rides in ${hrName()} yet.`:`No new rides in ${hrName()}.`+(hrAndroid()?"":" If you expected some, check that the app you record with saves rides to Apple Health, and that Plushbucket is allowed to read workouts (Health app, your profile, Apps, Plushbucket).")}
+  HR.msg=HR.list.length?"":!HR.perm?`Plushbucket can't see your rides in ${hrName()} yet.`:`No new rides in ${hrName()} since ${new Date(hrFrom).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}. Earlier rides count toward the last service, not this one.`+(hrAndroid()?"":" If you expected some, check that the app you record with saves rides to Apple Health, and that Plushbucket is allowed to read workouts (Health app, your profile, Apps, Plushbucket).")}
  catch(e){HR.msg=`Couldn't read ${hrName()} just now. Try again in a moment.`}
  finally{HR.busy=false;hrRender()}}
 function hrAuto(){if(!hrPlugin()||HR.busy||!HR.st||!HR.st.available||!hrAsked()||Date.now()-HR.at<6e4)return;hrFind(false)}
