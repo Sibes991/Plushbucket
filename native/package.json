@@ -6,11 +6,11 @@
   "type": "module",
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
-    "add:android": "npm run build:web && npx cap add android",
+    "add:android": "npm run build:web && npx cap add android && node scripts/android-min-sdk.mjs",
     "add:ios": "npm run build:web && npx cap add ios",
     "icons": "npx capacitor-assets generate --iconBackgroundColor '#1a3328' --iconBackgroundColorDark '#1a3328' --splashBackgroundColor '#1a3328' --splashBackgroundColorDark '#1a3328'",
     "sync": "npm run build:web && npx cap sync",
-    "android": "npm run sync && npx cap open android",
+    "android": "npm run sync && node scripts/android-min-sdk.mjs && npx cap open android",
     "ios": "npm run sync && npx cap open ios"
   },
   "dependencies": {

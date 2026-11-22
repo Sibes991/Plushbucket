@@ -4543,6 +4543,7 @@ async function hrFind(ask){const H=hrPlugin();if(!H||HR.busy)return;HR.busy=true
  try{if(ask){const r=await H.request();hrLS(HRK,"1");if(r&&r.granted!=null)HR.st={...HR.st,granted:!!r.granted,asked:true}}
   if(!G.parts.length){HR.list=[];HR.msg="Add your fork or shock above first.";return}
   const r=await H.rides({from:Math.min(...G.parts.map(hrStart))-6*36e5});HR.at=Date.now();
+  if(r&&r.error&&r.error!=="permission")throw new Error(r.error);
   HR.perm=!(r&&r.error==="permission")&&!(hrAndroid()&&HR.st&&HR.st.granted===false);
   HR.list=hrSort((r&&r.rides)||[]);HR.groups=HR.list.length?hrGroups():[];
   let last={};try{last=JSON.parse(hrLS(HRGK)||"{}")||{}}catch(e){}
@@ -4561,6 +4562,8 @@ function hrAdd(){let n=0;
  HR.list=[];HR.sel={};HR.msg=n?`Added ${n} ride${n===1?"":"s"} to the service log.`:"Done. Those rides won't be offered again.";HR.at=Date.now();svcSave();renderService()}
 function hrRender(){const box=$("hr-box");if(!box)return;const H=hrPlugin(),st=HR.st,on=!!(H&&st&&(st.available||st.needsInstall));
  box.hidden=!on;$("hr-h").hidden=!on;if(!on)return;const N=hrName();
+ // the list is rebuilt on every change: remember which control had focus, to give it back afterwards
+ const ae=document.activeElement,fk=ae&&box.contains(ae)&&ae.dataset?["hron","hrwet","hrg","hract"].map(k=>ae.dataset[k]!=null?[k,ae.dataset[k]]:null).find(Boolean):null;
  document.querySelectorAll(".hr-name").forEach(e=>e.textContent=N);
  $("hr-intro").textContent=`Rides you record with Garmin, Strava, Trailforks or another app can count here too. In that app, turn on its ${N} setting so it saves your rides there. Plushbucket only reads your bike rides, and nothing leaves this phone.`+(hrAndroid()?" Health Connect shares rides from up to 30 days before you first allow access, and every ride after that.":"");
  const L=HR.list,gs=HR.groups;
@@ -4585,7 +4588,8 @@ function hrRender(){const box=$("hr-box");if(!box)return;const H=hrPlugin(),st=H
  box.querySelectorAll("[data-hron]").forEach(i=>i.onchange=()=>{const s=HR.sel[i.dataset.hron];if(s){s.on=i.checked;s.user=true}hrRender()});
  box.querySelectorAll("[data-hrwet]").forEach(i=>i.onchange=()=>{(HR.sel[i.dataset.hrwet]||{}).wet=i.checked});
  box.querySelectorAll("[data-hrg]").forEach(i=>i.onchange=()=>{const s=HR.sel[i.dataset.hrg],w=L.find(x=>x.id===i.dataset.hrg);if(!s||!w)return;s.g=i.value;
-  if(!hrOk(w,gs.find(x=>x.k===s.g)).length)s.on=false;else if(!s.user)s.on=!s.same;let last={};try{last=JSON.parse(hrLS(HRGK)||"{}")||{}}catch(e){}if(w.source){last[w.source]=s.g;hrLS(HRGK,JSON.stringify(last))}hrRender()})}
+  if(!hrOk(w,gs.find(x=>x.k===s.g)).length)s.on=false;else if(!s.user)s.on=!s.same;let last={};try{last=JSON.parse(hrLS(HRGK)||"{}")||{}}catch(e){}if(w.source){last[w.source]=s.g;hrLS(HRGK,JSON.stringify(last))}hrRender()});
+ if(fk){const el=box.querySelector(`[data-${fk[0]}="${CSS.escape(fk[1])}"]`);if(el&&!el.disabled)el.focus({preventScroll:true})}}
 async function hrInit(){const H=hrPlugin();if(!H)return;try{HR.st=await H.status()}catch(e){HR.st=null}
  if(!HR.st||(!HR.st.available&&!HR.st.needsInstall)){HRP=null;HR.st=null}
  hrRender();if(tab==="v")hrAuto()}

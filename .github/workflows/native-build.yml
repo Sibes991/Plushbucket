@@ -25,9 +25,7 @@ jobs:
       - name: Create the Android project if it isn't committed yet
         run: test -d android || npx cap add android
       - name: Android 8.0 or newer (Health Connect's library, used for ride import, needs it)
-        run: |
-          sed -i -E 's/minSdkVersion = [0-9]+/minSdkVersion = 26/' android/variables.gradle
-          grep -q "minSdkVersion = 26" android/variables.gradle
+        run: node scripts/android-min-sdk.mjs
       - run: npm run icons -- --android
       - run: npx cap sync android
       - name: Build debug APK

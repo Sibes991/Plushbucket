@@ -55,7 +55,11 @@ public class HealthRidesPlugin: CAPPlugin, CAPBridgedPlugin {
         }
         let fromMs = call.getDouble("from") ?? (Date().timeIntervalSince1970 - 30 * 86400) * 1000
         let from = Date(timeIntervalSince1970: fromMs / 1000)
-        let pred = HKQuery.predicateForSamples(withStart: from, end: nil, options: .strictStartDate)
+        // cycling only, in the query itself, so the 1000-workout limit counts rides and not walks or runs
+        let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            HKQuery.predicateForSamples(withStart: from, end: nil, options: .strictStartDate),
+            HKQuery.predicateForWorkouts(with: .cycling)
+        ])
         let sort = [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
         let q = HKSampleQuery(sampleType: HKObjectType.workoutType(), predicate: pred, limit: 1000, sortDescriptors: sort) { _, samples, error in
             if let error = error as? HKError, error.code != .errorNoData {
