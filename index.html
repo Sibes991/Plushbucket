@@ -510,6 +510,39 @@ svg text.gg-v{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tab
 svg text.gk-n{font:700 11px var(--body);fill:var(--ink);font-variant-numeric:tabular-nums}
 .gk-cap{display:block;margin-top:6px;color:var(--muted);font-size:.85rem;min-height:1.3em}
 .gd-foot .gd-wrap{display:flex;gap:10px}.gd-foot .primary{flex:1}.gd-foot button{min-height:48px}
+
+/* Big landscape screens: the iPhone Duo open and turned sideways, iPads, computers (html.wide is set by wideCheck).
+   Two pages at once: your fork or shock and its numbers on the left; Spring, Damping, Service or Shop on the right. */
+html.wide,html.wide body{height:100%;overflow:hidden}
+html.wide main{max-width:none;height:100vh;height:100dvh;box-sizing:border-box;margin:0;padding:0 max(18px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:96px minmax(0,600px) minmax(0,720px);justify-content:center;grid-template-rows:auto auto minmax(0,1fr);column-gap:20px}
+html.wide .hero{grid-column:2/4;grid-row:1;margin:0;padding:calc(env(safe-area-inset-top,0px) + 12px) 22px 14px;border-radius:0 0 20px 20px;overflow:hidden}
+html.wide .hero-in{max-width:none;display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:baseline}
+html.wide .hero .brand{grid-column:1;grid-row:1;margin:0}
+html.wide .hero .slogan{grid-column:2;grid-row:1;margin:0;font-size:.82rem}
+html.wide h1{grid-column:1/3;grid-row:2;font-size:1.7rem;margin-top:6px}
+html.wide .hero .sub{grid-column:1/3;grid-row:3;margin-top:3px;font-size:.92rem;max-width:none}
+html.wide .bnav{grid-column:1;grid-row:1/4;flex-direction:column;justify-content:flex-start;gap:8px;margin:calc(env(safe-area-inset-top,0px) + 12px) 0 calc(env(safe-area-inset-bottom,0px) + 12px);padding:8px 6px;border-radius:20px}
+html.wide .bnav button{flex:none;min-height:78px;font-size:.86rem;padding:10px 2px}
+html.wide .bnav button span{white-space:normal;text-align:center;line-height:1.05}
+html.wide #pane-u{grid-column:2;grid-row:2/4}
+html.wide #learn-head{grid-column:3;grid-row:2;grid-template-columns:repeat(2,1fr);margin:14px 0 2px}
+html.wide #pane-s,html.wide #pane-d{grid-column:3;grid-row:3}
+html.wide #pane-v,html.wide #pane-p{grid-column:3;grid-row:2/4}
+html.wide #pane-u,html.wide #pane-s,html.wide #pane-d,html.wide #pane-v,html.wide #pane-p,html.wide #landing{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 4px calc(env(safe-area-inset-bottom,0px) + 32px);scrollbar-width:thin}
+html.wide #landing{grid-column:2/4;grid-row:2/4;width:100%;max-width:640px;justify-self:center}
+html.wide body.landing #landing,html.wide body.landing .hero{grid-column:1/4}
+html.wide #st-u,html.wide #back-u,html.wide #cta,html.wide #ctx{display:none!important}
+html.wide #pane-s .cta{justify-content:flex-end}
+/* first-time setup, sideways: the instructions on the left, the numbers and the animation on the right */
+html.wide .gd-wrap{max-width:960px}
+html.wide .gd-wrap.gd-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:36px;align-items:start}
+html.wide .gd-side>:first-child{margin-top:0}
+html.wide .gd-body{display:flex;flex-direction:column}
+html.wide .gd-body>.gd-wrap{margin:auto;width:100%}
+html.wide .gd-h{font-size:2.3rem}
+html.wide .gd-h.long{font-size:1.8rem}
+html.wide .gd-t{font-size:1.18rem}
+html.wide .gd-side{zoom:1.15}
 </style>
 
 <main>
@@ -2727,16 +2760,30 @@ $("rate").addEventListener("input",e=>{const v=parseFloat(e.target.value);if(v>0
 $("eb").addEventListener("change",e=>{U.eb=e.target.checked;renderSetup()});
 $("runt").addEventListener("change",e=>{U.runt=e.target.checked;USERPICK=true;renderSetup()});
 $("lrunt").addEventListener("change",e=>{U.lrunt=e.target.checked;USERPICK=true;renderSetup()});
-function setTab(x){tab=x;const learn=x==="s"||x==="d",setup=learn||x==="u";
+// ---------- two pages at once on big landscape screens (iPhone Duo open and sideways, iPads, computers) ----------
+// The setup page stays on the left; Spring, Damping, Service or Shop open on the right. RS remembers Spring or Damping.
+const WIDEQ=matchMedia("(min-width:900px) and (min-height:500px)");let WIDE=false,RS="s",RW=false,WREADY=false;const WMOVED=[];
+{let el=$("pane-p").nextElementSibling;while(el){if(el.tagName==="FOOTER"||getComputedStyle(el).position==="static")WMOVED.push(el);el=el.nextElementSibling}}
+function wideCheck(){WIDE=WIDEQ.matches;document.documentElement.classList.toggle("wide",WIDE);const m=document.querySelector("main"),pu=$("pane-u");WMOVED.forEach(el=>(WIDE?pu:m).append(el))}
+{const rs0=renderSetup;renderSetup=function(){const r=rs0.apply(this,arguments);if(WIDE&&WREADY&&!RW&&tab!=="u"){RW=true;try{render()}finally{RW=false}}return r}}
+// first-time setup, sideways: move the numbers, dial list and animation into a right-hand column
+function gdSplit(){const w=document.querySelector("#gd-body>.gd-wrap");if(!w||w.classList.contains("gd-split"))return;const vis=[...w.children].filter(e=>e.matches(".gd-tg,.gd-scene,.gd-cap,.gd-dl"));if(!vis.length)return;
+ const main=document.createElement("div"),side=document.createElement("div");main.className="gd-main";side.className="gd-side";[...w.children].forEach(e=>(vis.includes(e)?side:main).append(e));w.append(main,side);w.classList.add("gd-split")}
+{const gr0=gdRender;gdRender=function(){const r=gr0.apply(this,arguments);if(WIDE)gdSplit();return r}}
+wideCheck();
+// the right-hand page renders once the whole script has run (some of what it draws is defined further down)
+setTimeout(()=>{WREADY=true;if(WIDE)setTab(tab)},0);
+{const onWide=()=>{const was=WIDE;wideCheck();if(was!==WIDE){setTab(tab==="u"?RS:tab);if(document.body.classList.contains("gd-on"))gdRender()}};WIDEQ.addEventListener?WIDEQ.addEventListener("change",onWide):WIDEQ.addListener(onWide)}
+function setTab(x){if(WIDE&&x==="u")x=RS;if(x==="s"||x==="d")RS=x;tab=x;const learn=x==="s"||x==="d",setup=learn||x==="u";
  $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));$("tb-p").setAttribute("aria-selected",String(x==="p"));
  $("st-u").setAttribute("aria-selected",String(x==="u"));$("tb-s").setAttribute("aria-selected",String(x==="s"));$("tb-d").setAttribute("aria-selected",String(x==="d"));
- [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x});
+ [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x&&!(WIDE&&k==="u")});
  const nn=U.mode==="shock"?"shock":"fork";
  const HD={u:[U.mode==="shock"?"Set up your shock":"Set up your fork",`Step 1 of 3: pick your ${nn} for a starting pressure and dial settings.`],s:["Set the spring","Step 2 of 3: pump it to your starting pressure and check your sag."],d:["Set the damping","Step 3 of 3: set your starting clicks, then see what each dial does on the trail."],v:["Service log","Log ride hours and see when each service is due."],p:["Shop mode","For mechanics: hand a customer the setup you put on their bike, as a link or QR code."]};
- $("ph1").textContent=HD[x][0];$("psub").textContent=HD[x][1];
- $("learn-head").hidden=!setup;$("btns").hidden=!learn;$("foot").hidden=!learn;if(learn)(x==="s"?$("smin"):$("dmin")).prepend($("btns"));
- const c=$("ctx");c.hidden=!learn;if(learn){c.innerHTML=`Setting up <b>${esc($("r-title").textContent)}</b> <button class="link" id="ctx-ch">Change</button>`;$("ctx-ch").onclick=()=>{pickSet(U.mode,true);setTab("u")}}
- render();window.scrollTo({top:0})}
+ $("ph1").textContent=HD[x][0];$("psub").textContent=HD[x][1];if(WIDE&&learn){$("ph1").textContent=HD.u[0];$("psub").textContent="Your numbers stay on the left. Set the spring and damping on the right."}
+ $("learn-head").hidden=WIDE?!learn:!setup;$("btns").hidden=!learn;$("foot").hidden=!learn;if(learn)(x==="s"?$("smin"):$("dmin")).prepend($("btns"));if(WIDE&&learn)$("pane-"+x).append($("foot"));else $("pane-d").after($("foot"));
+ const c=$("ctx");c.hidden=!learn||WIDE;if(learn&&!WIDE){c.innerHTML=`Setting up <b>${esc($("r-title").textContent)}</b> <button class="link" id="ctx-ch">Change</button>`;$("ctx-ch").onclick=()=>{pickSet(U.mode,true);setTab("u")}}
+ if(WIDE){renderSetup();const rp=$("pane-"+x);if(rp)rp.scrollTop=0}else{render();window.scrollTo({top:0})}}
 const goMode=m=>{if(U.mode!==m){U.mode=m;setTab("u")}else setTab(tab==="v"||tab==="p"?"u":tab)};
 $("tb-u").onclick=()=>goMode("fork");$("tb-k").onclick=()=>goMode("shock");$("tb-v").onclick=()=>setTab("v");$("tb-p").onclick=()=>setTab("p");$("st-u").onclick=()=>setTab("u");$("tb-s").onclick=()=>setTab("s");$("tb-d").onclick=()=>setTab("d");
 $("go-d").onclick=()=>setTab("d");$("back-u").onclick=()=>setTab("u");$("back-s").onclick=()=>setTab("s");
