@@ -543,6 +543,33 @@ html.wide .gd-h{font-size:2.3rem}
 html.wide .gd-h.long{font-size:1.8rem}
 html.wide .gd-t{font-size:1.18rem}
 html.wide .gd-side{zoom:1.15}
+
+/* Tablets held upright and foldables opened (600-839 wide): two panes, section buttons in a bar along the bottom */
+@media (max-width:839.98px){
+html.wide main{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:auto auto minmax(0,1fr) auto;column-gap:14px;padding:0 max(14px,env(safe-area-inset-right,0px)) 0 max(14px,env(safe-area-inset-left,0px))}
+html.wide .hero{grid-column:1/3}
+html.wide .bnav{grid-column:1/3;grid-row:4;flex-direction:row;gap:6px;margin:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px);padding:5px;border-radius:18px}
+html.wide .bnav button{flex:1;min-height:58px;font-size:1rem;padding:6px 4px}
+html.wide .bnav button span{white-space:nowrap}
+html.wide #pane-u{grid-column:1}
+html.wide #learn-head,html.wide #pane-s,html.wide #pane-d,html.wide #pane-v,html.wide #pane-p{grid-column:2}
+html.wide #landing,html.wide body.landing #landing,html.wide body.landing .hero{grid-column:1/3}
+}
+/* Big screens (iPads sideways, big tablets, computers): your numbers, Spring and Damping all at once */
+html.w3 main{grid-template-columns:96px minmax(0,520px) minmax(0,560px) minmax(0,560px)}
+html.w3 .hero{grid-column:2/5}
+html.w3 #learn-head{display:none!important}
+html.w3 #pane-s{grid-column:3;grid-row:2/4}
+html.w3 #pane-d{grid-column:4;grid-row:2/4}
+html.w3 #pane-v,html.w3 #pane-p{grid-column:3/5}
+html.w3 #landing{grid-column:2/5}
+html.w3 body.landing #landing,html.w3 body.landing .hero{grid-column:1/5}
+/* narrow columns: pressure on its own line, sag and tokens side by side under it */
+html.wide #pane-u,html.wide #pane-s,html.wide #pane-d{container-type:inline-size}
+@container (max-width:350px){.stats{grid-template-columns:1fr 1fr;row-gap:8px}.stats>.stat:first-child{grid-column:1/-1}.stats>.stat:first-child small{display:inline;margin-right:8px}.stats .stat strong:not(.big){font-size:1.6rem}}
+.w3h{display:none}
+html.w3 .w3h{display:flex;align-items:center;gap:10px;margin:14px 0 6px;font:italic 800 condensed 1.35rem/1 var(--display);color:var(--ink)}
+html.w3 .w3h b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--on-accent);font:800 .95rem/1 var(--display);font-style:normal}
 </style>
 
 <main>
@@ -2763,26 +2790,28 @@ $("runt").addEventListener("change",e=>{U.runt=e.target.checked;USERPICK=true;re
 $("lrunt").addEventListener("change",e=>{U.lrunt=e.target.checked;USERPICK=true;renderSetup()});
 // ---------- two pages at once on big landscape screens (iPhone Duo open and sideways, iPads, computers) ----------
 // The setup page stays on the left; Spring, Damping, Service or Shop open on the right. RS remembers Spring or Damping.
-const WIDEQ=matchMedia("(min-width:900px) and (min-height:500px)");let WIDE=false,RS="s",RW=false,WREADY=false;const WMOVED=[];
+const WIDEQ=matchMedia("(min-width:600px) and (min-height:480px)"),W3Q=matchMedia("(min-width:1100px) and (min-height:600px)");let WIDE=false,W3=false,RS="s",RW=false,WREADY=false;const WMOVED=[];
 {let el=$("pane-p").nextElementSibling;while(el){if(el.tagName==="FOOTER"||getComputedStyle(el).position==="static")WMOVED.push(el);el=el.nextElementSibling}}
-function wideCheck(){WIDE=WIDEQ.matches;document.documentElement.classList.toggle("wide",WIDE);const m=document.querySelector("main"),pu=$("pane-u");WMOVED.forEach(el=>(WIDE?pu:m).append(el))}
+function wideCheck(){WIDE=WIDEQ.matches;W3=WIDE&&W3Q.matches;document.documentElement.classList.toggle("wide",WIDE);document.documentElement.classList.toggle("w3",W3);const m=document.querySelector("main"),pu=$("pane-u");WMOVED.forEach(el=>(WIDE?pu:m).append(el))}
 {const rs0=renderSetup;renderSetup=function(){const r=rs0.apply(this,arguments);if(WIDE&&WREADY&&!RW&&tab!=="u"){RW=true;try{render()}finally{RW=false}}return r}}
 // first-time setup, sideways: move the numbers, dial list and animation into a right-hand column
 function gdSplit(){const w=document.querySelector("#gd-body>.gd-wrap");if(!w||w.classList.contains("gd-split"))return;const vis=[...w.children].filter(e=>e.matches(".gd-tg,.gd-scene,.gd-cap,.gd-dl"));if(!vis.length)return;
  const main=document.createElement("div"),side=document.createElement("div");main.className="gd-main";side.className="gd-side";[...w.children].forEach(e=>(vis.includes(e)?side:main).append(e));w.append(main,side);w.classList.add("gd-split")}
+{const r0=render;render=function(){if(W3&&(tab==="s"||tab==="d")){renderSpring();renderDamp();saveTune();return}return r0.apply(this,arguments)}}
+[["s","Spring",2],["d","Damping",3]].forEach(([k,t,n])=>{const h=document.createElement("div");h.className="w3h";h.innerHTML=`<b>${n}</b>${t}`;$("pane-"+k).prepend(h)});
 {const gr0=gdRender;gdRender=function(){const r=gr0.apply(this,arguments);if(WIDE)gdSplit();return r}}
 wideCheck();
 // the right-hand page renders once the whole script has run (some of what it draws is defined further down)
 setTimeout(()=>{WREADY=true;if(WIDE)setTab(tab)},0);
-{const onWide=()=>{const was=WIDE;wideCheck();if(was!==WIDE){setTab(tab==="u"?RS:tab);if(document.body.classList.contains("gd-on"))gdRender()}};WIDEQ.addEventListener?WIDEQ.addEventListener("change",onWide):WIDEQ.addListener(onWide)}
+{const onWide=()=>{const was=WIDE,w3=W3;wideCheck();if(was!==WIDE||w3!==W3){setTab(tab==="u"?RS:tab);if(document.body.classList.contains("gd-on"))gdRender()}};[WIDEQ,W3Q].forEach(q=>q.addEventListener?q.addEventListener("change",onWide):q.addListener(onWide))}
 function setTab(x){if(WIDE&&x==="u")x=RS;if(x==="s"||x==="d")RS=x;tab=x;const learn=x==="s"||x==="d",setup=learn||x==="u";
  $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));$("tb-p").setAttribute("aria-selected",String(x==="p"));
  $("st-u").setAttribute("aria-selected",String(x==="u"));$("tb-s").setAttribute("aria-selected",String(x==="s"));$("tb-d").setAttribute("aria-selected",String(x==="d"));
- [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x&&!(WIDE&&k==="u")});
+ [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x&&!(WIDE&&k==="u")&&!(W3&&learn&&(k==="s"||k==="d"))});
  const nn=U.mode==="shock"?"shock":"fork";
  const HD={u:[U.mode==="shock"?"Set up your shock":"Set up your fork",`Step 1 of 3: pick your ${nn} for a starting pressure and dial settings.`],s:["Set the spring","Step 2 of 3: pump it to your starting pressure and check your sag."],d:["Set the damping","Step 3 of 3: set your starting clicks, then see what each dial does on the trail."],v:["Service log","Log ride hours and see when each service is due."],p:["Shop mode","For mechanics: hand a customer the setup you put on their bike, as a link or QR code."]};
- $("ph1").textContent=HD[x][0];$("psub").textContent=HD[x][1];if(WIDE&&learn){$("ph1").textContent=HD.u[0];$("psub").textContent="Your numbers stay on the left. Set the spring and damping on the right."}
- $("learn-head").hidden=WIDE?!learn:!setup;$("btns").hidden=!learn;$("foot").hidden=!learn;if(learn)(x==="s"?$("smin"):$("dmin")).prepend($("btns"));if(WIDE&&learn)$("pane-"+x).append($("foot"));else $("pane-d").after($("foot"));
+ $("ph1").textContent=HD[x][0];$("psub").textContent=HD[x][1];if(WIDE&&learn){$("ph1").textContent=HD.u[0];$("psub").textContent=W3?"Your numbers on the left, with the spring and damping side by side.":"Your numbers stay on the left. Set the spring and damping on the right."}
+ $("learn-head").hidden=WIDE?!learn:!setup;$("btns").hidden=!learn;$("foot").hidden=!learn;if(learn)(x==="s"?$("smin"):$("dmin")).prepend($("btns"));if(WIDE&&learn)$("pane-"+(W3?"d":x)).append($("foot"));else $("pane-d").after($("foot"));
  const c=$("ctx");c.hidden=!learn||WIDE;if(learn&&!WIDE){c.innerHTML=`Setting up <b>${esc($("r-title").textContent)}</b> <button class="link" id="ctx-ch">Change</button>`;$("ctx-ch").onclick=()=>{pickSet(U.mode,true);setTab("u")}}
  if(WIDE){renderSetup();const rp=$("pane-"+x);if(rp)rp.scrollTop=0}else{render();window.scrollTo({top:0})}}
 const goMode=m=>{if(U.mode!==m){U.mode=m;setTab("u")}else setTab(tab==="v"||tab==="p"?"u":tab)};
