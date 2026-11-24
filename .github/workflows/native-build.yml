@@ -28,13 +28,19 @@ jobs:
         run: node scripts/android-min-sdk.mjs
       - run: npm run icons -- --android
       - run: npx cap sync android
-      - name: Build debug APK
+      - name: Add the Wear OS watch app (native/wear) as the :wear module
+        run: node scripts/android-wear.mjs
+      - name: Build debug APKs (phone and Wear OS watch)
         working-directory: native/android
-        run: ./gradlew assembleDebug
+        run: ./gradlew :app:assembleDebug :wear:assembleDebug
       - uses: actions/upload-artifact@v6
         with:
           name: plushbucket-android-debug
           path: native/android/app/build/outputs/apk/debug/*.apk
+      - uses: actions/upload-artifact@v6
+        with:
+          name: plushbucket-wear-debug
+          path: native/android/wear/build/outputs/apk/debug/*.apk
 
   ios:
     runs-on: macos-latest
