@@ -30,6 +30,8 @@ jobs:
         run: node scripts/android-min-sdk.mjs
       - run: npm run icons -- --android
       - run: npx cap sync android
+      - name: Add the Wear OS watch app (native/wear) as the :wear module
+        run: node scripts/android-wear.mjs
       - name: Set the version (build number goes up by itself on every run)
         working-directory: native/android/app
         run: |
@@ -46,9 +48,10 @@ jobs:
           # stop here if Capacitor's template changed and the edits above didn't apply
           grep -q "minifyEnabled true" build.gradle
           grep -q "proguard-android-optimize.txt" build.gradle
-      - name: Build the release bundle
+      - name: Build the release bundles (phone, and the Wear OS watch app)
         working-directory: native/android
-        run: ./gradlew bundleRelease
+        # the watch app ships as its own bundle in the same Play listing, so it needs its own version code
+        run: ./gradlew :app:bundleRelease :wear:bundleRelease -PwearVersionCode=$((100000 + ${{ github.run_number }})) -PwearVersionName="${{ inputs.version }}"
       - name: Sign it with the upload key
         working-directory: native/android
         env:
@@ -62,11 +65,23 @@ jobs:
           jarsigner -verify "$AAB" | tail -1
           mkdir -p "$GITHUB_WORKSPACE/out"
           cp "$AAB" "$GITHUB_WORKSPACE/out/plushbucket-${{ inputs.version }}-${{ github.run_number }}.aab"
+          WEAR=wear/build/outputs/bundle/release/wear-release.aab
+          jarsigner -keystore "$RUNNER_TEMP/upload.jks" -storepass "$KS_PASS" -keypass "$KS_PASS" \
+            -sigalg SHA256withRSA -digestalg SHA-256 "$WEAR" upload
+          jarsigner -verify "$WEAR" | tail -1
+          mkdir -p "$GITHUB_WORKSPACE/out-wear"
+          cp "$WEAR" "$GITHUB_WORKSPACE/out-wear/plushbucket-wear-${{ inputs.version }}-$((100000 + ${{ github.run_number }})).aab"
           rm -f "$RUNNER_TEMP/upload.jks"
       - uses: actions/upload-artifact@v6
         with:
           name: plushbucket-android-bundle
           path: out/*.aab
+          retention-days: 7
+      # The Wear OS watch app: upload it in Play Console under the Wear OS form factor (its own releases)
+      - uses: actions/upload-artifact@v6
+        with:
+          name: plushbucket-wear-bundle
+          path: out-wear/*.aab
           retention-days: 7
       # R8's map from shortened names back to the real ones, for reading crash reports.
       # The .aab carries it too, so Play Console decodes crashes by itself.

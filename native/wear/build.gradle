@@ -1,0 +1,66 @@
+// Plushbucket on Wear OS (Galaxy Watch4 and newer, Pixel Watch, other Wear OS watches).
+// Copied into the generated android/ project as the :wear module by scripts/android-wear.mjs.
+// Same applicationId and signing key as the phone app, which the Wearable Data Layer needs to pair them;
+// it ships as its own bundle in the same Play listing (Wear OS form factor), with its own version code.
+buildscript {
+    ext.kotlin_version = project.hasProperty("kotlin_version") ? rootProject.ext.kotlin_version : '2.2.20'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+android {
+    namespace = "com.plushbucket.wear"
+    compileSdk = 36
+    defaultConfig {
+        applicationId "com.plushbucket.app"
+        minSdkVersion 30
+        targetSdkVersion 36
+        versionCode Integer.parseInt((project.findProperty('wearVersionCode') ?: '1').toString())
+        versionName((project.findProperty('wearVersionName') ?: '1.0').toString())
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    buildFeatures {
+        compose true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    lintOptions {
+        abortOnError = false
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform('androidx.compose:compose-bom:2024.12.01')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.activity:activity-compose:1.9.3'
+    implementation 'androidx.wear.compose:compose-material:1.4.1'
+    implementation 'androidx.wear.compose:compose-foundation:1.4.1'
+    implementation 'androidx.wear.compose:compose-navigation:1.4.1'
+    implementation 'com.google.android.gms:play-services-wearable:19.0.0'
+}
