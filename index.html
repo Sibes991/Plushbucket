@@ -2298,6 +2298,8 @@ const levG=(L,x)=>{const d=L.b-L.a;if(Math.abs(d)<1e-6)return x;const I=u=>Math.
 const levAvg=L=>{const d=L.b-L.a;return Math.abs(d)<1e-6?L.a:d/Math.log(L.b/L.a)};
 const levInvG=(L,g)=>{let lo=0,hi=1;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(levG(L,m)<g)lo=m;else hi=m}return(lo+hi)/2};
 const levProg=L=>(L.a-L.b)/L.a*100;
+// what the Spring tab shows: % of shock stroke (the O-ring), so it matches the setup card's sag target
+const toG=x=>LEV?levG(LEV,x):x,fromG=g=>LEV?levInvG(LEV,g):g;
 function applyShock(psi){
  LEV=levOf();const sh=SHK[U.sb].shocks[U.sk],dm=SDMP[U.sk],coil=sh.kind==="coil",trav=LEV?U.wtrav:U.stroke*LR;
  S=trav/10;T=trav/1000;SC=trav/160;TCC=coil?0:(sh.tcc||0);TMAX=sh.tmax||vivTmax()||4;$("t").step=TCC?1/TCC:1;NMAX=coil?0:(sh.neg||0);{const sg=sagMid(shockSagR())/100;SAGT=LEV?levInvG(LEV,sg):sg}$("rp-ctl").hidden=true;
@@ -2338,7 +2340,7 @@ function drawCut(fr){
  const ramp=s.rp!=null,tokH=coil?0:ramp?22:s.t*9,negH=coil?0:s.n*7;
  const pistY=top+tokH+(trav+30-tokH)-fr*trav;const pY=Math.min(pistY,seal-pistH-negH-4);
  let g=`<rect class="wall" x="${cx}" y="${top}" width="${cw}" height="${seal-top}" rx="6"/>`;
- const Ff=F(Math.min(fr,.995),s),ratio=Ff/LOAD;
+ const Ff=F(fromG(Math.min(fr,.995)),s),ratio=Ff/LOAD;
  if(coil){let d=`M${cx+cw/2},${top+4}`;const n=9,len=pY-top-4;for(let i=1;i<=n;i++){d+=` L${cx+(i%2?8:cw-8)},${(top+4+len*i/(n+1)).toFixed(1)}`}d+=` L${cx+cw/2},${pY}`;g+=`<path class="coil" d="${d}"/>`}
  else{
   const posTop=top+2+tokH,op=Math.min(.95,.25+.5*(Ff/(LOAD*4)));
@@ -2369,12 +2371,12 @@ function drawCut(fr){
  $("cutwhy").innerHTML=coil?`Every millimeter of squash adds the same force (the rate, in lb/in), so the graph is a straight line.`
   :fr<.02?`At full length the air is at the ${pump} psi you pumped in. Compress the ${nn} and watch it climb.`
   :`<b>No air was added.</b> The same air is squeezed into ${space}% of its room, so ${pump} psi becomes ${posP} psi and the ${nn} gets firmer.`;
- const SG=sagOf(s),st=[["Top",0],["Sag",SG],["Half",.5],["Deep",.8],["Bottom",.95]];
+ const SG=toG(sagOf(s)),st=[["Top",0],["Sag",SG],["Half",.5],["Deep",.8],["Bottom",.95]];
  $("stops").innerHTML=st.map(([l,v])=>`<button data-v="${v}" aria-pressed="${Math.abs(fr-v)<.015}">${l}</button>`).join("");
  $("stops").querySelectorAll("button").forEach(b=>b.onclick=()=>{cancelAnimationFrame(cutAnim);CUT=+b.dataset.v;$("spt").value=Math.round(CUT*100);drawCut(CUT)});
  const sp=window.SPMAP;if(sp){const xm=sp.xm;if(fr<=xm){$("sdot").style.display="";at($("sdot"),{cx:sp.px(fr),cy:sp.py(Math.min(Ff,sp.ym))})}else $("sdot").style.display="none"}
  $("spt-l").textContent=shock?"Push the shock into its travel":"Push the fork into its travel";
- {const SG=sagOf(s),nn=shock?"shock":"fork",tk=U.mode==="shock"?"volume spacers":"tokens";
+ {const SG=toG(sagOf(s)),nn=shock?"shock":"fork",tk=U.mode==="shock"?"volume spacers":"tokens";
  $("cutcap").innerHTML=fr<.02?`<b>Top of the travel.</b> Nothing is squashed yet. This is the ${nn} with no one on the bike.`
   :Math.abs(fr-SG)<.04?`<b>Sag.</b> Here the spring pushes back exactly as hard as your weight on it (1×), so this is where the ${nn} sits when you're on the bike, ready for bumps and holes.`
   :fr<SG?(coil?`<b>Off the top.</b> The spring is only lightly squashed, so the ${nn} moves easily over small bumps.`:`<b>Off the top.</b> The negative chamber below the piston helps pull the ${nn} into its travel, so it moves easily over small bumps. Negative spacers make this part firmer.`)
@@ -2385,7 +2387,7 @@ function drawCut(fr){
 }
 function animateCut(){cancelAnimationFrame(cutAnim);
  if(matchMedia("(prefers-reduced-motion: reduce)").matches){CUT=.9;$("spt").value=90;drawCut(CUT);return}
- const t0=performance.now(),dur=3200,sag=sagOf(s);
+ const t0=performance.now(),dur=3200,sag=toG(sagOf(s));
  const step=now=>{const u=Math.min(1,(now-t0)/dur);CUT=u<.55?.95*Math.sin(u/.55*Math.PI/2):.95-(.95-sag)*Math.sin((u-.55)/.45*Math.PI/2);
   $("spt").value=Math.round(CUT*100);drawCut(CUT);if(u<1)cutAnim=requestAnimationFrame(step)};cutAnim=requestAnimationFrame(step)}
 
@@ -2396,7 +2398,7 @@ function animateCut(){cancelAnimationFrame(cutAnim);
 // means damping grows with the square root of stiffness; each rebound click is ~12%.
 function kAt(q){const xs=Math.min(.6,Math.max(.05,sagOf(q)));return Math.max(1,(F(xs+.01,q)-F(xs-.01,q)))}
 function springDiff(){const coil=s.prof==="coil",dp=Math.round(realP(s.p)-realP(D.p)),pct=Math.round((s.p/D.p-1)*100),dt=s.t-D.t,dn=s.n-D.n,drp=s.rp!=null?s.rp-D.rp:0,
-  ratio=kAt(s)/kAt(D),clicks=Math.round(Math.log(Math.sqrt(ratio))/Math.log(RSTEP)),sag0=Math.round(sagOf(D)*100),sag1=Math.round(sagOf(s)*100),ramp0=F(.9,D)/LOAD,ramp1=F(.9,s)/LOAD;
+  ratio=kAt(s)/kAt(D),clicks=Math.round(Math.log(Math.sqrt(ratio))/Math.log(RSTEP)),sag0=Math.round(toG(sagOf(D))*100),sag1=Math.round(toG(sagOf(s))*100),ramp0=F(fromG(.9),D)/LOAD,ramp1=F(fromG(.9),s)/LOAD;
  return{coil,dp,pct,dt,dn,drp,clicks,sag0,sag1,ramp0,ramp1,changed:s.p!==D.p||dt!==0||dn!==0||drp!==0}}
 const unitP=()=>s.prof==="coil"?" lb/in":" psi";
 const springWords=()=>s.prof==="coil"?"the spring rate":["pressure",s.rp!=null?"ramp-up chamber pressure":U.mode==="shock"?"volume spacers":"tokens"].concat(NMAX?["negative spacers"]:[]).join(", ").replace(/, ([^,]*)$/," or $1");
@@ -2523,16 +2525,16 @@ function renderSpring(){
  $("grid").innerHTML=gr;
  at($("zs"),{x:X0,width:zoom?W:px(.25)-X0});at($("ze"),{x:px(.7),width:X0+W-px(.7)});
  $("ze").style.display=$("zel").style.display=$("zml").style.display=zoom?"none":"";at($("zml"),{x:(px(.25)+px(.7))/2});
- const P=q=>{let d="";for(let i=0;i<=80;i++){const x=xm*i/80;d+=(i?"L":"M")+px(x).toFixed(1)+" "+py(F(x,q)).toFixed(1)}return d};
+ const P=q=>{let d="";for(let i=0;i<=80;i++){const x=xm*i/80;d+=(i?"L":"M")+px(x).toFixed(1)+" "+py(F(fromG(x),q)).toFixed(1)}return d};
  $("ref").setAttribute("d",P(R));$("cur").setAttribute("d",P(s));window.SPMAP={px,py,xm,ym};
- const ly=py(LOAD),sg=sagOf(s),sx=px(sg),ok=sg<=xm,right=sx>X0+W*.7;
+ const ly=py(LOAD),sg=toG(sagOf(s)),sx=px(sg),ok=sg<=xm,right=sx>X0+W*.7;
  at($("ld"),{x1:X0,x2:X0+W,y1:ly,y2:ly});at($("ldl"),{x:X0+W-3,y:ly-5});
  at($("sm"),{cx:sx,cy:ly});at($("sv"),{x1:sx,x2:sx,y1:ly,y2:Y1});
  at($("st"),{x:sx+(right?-6:6),y:Y1-6,"text-anchor":right?"end":"start"});
  $("st").textContent="sag "+Math.round(sg*100)+"%";
  ["sm","sv","st"].forEach(i=>{$(i).style.display=ok?"":"none"});
- const rp=q=>F(.9,q)/LOAD;
- $("sag").textContent=Math.round(sg*100)+"%";$("sagr").textContent="start "+Math.round(sagOf(R)*100)+"%";
+ const rp=q=>F(fromG(.9),q)/LOAD;
+ $("sag").textContent=Math.round(sg*100)+"%";$("sagr").textContent="start "+Math.round(toG(sagOf(R))*100)+"%";
  $("rmp").textContent=rp(s).toFixed(1)+"×";$("rmpr").textContent=`your weight, at 90% travel · start ${rp(R).toFixed(1)}×`;
  const coil=s.prof==="coil",ramp=s.rp!=null;["zs","ze","zsl","zel","zml"].forEach(i=>{$(i).style.visibility=coil?"hidden":""});$("t").closest(".ctl").hidden=coil||ramp;$("n").closest(".ctl").hidden=coil||!NMAX;$("rp-ctl").hidden=!ramp;
  const nn=U.mode==="shock"?"shock":"fork",endBy=ramp?"the ramp-up chamber pressure":U.mode==="shock"?"volume spacers":"tokens",startBy=NMAX?"negative spacers and the negative chamber":"the negative chamber";
@@ -2743,8 +2745,8 @@ let prevS=null,prevD=null,prevKey="";
 const baseKey=()=>JSON.stringify(D);
 function before(){if(prevKey!==baseKey()){prevKey=baseKey();prevS={...D};prevD={...D}}}
 function springFx(k){before();const a=prevS,b=s,pc=x=>Math.round(x*100)+"%",nn=U.mode==="shock"?"shock":"fork";let m="";
- if(k==="p")m=`Sag <b>${pc(sagOf(a))} → ${pc(sagOf(b))}</b>`+(sagOf(b)<sagOf(a)?" · firmer":sagOf(b)>sagOf(a)?" · softer":"");
- else if(k==="t"||k==="rp")m=`Bottom-out support <b>${(F(.9,a)/LOAD).toFixed(1)}× → ${(F(.9,b)/LOAD).toFixed(1)}×</b>`;
+ if(k==="p")m=`Sag <b>${pc(toG(sagOf(a)))} → ${pc(toG(sagOf(b)))}</b>`+(sagOf(b)<sagOf(a)?" · firmer":sagOf(b)>sagOf(a)?" · softer":"");
+ else if(k==="t"||k==="rp")m=`Bottom-out support <b>${(F(fromG(.9),a)/LOAD).toFixed(1)}× → ${(F(fromG(.9),b)/LOAD).toFixed(1)}×</b>`;
  else if(k==="n")m=`Push-back off the top <b>${(F(.1,a)/LOAD).toFixed(2)}× → ${(F(.1,b)/LOAD).toFixed(2)}×</b>`;
  prevS={...s};if(!m)return;showFx("fx-s",m);
  if($("spnl").dataset.v==="gr")pulse($("cur"));else{pulse($("cutstat"));if(!reduced())animateCut()}}
