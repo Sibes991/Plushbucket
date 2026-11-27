@@ -527,8 +527,9 @@ html.wide .bnav button span{white-space:normal;text-align:center;line-height:1.0
 html.wide #pane-u{grid-column:2;grid-row:2/4}
 html.wide #learn-head{grid-column:3;grid-row:2;grid-template-columns:repeat(2,1fr);margin:14px 0 2px}
 html.wide #pane-s,html.wide #pane-d{grid-column:3;grid-row:3}
-html.wide #pane-v,html.wide #pane-p{grid-column:3;grid-row:2/4}
-html.wide #pane-u,html.wide #pane-s,html.wide #pane-d,html.wide #pane-v,html.wide #pane-p,html.wide #landing{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 4px calc(env(safe-area-inset-bottom,0px) + 32px);scrollbar-width:thin}
+html.wide #pane-v,
+html.wide #pane-r,html.wide #pane-p{grid-column:3;grid-row:2/4}
+html.wide #pane-u,html.wide #pane-s,html.wide #pane-d,html.wide #pane-v,html.wide #pane-r,html.wide #pane-p,html.wide #landing{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 4px calc(env(safe-area-inset-bottom,0px) + 32px);scrollbar-width:thin}
 html.wide #landing{grid-column:2/4;grid-row:2/4;width:100%;max-width:640px;justify-self:center}
 html.wide body.landing #landing,html.wide body.landing .hero{grid-column:1/4}
 html.wide #st-u,html.wide #back-u,html.wide #cta,html.wide #ctx{display:none!important}
@@ -552,7 +553,7 @@ html.wide .bnav{grid-column:1/3;grid-row:4;flex-direction:row;gap:6px;margin:8px
 html.wide .bnav button{flex:1;min-height:58px;font-size:1rem;padding:6px 4px}
 html.wide .bnav button span{white-space:nowrap}
 html.wide #pane-u{grid-column:1}
-html.wide #learn-head,html.wide #pane-s,html.wide #pane-d,html.wide #pane-v,html.wide #pane-p{grid-column:2}
+html.wide #learn-head,html.wide #pane-s,html.wide #pane-d,html.wide #pane-v,html.wide #pane-r,html.wide #pane-p{grid-column:2}
 html.wide #landing,html.wide body.landing #landing,html.wide body.landing .hero{grid-column:1/3}
 }
 /* Big screens (iPads sideways, big tablets, computers): your numbers, Spring and Damping all at once */
@@ -561,7 +562,8 @@ html.w3 .hero{grid-column:2/5}
 html.w3 #learn-head{display:none!important}
 html.w3 #pane-s{grid-column:3;grid-row:2/4}
 html.w3 #pane-d{grid-column:4;grid-row:2/4}
-html.w3 #pane-v,html.w3 #pane-p{grid-column:3/5}
+html.w3 #pane-v,
+html.w3 #pane-r,html.w3 #pane-p{grid-column:3/5}
 html.w3 #landing{grid-column:2/5}
 html.w3 body.landing #landing,html.w3 body.landing .hero{grid-column:1/5}
 /* narrow columns: pressure on its own line, sag and tokens side by side under it */
@@ -595,6 +597,7 @@ html.w3 .w3h b{display:grid;place-items:center;width:28px;height:28px;border-rad
 .badge{display:inline-block;font-size:.8rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--accent);color:var(--on-accent)}
 .bnav button{min-width:0}.bnav button span{white-space:normal;text-align:center;line-height:1.05}
 .mytune{margin:10px 0 0;padding:9px 12px;border-radius:10px;background:var(--sunk);border-left:4px solid var(--accent);font-size:.95rem}
+@media (max-width:599px){.bnav button{font-size:.84rem;padding:8px 2px}.bnav button svg{width:24px;height:24px}}
 </style>
 
 <main>
@@ -613,7 +616,8 @@ html.w3 .w3h b{display:grid;place-items:center;width:28px;height:28px;border-rad
 <nav class="bnav" role="tablist" aria-label="Sections">
 <button role="tab" id="tb-u" aria-selected="true" aria-controls="pane-u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12M8 3v9M16 3v9M7 12h2v9H7zM15 12h2v9h-2z"/></svg><span>My fork</span></button>
 <button role="tab" id="tb-k" aria-selected="false" aria-controls="pane-u"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/><path d="M12 6v2M12 16v2M9 8h6v4H9zM10 12l4 1-4 1 4 1"/></svg><span>My shock</span></button>
-<button role="tab" id="tb-v" aria-selected="false" aria-controls="pane-v"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.3-.7-.7-2.3z"/></svg><span>Ride &amp; service</span></button>
+<button role="tab" id="tb-r" aria-selected="false" aria-controls="pane-r"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v3M5 11v9M12 4v9M12 17v3M19 4v1M19 9v11"/><circle cx="5" cy="9" r="2"/><circle cx="12" cy="15" r="2"/><circle cx="19" cy="7" r="2"/></svg><span>Ride tuning</span></button>
+<button role="tab" id="tb-v" aria-selected="false" aria-controls="pane-v"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.3-.7-.7-2.3z"/></svg><span>Service</span></button>
 <button role="tab" id="tb-p" aria-selected="false" aria-controls="pane-p" aria-label="Shop mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9 5 4h14l1.5 5z"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/></svg><span>Shop</span></button>
 </nav>
 <div class="steps" id="learn-head" role="tablist" aria-label="Setup steps"><button role="tab" id="st-u" aria-selected="true" aria-controls="pane-u"><b>1</b><span id="st-u-l">Fork</span></button><button role="tab" id="tb-s" aria-selected="false" aria-controls="pane-s"><b>2</b><span>Spring</span></button><button role="tab" id="tb-d" aria-selected="false" aria-controls="pane-d"><b>3</b><span>Damping</span></button></div>
@@ -809,8 +813,8 @@ html.w3 .w3h b{display:grid;place-items:center;width:28px;height:28px;border-rad
 </div>
 <p class="note" id="foot" hidden>Simplified physics, anchored to the manufacturer's starting point for your fork or shock. The direction of each change is the lesson, not the exact numbers.</p>
 
-<!-- SERVICE -->
-<div id="pane-v" role="tabpanel" aria-labelledby="tb-v" hidden>
+<!-- RIDE TUNING -->
+<div id="pane-r" role="tabpanel" aria-labelledby="tb-r" hidden>
 <h2 class="h2">Tune on the trail</h2>
 <section class="card picker" id="ts-box" style="margin-top:0"><div id="ts-in"></div></section>
 <h2 class="h2">Tune log</h2>
@@ -819,7 +823,7 @@ html.w3 .w3h b{display:grid;place-items:center;width:28px;height:28px;border-rad
 <h2 class="h2">Trail notes</h2>
 <section class="card picker" style="margin-top:0">
 <p class="fk" style="margin-top:0">How did it ride? Pick the closest match and the app shows one change to try next ride. Notes are saved with your service log and backup.</p>
-<p class="fk" id="tn-empty" hidden>Add your fork or shock under Your fork and shock below first, then come back after a ride.</p>
+<p class="fk" id="tn-empty" hidden>Add your fork or shock on the Service page first, then come back after a ride. <button type="button" class="link" id="tn-go-v">Go to Service</button></p>
 <div id="tn-form">
 <div class="field"><span class="lab">Which part</span><div class="chips" id="tn-part"></div></div>
 <div class="field"><label for="tn-text">What you felt (optional)</label><textarea id="tn-text" rows="2" maxlength="400" placeholder="e.g. harsh on roots, kicked me off the big jump"></textarea><div class="tn-ai" id="tn-ai-row" hidden><button type="button" id="tn-ai">Match it for me</button><span class="fk" id="tn-ai-msg">Uses the AI built into your iPhone. Works offline, nothing leaves your phone.</span></div></div>
@@ -829,8 +833,12 @@ html.w3 .w3h b{display:grid;place-items:center;width:28px;height:28px;border-rad
 </div>
 </section>
 <ul class="tnl" id="tn-list"></ul>
-<p class="fk" style="margin-top:16px">Intervals come from each maker's own service schedule. DVO shocks borrow DVO's fork interval, since we couldn't find one for them.</p>
+</div>
+
+<!-- SERVICE -->
+<div id="pane-v" role="tabpanel" aria-labelledby="tb-v" hidden>
 <h2 class="h2">Your fork and shock</h2>
+<p class="fk" style="margin-top:0">Intervals come from each maker's own service schedule. DVO shocks borrow DVO's fork interval, since we couldn't find one for them.</p>
 <div id="svc-parts"></div>
 <div class="cta" style="margin-top:6px"><button id="svc-add">Add <span id="svc-add-what">the one in Setup</span></button></div>
 <h2 class="h2" id="hr-h" hidden>Rides from <span class="hr-name">Apple Health</span></h2>
@@ -2757,7 +2765,7 @@ function play(){
   if(i<o.length-1)anim=requestAnimationFrame(step);else{dot.style.display="none";setGauge(r.mx,r.mx,true)}};
  anim=requestAnimationFrame(step);
 }
-function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():tab==="p"?renderShopTab():renderDamp();if(tab==="s"||tab==="d")saveTune()}
+function render(){tab==="u"?renderSetup():tab==="s"?renderSpring():tab==="v"?renderService():tab==="r"?renderRide():tab==="p"?renderShopTab():renderDamp();if(tab==="s"||tab==="d")saveTune()}
 ["p","t","n","rp"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=+e.target.value;last=k;render()}));
 // rebound is stored as clicks from fully closed; sliders run open-to-closed so the inverse is stored on them
 ["r","l","h","hr"].forEach(k=>$(k).addEventListener("input",e=>{s[k]=(k==="r"||k==="hr")?(+e.target.max)-(+e.target.value):+e.target.value;last2=k;render()}));
@@ -2837,17 +2845,17 @@ wideCheck();
 setTimeout(()=>{WREADY=true;if(WIDE)setTab(tab)},0);
 {const onWide=()=>{const was=WIDE,w3=W3;wideCheck();if(was!==WIDE||w3!==W3){setTab(tab==="u"?RS:tab);if(document.body.classList.contains("gd-on"))gdRender()}};[WIDEQ,W3Q].forEach(q=>q.addEventListener?q.addEventListener("change",onWide):q.addListener(onWide))}
 function setTab(x){if(WIDE&&x==="u")x=RS;if(x==="s"||x==="d")RS=x;tab=x;const learn=x==="s"||x==="d",setup=learn||x==="u";
- $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));$("tb-p").setAttribute("aria-selected",String(x==="p"));
+ $("tb-u").setAttribute("aria-selected",String(setup&&U.mode==="fork"));$("tb-k").setAttribute("aria-selected",String(setup&&U.mode==="shock"));$("tb-v").setAttribute("aria-selected",String(x==="v"));$("tb-r").setAttribute("aria-selected",String(x==="r"));$("tb-p").setAttribute("aria-selected",String(x==="p"));
  $("st-u").setAttribute("aria-selected",String(x==="u"));$("tb-s").setAttribute("aria-selected",String(x==="s"));$("tb-d").setAttribute("aria-selected",String(x==="d"));
- [["u","pane-u"],["s","pane-s"],["d","pane-d"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x&&!(WIDE&&k==="u")&&!(W3&&learn&&(k==="s"||k==="d"))});
+ [["u","pane-u"],["s","pane-s"],["d","pane-d"],["r","pane-r"],["v","pane-v"],["p","pane-p"]].forEach(([k,p])=>{$(p).hidden=k!==x&&!(WIDE&&k==="u")&&!(W3&&learn&&(k==="s"||k==="d"))});
  const nn=U.mode==="shock"?"shock":"fork";
- const HD={u:[U.mode==="shock"?"Set up your shock":"Set up your fork",`Step 1 of 3: pick your ${nn} for a starting pressure and dial settings.`],s:["Set the spring","Step 2 of 3: pump it to your starting pressure and check your sag."],d:["Set the damping","Step 3 of 3: set your starting clicks, then see what each dial does on the trail."],v:["Ride & service","Tune on the trail, note how it rode, and see when each service is due."],p:["Shop mode","For mechanics: hand a customer the setup you put on their bike, as a link or QR code."]};
+ const HD={u:[U.mode==="shock"?"Set up your shock":"Set up your fork",`Step 1 of 3: pick your ${nn} for a starting pressure and dial settings.`],s:["Set the spring","Step 2 of 3: pump it to your starting pressure and check your sag."],d:["Set the damping","Step 3 of 3: set your starting clicks, then see what each dial does on the trail."],r:["Ride tuning","Tune one dial at a time on the trail, and note how each ride felt."],v:["Service","See when each service is due, and log your rides."],p:["Shop mode","For mechanics: hand a customer the setup you put on their bike, as a link or QR code."]};
  $("ph1").textContent=HD[x][0];$("psub").textContent=HD[x][1];if(WIDE&&learn){$("ph1").textContent=HD.u[0];$("psub").textContent=W3?"Your numbers on the left, with the spring and damping side by side.":"Your numbers stay on the left. Set the spring and damping on the right."}
  $("learn-head").hidden=WIDE?!learn:!setup;$("btns").hidden=!learn;$("foot").hidden=!learn;if(learn)(x==="s"?$("smin"):$("dmin")).prepend($("btns"));if(WIDE&&learn)$("pane-"+(W3?"d":x)).append($("foot"));else $("pane-d").after($("foot"));
  const c=$("ctx");c.hidden=!learn||WIDE;if(learn&&!WIDE){c.innerHTML=`Setting up <b>${esc($("r-title").textContent)}</b> <button class="link" id="ctx-ch">Change</button>`;$("ctx-ch").onclick=()=>{pickSet(U.mode,true);setTab("u")}}
  if(WIDE){renderSetup();const rp=$("pane-"+x);if(rp)rp.scrollTop=0}else{render();window.scrollTo({top:0})}}
-const goMode=m=>{if(U.mode!==m){U.mode=m;setTab("u")}else setTab(tab==="v"||tab==="p"?"u":tab)};
-$("tb-u").onclick=()=>goMode("fork");$("tb-k").onclick=()=>goMode("shock");$("tb-v").onclick=()=>setTab("v");$("tb-p").onclick=()=>setTab("p");$("st-u").onclick=()=>setTab("u");$("tb-s").onclick=()=>setTab("s");$("tb-d").onclick=()=>setTab("d");
+const goMode=m=>{if(U.mode!==m){U.mode=m;setTab("u")}else setTab(tab==="v"||tab==="r"||tab==="p"?"u":tab)};
+$("tb-u").onclick=()=>goMode("fork");$("tb-k").onclick=()=>goMode("shock");$("tb-r").onclick=()=>setTab("r");$("tb-v").onclick=()=>setTab("v");$("tn-go-v").onclick=()=>setTab("v");$("tb-p").onclick=()=>setTab("p");$("st-u").onclick=()=>setTab("u");$("tb-s").onclick=()=>setTab("s");$("tb-d").onclick=()=>setTab("d");
 $("go-d").onclick=()=>setTab("d");$("back-u").onclick=()=>setTab("u");$("back-s").onclick=()=>setTab("s");
 $("go-s").onclick=()=>setTab("s");
 $("go-v").onclick=()=>{const p=partFromSetup();if(!G.parts.some(x=>x.label===p.label)){G.parts.push(p);svcSave()}setTab("v")};
@@ -2890,7 +2898,7 @@ const uidGen=()=>Math.random().toString(36).slice(2,9);
 async function svcInit(){
  try{const raw=localStorage.getItem(SK);if(raw)G=JSON.parse(raw)}catch(e){}
  maybeLanding();
- if(tab==="v")renderService();renderGarage();maybeLanding()}
+ if(tab==="v")renderService();else if(tab==="r")renderRide();renderGarage();maybeLanding()}
 async function svcSave(){try{localStorage.setItem(SK,JSON.stringify(G))}catch(e){}watchSoon();
  if(svcRef){try{await svcRef.set(JSON.parse(JSON.stringify(G)))}catch(e){svcMode="device";svcRef=null;$("svc-where").textContent="Couldn't save to your account just now, so this is saved on this device only."}}}
 function effHours(p){let h=p.base||0;G.rides.forEach(r=>{if(r.parts.includes(p.id))h+=r.h*(r.wet?1.5:1)*(p.ebike?1.25:1)});return h}
@@ -3007,6 +3015,7 @@ function renderTuneLog(){const el=$("tl-list");if(!el)return;const L=(G.tunes||[
 {const rs1=renderSetup;renderSetup=function(){const r=rs1.apply(this,arguments);try{const el=$("r-mytune");if(el){const lab=partFromSetup().label,
  t=(G.tunes||[]).filter(x=>x.mine&&x.label===lab&&x.prof===U.prof&&x.kind===U.mode).slice(-1)[0];el.hidden=!t;
  if(t)el.innerHTML=`<b>Your tune</b> from a trail session on ${esc(t.date)}: ${t.dials.map(x=>`${esc(x.name.toLowerCase())} ${x.end}`).join(" · ")} clicks out. The clicks above are the starting point.`}}catch(e){}return r}}
+function renderRide(){renderNotes();renderSession();renderTuneLog()}
 function renderService(){
  renderNotes();renderSession();renderTuneLog();
  $("svc-where").textContent=NATIVE?"Saved on this phone. Deleting the app erases it, so make a backup now and then.":"Saved on this phone, in this browser. Clearing your browser data erases it.";
